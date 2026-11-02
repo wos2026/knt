@@ -91,9 +91,9 @@ var PROT=72*3600000,CYC=PROT+WIN;
 var RULE={1:['15分','重傷10%'],2:['20分','重傷20%'],3:['25分','重傷30%'],4:['30分','重傷30%・死亡10%']};
 function phase(end,now,g){var e=new Date(end).getTime(),pred=false,pe=e;
   if(now>=e){var k=Math.floor((now-e)/CYC),cs=e+k*CYC;pred=k>0;
-    if(now<cs+WIN)return{key:'c',ms:cs+WIN-now,until:cs+WIN,pred:pred,cls:g==='target'?'s-atk':'s-contest',pill:g==='target'?'攻撃可能':'争奪可能・防衛中',lab:'争奪終了'};
+    if(now<cs+WIN)return{key:'c',ms:cs+WIN-now,until:cs+WIN,pred:pred,cls:g==='target'?'s-atk':'s-contest',pill:g==='target'?'争奪可能状態・攻撃できます':'争奪可能状態',lab:'争奪可能状態の終了'};
     pe=cs+CYC;pred=true}
-  var ms=pe-now;return{key:'p',ms:ms,until:pe,pred:pred,cls:ms<3600000?'s-hot':ms<6*3600000?'s-warn':'s-ok',pill:ms<3600000?'1時間以内に争奪開始':ms<6*3600000?'6時間以内に争奪開始':'保護中',lab:'争奪開始'}}
+  var ms=pe-now;return{key:'p',ms:ms,until:pe,pred:pred,cls:ms<3600000?'s-hot':ms<6*3600000?'s-warn':'s-ok',pill:ms<3600000?'保護状態・1時間以内に争奪開始':ms<6*3600000?'保護状態・6時間以内に争奪開始':'保護状態',lab:'保護状態の終了'}}
 function rank(k){return k==='c'?0:1}
 function sorted(g){var now=Date.now();return S.stations.filter(function(s){return (s.g||'own')===g}).map(function(s){return{s:s,ph:phase(s.end,now,g)}}).sort(function(a,b){return rank(a.ph.key)-rank(b.ph.key)||a.ph.until-b.ph.until}).map(function(o){return o.s})}
 function card(s,now){var g=s.g||'own',ph=phase(s.end,now,g),u=new Date(ph.until),src=s.img&&IM[s.img];
@@ -102,12 +102,12 @@ function render(){
   var now=Date.now(),h='';
   h+='<div class="wrap"><div><h1>KNT 拠点タイマー</h1><div class="sub">拠点争奪・工程ステーション｜最終更新 '+fmt(new Date(S.updated),9)+'（日本時間）</div></div>';
   h+='<div class="clock"><div><b>いまの時刻 UTC</b><span id="cu">'+clock(0)+'</span></div><div><b>日本時間 JST</b><span id="cj">'+clock(9)+'</span></div></div>';
-  h+='<div class="legend"><span><b>保護中</b>：3日間、攻撃されない時間。残り時間は「争奪開始」まで</span><span><b>争奪可能</b>：24時間、隣接する同盟が攻撃できる時間。攻略されなければ占領者がそのまま保有し、次の保護に入ります</span><span><b>（予測）</b>：守り切った前提で自動計算した時間です</span></div>';
+  h+='<div class="legend"><span><b>保護状態</b>：3日間、攻撃されない時間。残り時間は保護状態が終わるまで</span><span><b>争奪可能状態</b>：24時間、隣接する同盟が攻撃できる時間。攻略されなければ占領者がそのまま保有し、次の保護状態に入ります</span><span><b>（予測）</b>：守り切った前提で自動計算した時間です</span></div>';
   var own=sorted('own'),tg=sorted('target');
   h+='<h2>占領済<small>守る拠点 '+own.length+'</small></h2><div class="list">'+(own.length?own.map(function(s){return card(s,now)}).join(''):'<div class="empty">占領済の拠点はありません</div>')+'</div>';
   h+='<h2>占領可能<small>狙える拠点 '+tg.length+'</small></h2><div class="list">'+(tg.length?tg.map(function(s){return card(s,now)}).join(''):'<div class="empty">いま狙える拠点はありません</div>')+'</div>';
   if(S.buffs&&S.buffs.length)h+='<h2>同盟の現在の強化<small>占領効果の合計</small></h2><div class="buffs">'+S.buffs.map(function(b){return'<div><span>'+esc(b[0])+'</span><b>'+esc(b[1])+'</b></div>'}).join('')+'</div>';
-  h+='<p class="foot">残り時間は最終更新時のスクショから計算しています。争奪を守り切ったあとは「保護3日→争奪24時間」の繰り返しを自動計算します。拠点を取られた・新しく取ったときは更新が必要です。強化効果は工程ステーションと隣接している領土にだけ発生し、同じタイプ・同じレベルの効果は重ね掛けできません。</p>';
+  h+='<p class="foot">残り時間は最終更新時のスクショから計算しています。争奪を守り切ったあとは「保護状態3日→争奪可能状態24時間」の繰り返しを自動計算します。拠点を取られた・新しく取ったときは更新が必要です。強化効果は工程ステーションと隣接している領土にだけ発生し、同じタイプ・同じレベルの効果は重ね掛けできません。</p>';
   if(canEdit&&!editing)h+='<div class="bar"><button class="pri" id="bEdit">編集する</button><span class="msg">'+esc(msg)+'</span></div>';
   if(editing)h+=editor();
   h+='</div>';
