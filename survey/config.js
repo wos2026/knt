@@ -7,9 +7,9 @@ var SURVEY = {
   // Apps Script を「ウェブアプリ」でデプロイした URL（https://script.google.com/macros/s/…/exec）
   API_URL: '',
 
-  TITLE: '英雄育成状況アンケート',
+  TITLE: '11月7日 4574サーバーSVS参加者 英雄育成アンケート',
   // 空欄なら表示しません。例：'11月14日 14:00'
-  DEADLINE: '',
+  DEADLINE: '11月5日（木）13:00まで',
   LEAD: '各英雄の右上の遠征スキルLvと、★（段）がどこまで育っているかを教えてください。',
 
   // 所属同盟の選択肢（並び順のまま表示）
