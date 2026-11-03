@@ -32,8 +32,6 @@ function setup() {
     log.appendRow(['日時', '更新者', '操作', '期', '変更前(JSON)', '変更後(JSON)']);
     log.setFrozenRows(1);
   }
-  var props = PropertiesService.getScriptProperties();
-  if (!props.getProperty('PASSCODE')) props.setProperty('PASSCODE', 'knt');
 }
 
 /* ---------- 入口 ---------- */
@@ -45,6 +43,7 @@ function doPost(e) {
   var req;
   try { req = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: '不正なリクエスト' }); }
   var pass = PropertiesService.getScriptProperties().getProperty('PASSCODE') || '';
+  if (!pass) return json_({ ok: false, error: '合言葉が未設定です（管理者に連絡）' });
   if (String(req.pass || '') !== pass) return json_({ ok: false, error: '合言葉が違います' });
   try {
     switch (req.action) {
