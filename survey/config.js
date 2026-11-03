@@ -13,7 +13,22 @@ var SURVEY = {
   LEAD: '各英雄の右上の遠征スキルLvと、★（段）がどこまで育っているかを教えてください。',
 
   // 所属同盟の選択肢（並び順のまま表示）
-  ALLIANCES: ['KNT', 'その他'],
+  ALLIANCES: [
+    '[SMG]THESHOWMUSTGOON',
+    '[T9M]九十九束',
+    '[nya]猫カフェ',
+    '[111]HELLOKITTY',
+    '[Mof]myau',
+    '[EKO]栄光の同盟',
+    '[NEO]ネオ',
+    '[AUR]Aurora',
+    '[Fwe]一般人の組',
+    '[arc]ariracco',
+    '[GTM]Götterdämmerung',
+    '[GOT]ちーちゃん危機一髪',
+    '[ebF]ワホー',
+    'その他'
+  ],
   // 参加可能時間の選択肢
   JOIN: ['21:00までにログインしてスタートダッシュできる', '途中参加'],
 

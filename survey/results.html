@@ -51,7 +51,7 @@ td.h{min-width:3.6em;padding:3px}
 .memo{font-size:12px;display:flex;flex-direction:column;gap:6px}
 .memo div{background:var(--bg);border-radius:8px;padding:6px 9px}
 .memo b{margin-right:6px}
-input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 .muted{color:var(--muted);font-size:12px}
 .demo{background:var(--chip);color:var(--accent);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800}
 </style>
@@ -75,7 +75,7 @@ input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12
     <div class="kpi" id="kpi"></div>
 
     <div class="tools" style="margin-top:16px">
-      <div class="seg" id="fally" hidden></div>
+      <select id="fally" hidden aria-label="同盟で絞り込み"></select>
       <div class="seg" id="ftype"></div>
       <button class="btn" id="reload" type="button">更新</button>
       <button class="btn" id="csv" type="button">CSVを保存</button>
@@ -145,7 +145,8 @@ input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12
     var als=['全同盟'].concat(C.ALLIANCES.filter(function(a){return all.some(function(r){return r['所属同盟']===a})}));
     all.forEach(function(r){var a=r['所属同盟']; if(a&&als.indexOf(a)<0) als.push(a)});
     var fa=$('fally'); fa.innerHTML=''; fa.hidden=als.length<=2;
-    als.forEach(function(a){var b=document.createElement('button');b.textContent=a;b.setAttribute('aria-pressed',a===fally);b.onclick=function(){fally=a;show()};fa.appendChild(b)});
+    als.forEach(function(a){var o=document.createElement('option');o.value=a;o.textContent=a==='全同盟'?'全同盟':a+'（'+all.filter(function(r){return r['所属同盟']===a}).length+'人）';fa.appendChild(o)});
+    fa.value=fally; fa.onchange=function(){fally=fa.value;show()};
     var latest=rows.map(function(r){return r['回答日時']}).sort().pop()||'';
     $('meta').textContent=(fally!=='全同盟'?fally+' ／ ':'')+(C.DEADLINE?'締切：'+C.DEADLINE+' ／ ':'')+'回答 '+rows.length+'人'+(latest?' ／ 最新 '+latest:'');
     var tot=0,cnt=0,l5=0; rows.forEach(function(r){var p=pw(r['総力']);if(p){tot+=p;cnt++} l5+=lv5(r)});
@@ -190,7 +191,7 @@ input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12
     var th='<thead><tr><th data-k="name"'+(sortKey==='name'?' class="on"':'')+'>名前</th>'+cols.map(function(c){
       return '<th data-k="'+esc(c.k)+'"'+(sortKey===c.k?' class="on"':'')+'>'+(c.h?'<span class="ty '+c.h.type+'">'+c.h.type+'</span><br>':'')+esc(c.l)+(sortKey===c.k?(sortDir<0?' ▼':' ▲'):'')+'</th>'}).join('')+'</tr></thead>';
     var tb='<tbody>'+list.map(function(r){
-      return '<tr><th title="'+esc(r['回答日時'])+'">'+esc(r['プレイヤー名'])+'</th><td>'+esc(r['所属同盟'])+'</td><td>'+joinTag(r['参加可能時間'])+'</td><td class="n">'+esc(r['総力'])+'</td><td>'+esc(r['大溶鉱炉'])+'</td><td class="n">'+lv5(r)+'</td>'+
+      return '<tr><th title="'+esc(r['回答日時'])+'">'+esc(r['プレイヤー名'])+'</th><td title="'+esc(r['所属同盟'])+'">'+esc(tag(r['所属同盟']))+'</td><td>'+joinTag(r['参加可能時間'])+'</td><td class="n">'+esc(r['総力'])+'</td><td>'+esc(r['大溶鉱炉'])+'</td><td class="n">'+lv5(r)+'</td>'+
         hs.map(function(h){var v=r.heroes[h.name];
           if(!v) return '<td class="h"><div class="cell c0">—</div></td>';
           if(v.skill===0) return '<td class="h"><div class="cell c0"><small>未所持</small></div></td>';
@@ -199,6 +200,7 @@ input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12
     $('tbl').innerHTML=th+tb;
     [].forEach.call($('tbl').querySelectorAll('thead th'),function(t){t.onclick=function(){var k=t.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=k==='name'?1:-1} table()}});
   }
+  function tag(a){ var m=String(a||'').match(/^\[([^\]]+)\]/); return m?m[1]:(a||'—'); }
   function joinTag(j){ if(!j) return '—'; return j===C.JOIN[0] ? '<span class="jt on" title="'+esc(j)+'">21時〜</span>' : '<span class="jt" title="'+esc(j)+'">'+esc(j.length>6?j.slice(0,6)+'…':j)+'</span>'; }
   function memos(){
     var m=rows.filter(function(r){return r['ひとこと']});
@@ -224,7 +226,7 @@ input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12
     return names.map(function(n,i){var hs={}; H.forEach(function(h){
       if(rnd()<0.12){hs[h.name]={skill:0};return}
       var s=1+Math.floor(rnd()*5), st=Math.min(5,Math.floor(rnd()*6)); hs[h.name]={skill:s,star:st,step:st<5?Math.floor(rnd()*6):0}});
-      return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3?0:C.ALLIANCES.length-1],'参加可能時間':C.JOIN[i%4?0:1],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
+      return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3],'参加可能時間':C.JOIN[i%4?0:1],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
   }
   load();
 })();
