@@ -18,7 +18,7 @@
 
 var SHEET = '回答';
 var SHEET_LOG = '送信ログ';
-var BASE = ['回答日時', 'プレイヤー名', '大溶鉱炉', '総力', '兵士(盾)', '兵士(槍)', '兵士(弓)', 'ひとこと'];
+var BASE = ['回答日時', 'プレイヤー名', '所属同盟', '参加可能時間', '大溶鉱炉', '総力', '兵士(盾)', '兵士(槍)', '兵士(弓)', 'ひとこと'];
 
 function setup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -59,6 +59,8 @@ function submit_(r) {
   var heroes = r.heroes || {};
   var sh = sheet_();
   var head = header_(sh);
+  // 基本項目の列が足りなければ追加（古いシートでも動くように）
+  BASE.forEach(function (c) { if (head.indexOf(c) < 0) { head.push(c); sh.getRange(1, head.length).setValue(c); } });
 
   // 英雄の列（スキル列「名前」と星列「名前★」）がなければ右端に追加
   Object.keys(heroes).forEach(function (h) {
@@ -73,6 +75,8 @@ function submit_(r) {
   var put = function (k, v) { var i = head.indexOf(k); if (i >= 0) row[i] = v; };
   put('回答日時', new Date());
   put('プレイヤー名', name);
+  put('所属同盟', clean_(r.alliance, 30));
+  put('参加可能時間', clean_(r.join, 60));
   put('大溶鉱炉', clean_(r.furnace, 20));
   put('総力', clean_(r.power, 20));
   put('兵士(盾)', clean_(t['盾'], 20));

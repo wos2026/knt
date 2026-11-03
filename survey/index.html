@@ -20,6 +20,14 @@ input[type=text]:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .seg button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed=true]{color:#0a1626}}
 :root[data-theme="dark"] .seg button[aria-pressed=true]{color:#0a1626}
+.hint.warn{color:var(--knt);font-weight:700}
+select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-width:12em}
+select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
+.radios{display:flex;flex-direction:column;gap:6px}
+.radios button{appearance:none;font:inherit;font-size:14px;font-weight:700;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px 10px 38px;cursor:pointer;position:relative;line-height:1.45}
+.radios button::before{content:"";position:absolute;left:12px;top:50%;width:16px;height:16px;margin-top:-9px;border-radius:50%;border:2px solid var(--muted)}
+.radios button[aria-pressed=true]{border-color:var(--accent);background:var(--chip)}
+.radios button[aria-pressed=true]::before{border-color:var(--accent);background:radial-gradient(var(--accent) 45%,transparent 50%)}
 .troops{display:grid;gap:10px}
 .troops .row{display:grid;grid-template-columns:3.2em 1fr;gap:8px;align-items:center}
 .troops .row b{font-size:13px}
@@ -70,7 +78,16 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       <div class="f">
         <label class="lab" for="name">プレイヤー名<span class="req">必須</span></label>
         <input type="text" id="name" autocomplete="nickname" placeholder="ゲーム内の名前">
+        <span class="hint warn">ホワサバと同じ名前を入力して下さい</span>
         <span class="hint">同じ名前でもう一度送ると、前の回答が上書きされます。</span>
+      </div>
+      <div class="f">
+        <label class="lab" for="alliance">所属同盟<span class="req">必須</span></label>
+        <select id="alliance"><option value="">選択してください</option></select>
+      </div>
+      <div class="f">
+        <span class="lab">参加可能時間<span class="req">必須</span></span>
+        <div class="radios" id="join"></div>
       </div>
       <div class="f">
         <span class="lab">大溶鉱炉レベル<span class="req">必須</span></span>
@@ -134,7 +151,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   var C = window.SURVEY, H = C.HEROES;
   var DRAFT = 'knt-survey-draft:' + C.TITLE;
   var $ = function(id){ return document.getElementById(id); };
-  var st = { furnace:'', troops:{盾:'',槍:'',弓:''}, heroes:{} };
+  var st = { alliance:'', join:'', furnace:'', troops:{盾:'',槍:'',弓:''}, heroes:{} };
 
   $('title').textContent = C.TITLE;
   document.title = 'KNT ' + C.TITLE;
@@ -152,6 +169,10 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     });
   }
   function buildTop(){
+    var al=$('alliance'); al.length=1;
+    C.ALLIANCES.forEach(function(a){ var o=document.createElement('option'); o.value=o.textContent=a; al.appendChild(o); });
+    al.value=st.alliance||''; al.onchange=function(){ st.alliance=al.value; save(); };
+    seg($('join'), C.JOIN, function(){return st.join;}, function(v){st.join=v;});
     seg($('furnace'), C.FURNACE, function(){return st.furnace;}, function(v){st.furnace=v;});
     var t = $('troops'); t.innerHTML='';
     ['盾','槍','弓'].forEach(function(k){
@@ -215,6 +236,8 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   function validate(){
     var miss=[];
     if(!$('name').value.trim()) miss.push('プレイヤー名');
+    if(!st.alliance) miss.push('所属同盟');
+    if(!st.join) miss.push('参加可能時間');
     if(!st.furnace) miss.push('大溶鉱炉レベル');
     if(!$('power').value.trim()) miss.push('総力');
     if(!st.troops.盾||!st.troops.槍||!st.troops.弓) miss.push('兵士の最高ランク');
@@ -234,7 +257,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       return; }
     if(!C.API_URL){ err.textContent='送信先が未設定のため送れません。管理者に連絡してください。'; err.hidden=false; return; }
     var heroes={}; H.forEach(function(h){ var v=st.heroes[h.name]; heroes[h.name]= v.s===0 ? {skill:0} : {skill:v.s, star:v.r, step:v.r===5?0:v.d}; });
-    var body={ action:'submit', survey:C.TITLE, name:$('name').value.trim(), furnace:st.furnace,
+    var body={ action:'submit', survey:C.TITLE, name:$('name').value.trim(), alliance:st.alliance, join:st.join, furnace:st.furnace,
       power:$('power').value.trim(), troops:st.troops, heroes:heroes, memo:$('memo').value.trim() };
     var btn=$('send'); btn.disabled=true; btn.textContent='送信中…';
     fetch(C.API_URL,{method:'POST',body:JSON.stringify(body)})

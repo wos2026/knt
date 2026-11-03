@@ -41,3 +41,4 @@ footer{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ty{color:#0a1626}}
 :root[data-theme="dark"] .ty{color:#0a1626}
 .rar{font-family:var(--f-num);font-size:10px;font-weight:700;color:var(--muted)}
+[hidden]{display:none!important}
