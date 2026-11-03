@@ -5,7 +5,7 @@
  * ========================================================= */
 var SURVEY = {
   // Apps Script を「ウェブアプリ」でデプロイした URL（https://script.google.com/macros/s/…/exec）
-  API_URL: 'https://script.google.com/macros/s/AKfycbzwg0lZcnUOL6OeWpnxEs-0a7AL-BW1C5HQTF6ns0gDIbVj3ZXdYdd2pnfriEqEA4tU1Q/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbzgGM2xlO5xgbAVS-m0_QZHM3Q6jmM3yST53yUcn2k1j0Xrla4fAGYVAtTC7KYD__geag/exec',
 
   TITLE: '11月7日 4574サーバーSVS参加者 英雄育成アンケート',
   // 空欄なら表示しません。例：'11月14日 14:00'
