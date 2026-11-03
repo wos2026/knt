@@ -7,7 +7,7 @@ var SURVEY = {
   // Apps Script を「ウェブアプリ」でデプロイした URL（https://script.google.com/macros/s/…/exec）
   API_URL: 'https://script.google.com/macros/s/AKfycbzgGM2xlO5xgbAVS-m0_QZHM3Q6jmM3yST53yUcn2k1j0Xrla4fAGYVAtTC7KYD__geag/exec',
 
-  TITLE: '11月7日 4574サーバーSVS参加者 英雄育成アンケート',
+  TITLE: '11月7日 4575サーバーSVS参加者 英雄育成アンケート',
   // 空欄なら表示しません。例：'11月14日 14:00'
   DEADLINE: '11月5日（木）13:00まで',
   // この日時を過ぎると回答ページが受付終了になります（日本時間）。空欄なら止めません
