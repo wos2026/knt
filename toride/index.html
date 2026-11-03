@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KNT 砦争奪履歴</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
+<style>
+:root{
+  --bg:#eef4fa; --panel:#ffffff; --ink:#0f2440; --muted:#5b6f88; --line:#d3e0ee;
+  --accent:#1d4f8f; --ice:#8cc4f2; --chip:#e3eef9; --knt:#c62f3a; --knt-bg:#fde7e9;
+  --f-disp:"M PLUS 1p","Hiragino Sans",system-ui,sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0a1626; --panel:#11223a; --ink:#e6f0fb; --muted:#93a8c2; --line:#22395a; --accent:#8cc4f2; --ice:#3b78b8; --chip:#18304f; --knt:#ff8089; --knt-bg:#3a1a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a1626; --panel:#11223a; --ink:#e6f0fb; --muted:#93a8c2; --line:#22395a; --accent:#8cc4f2; --ice:#3b78b8; --chip:#18304f; --knt:#ff8089; --knt-bg:#3a1a22; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-disp)}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.02em}
+h2{margin:0 0 8px;font-size:15px;font-weight:800;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+h2 small{font-size:12px;color:var(--muted);font-weight:500}
+.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tag{display:inline-block;min-width:3.4em;text-align:center;padding:2px 6px;border-radius:6px;font-family:var(--f-num);font-weight:700;font-size:12px;line-height:1.5;color:#fff;white-space:nowrap}
+.tag.none{background:var(--chip);color:var(--muted)}
+/* standings */
+.rank{display:flex;flex-direction:column;gap:6px}
+.rk{display:grid;grid-template-columns:1.6em 4.2em 1fr 3.2em;gap:8px;align-items:center;font-size:13px}
+.rk .n{font-family:var(--f-num);color:var(--muted);text-align:right}
+.bar{height:10px;border-radius:5px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px}
+.rk .p{font-family:var(--f-num);font-weight:700;text-align:right}
+.rk .d{grid-column:3/5;font-size:11px;color:var(--muted);margin-top:-4px}
+/* matrix */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--chip);font-weight:700;font-size:11px;color:var(--muted)}
+tbody th{text-align:left;font-weight:700;background:var(--panel);position:sticky;left:0;z-index:1}
+tr.sep td,tr.sep th{border-top:2px solid var(--accent)}
+td.cur{background:color-mix(in srgb,var(--ice) 15%,transparent)}
+.streak{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.pt{font-size:10px;color:var(--muted);font-weight:500}
+/* periods */
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+summary{cursor:pointer;padding:10px 12px;font-weight:800;font-size:14px;list-style:none;display:flex;justify-content:space-between;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary span{color:var(--muted);font-weight:500;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;padding:0 12px 12px}
+.cell{display:flex;justify-content:space-between;align-items:center;gap:6px;background:var(--bg);border-radius:8px;padding:6px 8px;font-size:12px}
+.nb{display:inline-block;margin-left:3px;padding:0 4px;border-radius:4px;font-size:10px;font-weight:700;line-height:1.6;background:var(--chip);color:var(--muted);vertical-align:middle}
+.nb.v{background:var(--knt-bg);color:var(--knt)}
+.cell{flex-wrap:wrap}
+.cn{flex-basis:100%;font-style:normal;font-size:10px;color:var(--muted)}
+.memo{margin:0;padding:0 12px 12px 30px;font-size:12px;color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+footer{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
+.empty{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+
+<!-- ===== 記録データ：期ごとに1件追加する ===== -->
+<script type="application/json" id="data">
+{
+ "season": "今シーズン",
+ "periods": [
+  {
+   "period": 1,
+   "date": "2026-10-02",
+   "fortress": {
+    "1": "ARK",
+    "2": "GaL",
+    "3": "RAV",
+    "4": "WSS"
+   },
+   "stronghold": {
+    "1": "",
+    "2": "WSS",
+    "3": "RAV",
+    "4": "Rdd",
+    "5": "ARK",
+    "6": "RNE",
+    "7": "GaL",
+    "8": "YEK",
+    "9": "JBA",
+    "10": "lgo",
+    "11": "MOF",
+    "12": "KHK"
+   }
+  },
+  {
+   "period": 2,
+   "date": "2026-10-09",
+   "fortress": {
+    "1": "lgo",
+    "2": "WSS",
+    "3": "RAV",
+    "4": "JBA"
+   },
+   "stronghold": {
+    "1": "JBA",
+    "2": "WSS",
+    "3": "RAV",
+    "4": "RNE",
+    "5": "RAV",
+    "6": "RNE",
+    "7": "GaL",
+    "8": "lgo",
+    "9": "YNS",
+    "10": "lgo",
+    "11": "MOF",
+    "12": "MnB"
+   },
+   "notes": {
+    "fortress:4": "違反あり",
+    "stronghold:9": "違反あり"
+   },
+   "memo": [
+    "初回違反① YNS（失敗）",
+    "保有違反① JBA"
+   ]
+  },
+  {
+   "period": 3,
+   "date": "2026-10-16",
+   "fortress": {
+    "1": "GaL",
+    "2": "RAV",
+    "3": "WSS",
+    "4": "ARK"
+   },
+   "stronghold": {
+    "1": "RAV",
+    "2": "WSS",
+    "3": "RAV",
+    "4": "GaL",
+    "5": "RAV",
+    "6": "RNE",
+    "7": "GaL",
+    "8": "lgo",
+    "9": "lgo",
+    "10": "lgo",
+    "11": "ooo",
+    "12": "ARK"
+   }
+  },
+  {
+   "period": 4,
+   "date": "2026-10-23",
+   "fortress": {
+    "1": "WSS",
+    "2": "RAV",
+    "3": "GaL",
+    "4": "YEK"
+   },
+   "stronghold": {
+    "1": "RAV",
+    "2": "WSS",
+    "3": "RAV",
+    "4": "GaL",
+    "5": "RAV",
+    "6": "RAV",
+    "7": "GaL",
+    "8": "lgo",
+    "9": "lgo",
+    "10": "GaL",
+    "11": "ooo",
+    "12": "YEK"
+   },
+   "notes": {
+    "fortress:4": "違反あり",
+    "stronghold:3": "無人だった為、自動申請元のRAVが支配",
+    "stronghold:11": "無人だった為、自動申請元のoooが支配"
+   },
+   "memo": [
+    "初回違反① ESJ（成功）"
+   ]
+  },
+  {
+   "period": 5,
+   "date": "2026-10-30",
+   "fortress": {
+    "1": "WSS",
+    "2": "GaL",
+    "3": "RAV",
+    "4": "RNE"
+   },
+   "stronghold": {
+    "1": "YEK",
+    "2": "lgo",
+    "3": "RNE",
+    "4": "GaL",
+    "5": "RAV",
+    "6": "RAV",
+    "7": "GaL",
+    "8": "RAV",
+    "9": "WSS",
+    "10": "GaL",
+    "11": "MOF",
+    "12": "ARK"
+   }
+  }
+ ]
+}
+</script>
+
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('data').textContent);
+  var P=D.periods.slice().sort(function(a,b){return a.period-b.period});
+  var TOTAL=8, MY='KNT';
+  var SITES=[];
+  for(var i=1;i<=4;i++)SITES.push({k:'fortress',n:i,label:i+'号要塞',pt:2});
+  for(var j=1;j<=12;j++)SITES.push({k:'stronghold',n:j,label:j+'号砦',pt:1});
+  var WD=['日','月','火','水','木','金','土'];
+  function fmtDate(s){var d=new Date(s+'T00:00:00');return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  // stable colour per alliance tag
+  var PAL=['#1d4f8f','#2f8a5b','#8a5a14','#6a3fb0','#0f7f8f','#a0407a','#4d6b1f','#b0561e','#3d5aa8','#7a6a12','#215f6e','#8f3b3b'];
+  var cmap={},ci=0;
+  function col(t){if(t===MY)return '#c62f3a';if(!(t in cmap)){var h=0;for(var x=0;x<t.length;x++)h=(h*31+t.charCodeAt(x))>>>0;cmap[t]=PAL[h%PAL.length]}return cmap[t]}
+  function tag(t){return t?'<span class="tag" style="background:'+col(t)+'">'+esc(t)+'</span>':'<span class="tag none">未占領</span>'}
+  function note(p,s){return (p.notes||{})[s.k+':'+s.n]||''}
+  function badge(n){if(!n)return '';var v=n.indexOf('違反')>=0;return '<span class="nb'+(v?' v':'')+'" title=""+esc(n)+"">'+(v?'違反':'自動')+'</span>'}
+  function owner(p,s){return (p[s.k]||{})[String(s.n)]||''}
+
+  var latest=P[P.length-1];
+  var h='';
+  h+='<header><h1>KNT 砦争奪履歴</h1><div class="sub">'+esc(D.season)+'（全'+TOTAL+'期）・記録済み '+P.length+'期'+(latest?'・最新 '+latest.period+'期 '+fmtDate(latest.date):'')+'</div></header>';
+
+  if(!P.length){document.getElementById('root').innerHTML=h+'<p class="empty">まだ記録がありません</p>';return}
+
+  // season points
+  var pts={},det={};
+  P.forEach(function(p){SITES.forEach(function(s){var t=owner(p,s);if(!t)return;pts[t]=(pts[t]||0)+s.pt;det[t]=det[t]||{f:0,s:0};if(s.k==='fortress')det[t].f++;else det[t].s++;})});
+  var rk=Object.keys(pts).sort(function(a,b){return pts[b]-pts[a]||a.localeCompare(b)});
+  var max=pts[rk[0]]||1, prev=null, rn=0;
+  h+='<section class="card"><h2>シーズンポイント<small>要塞2pt・砦1pt／記録済み'+P.length+'期の累計</small></h2><div class="rank">';
+  rk.forEach(function(t,ix){if(pts[t]!==prev){rn=ix+1;prev=pts[t]}
+    h+='<div class="rk"><span class="n">'+rn+'</span>'+tag(t)+'<span class="bar"><i style="width:'+(pts[t]/max*100)+'%;background:'+col(t)+'"></i></span><span class="p">'+pts[t]+'pt</span><span></span><span></span><span class="d">要塞'+det[t].f+'回・砦'+det[t].s+'回</span></div>'});
+  if(P.length<TOTAL&&P[0].period!==1)h+='';
+  h+='</div>';
+  var missing=[];for(var m=1;m<=TOTAL;m++){if(!P.some(function(p){return p.period===m})&&m<latest.period)missing.push(m)}
+  if(missing.length)h+='<div class="sub">※ '+missing.join('・')+'期が未記録のため、シーズン累計は暫定です</div>';
+  h+='</section>';
+
+  // matrix
+  h+='<section><h2>拠点別の支配推移<small>左ほど新しい期・連続数は同じ同盟が続けて支配している期数</small></h2><div class="sub" style="margin:-4px 0 8px"><span class="nb v">違反</span> 違反あり　<span class="nb">自動</span> 無人のため自動申請元が支配</div><div class="scroll"><table><thead><tr><th style="text-align:left">拠点</th>';
+  for(var c=latest.period;c>=1;c--)h+='<th>'+c+'期</th>';
+  h+='</tr></thead><tbody>';
+  var byNo={};P.forEach(function(p){byNo[p.period]=p});
+  SITES.forEach(function(s,ix){
+    h+='<tr'+(ix===4?' class="sep"':'')+'><th>'+s.label+' <span class="pt">'+s.pt+'pt</span></th>';
+    for(var c=latest.period;c>=1;c--){var p=byNo[c];
+      if(!p){h+='<td></td>';continue}
+      var t=owner(p,s),st=0;
+      if(t){for(var b=c;b>=1&&byNo[b]&&owner(byNo[b],s)===t;b--)st++}
+      h+='<td'+(c===latest.period?' class="cur"':'')+'>'+tag(t)+badge(note(p,s))+(st>=2?'<span class="streak">'+st+'連続</span>':'')+'</td>'}
+    h+='</tr>'});
+  h+='</tbody></table></div></section>';
+
+  // per period
+  h+='<section><h2>期ごとの記録</h2><div style="display:flex;flex-direction:column;gap:8px">';
+  P.slice().reverse().forEach(function(p,ix){
+    h+='<details'+(ix===0?' open':'')+'><summary>'+p.period+'/'+TOTAL+'期<span>'+fmtDate(p.date)+'</span></summary><div class="grid">';
+    SITES.forEach(function(s){var n=note(p,s);h+='<div class="cell"><span>'+s.label+'</span><span>'+tag(owner(p,s))+'</span>'+(n?'<em class="cn">'+esc(n)+'</em>':'')+'</div>'});
+    h+='</div>';
+    if(p.memo&&p.memo.length)h+='<ul class="memo">'+p.memo.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+    h+='</details>'});
+  h+='</div></section>';
+
+  h+='<footer>製作者「FURUKANA」</footer>';
+  document.getElementById('root').innerHTML=h;
+})();
+</script>
+</body>
+</html>
