@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" translate="no">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>4297サーバー砦占領履歴</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
@@ -261,7 +262,7 @@ var API_URL='';
   var PAL=['#1d4f8f','#2f8a5b','#8a5a14','#6a3fb0','#0f7f8f','#a0407a','#4d6b1f','#b0561e','#3d5aa8','#7a6a12','#215f6e','#8f3b3b'];
   var cmap={};
   function col(t){if(t===MY)return '#c62f3a';if(!(t in cmap)){var h=0;for(var x=0;x<t.length;x++)h=(h*31+t.charCodeAt(x))>>>0;cmap[t]=PAL[h%PAL.length]}return cmap[t]}
-  function tag(t){return t?'<span class="tag" style="background:'+col(t)+'">'+esc(t)+'</span>':'<span class="tag none">未占領</span>'}
+  function tag(t){return t?'<span class="tag notranslate" translate="no" style="background:'+col(t)+'">'+esc(t)+'</span>':'<span class="tag none">未占領</span>'}
   function owner(p,s){return (p[s.k]||{})[String(s.n)]||''}
   function note(p,s){return (p.notes||{})[s.k+':'+s.n]||''}
   function badge(n){if(!n)return '';var c=n.indexOf('違反')>=0?'v':'',t=c?'違反':(n.indexOf('自動')>=0?'自動':'メモ');return '<span class="nb '+c+'" title="'+esc(n)+'">'+t+'</span>'}
@@ -344,11 +345,11 @@ var API_URL='';
     for(var i=1;i<=TOTAL;i++)h+='<option value="'+i+'"'+(i===pNo?' selected':'')+'>'+i+'/'+TOTAL+'期'+(P.some(function(p){return p.period===i})?'（記録あり）':'')+'</option>';
     h+='</select></label><label class="f">日付<input id="e-date" type="date" value="'+esc(cur?cur.date:nextFriday())+'"></label></div></div>';
     h+='<div class="fs"><b>スクショから読み取る</b><div class="hint">拠点争奪 → 砦タブの画面を、1号要塞〜12号砦がすべて写るように撮って選んでください（6枚ほど）。読み取った結果は下の欄に入るので、確認してから保存してください。</div><input id="e-files" type="file" accept="image/*" multiple><div class="thumbs" id="e-thumbs"></div><div class="acts"><button class="btn" id="e-read" data-act="read" disabled>スクショを読み取る</button><span class="status" id="e-rs"></span></div></div>';
-    h+='<div class="fs"><b>支配同盟</b><div class="hint">未占領は空欄。メモ欄は「違反あり」「無人だった為、自動申請元が支配」から選ぶか自由に入力。</div>';
+    h+='<div class="fs"><b>支配同盟</b><div class="hint">同盟名はアルファベット3文字をそのまま（大文字・小文字も画面どおり）。未占領は空欄。メモ欄は「違反あり」「無人だった為、自動申請元が支配」から選ぶか自由に入力。</div>';
     h+='<datalist id="dl-tag">'+tags.map(function(t){return '<option value="'+esc(t)+'">'}).join('')+'</datalist>';
     h+='<datalist id="dl-note">'+NOTE_OPTS.map(function(t){return '<option value="'+esc(t)+'">'}).join('')+'</datalist>';
     SITES.forEach(function(s,ix){
-      h+='<div class="er'+(ix===4?' sep':'')+'"><span>'+s.label+'</span><input class="t" list="dl-tag" id="t-'+s.k+'-'+s.n+'" value="'+esc(cur?owner(cur,s):'')+'" autocapitalize="off" autocorrect="off" spellcheck="false"><input list="dl-note" id="n-'+s.k+'-'+s.n+'" placeholder="メモ" value="'+esc(cur?note(cur,s):'')+'"></div>'});
+      h+='<div class="er'+(ix===4?' sep':'')+'"><span>'+s.label+'</span><input class="t" list="dl-tag" id="t-'+s.k+'-'+s.n+'" maxlength="3" pattern="[A-Za-z]{3}" translate="no" value="'+esc(cur?owner(cur,s):'')+'" autocapitalize="off" autocorrect="off" spellcheck="false"><input list="dl-note" id="n-'+s.k+'-'+s.n+'" placeholder="メモ" value="'+esc(cur?note(cur,s):'')+'"></div>'});
     h+='</div>';
     h+='<div class="fs"><b>全体メモ</b><div class="hint">1行に1件（例：初回違反① ESJ（成功））</div><textarea id="e-memo">'+esc(cur&&cur.memo?cur.memo.join('\n'):'')+'</textarea></div>';
     h+='<div class="acts"><span>'+(cur?'<button class="btn del" data-act="delete">この期を削除</button>':'')+'</span><span style="display:flex;gap:8px;align-items:center"><span class="status" id="e-st"></span><button class="btn pri" data-act="save">保存</button></span></div>';
@@ -382,7 +383,7 @@ var API_URL='';
     var st=$('e-rs');st.className='status';st.textContent='読み取り中…（10〜30秒ほど）';$('e-read').disabled=true;
     api({action:'read',pass:c.pass,images:shots,known:knownTags()}).then(function(j){
       var r=j.result||{},filled=0,empty=[];
-      SITES.forEach(function(s){var v=((r[s.k]||{})[String(s.n)]||'').trim(),el=$('t-'+s.k+'-'+s.n);
+      SITES.forEach(function(s){var v=((r[s.k]||{})[String(s.n)]||'').replace(/[【】\s]/g,'');if(!/^[A-Za-z]{3}$/.test(v))v='';var el=$('t-'+s.k+'-'+s.n);
         el.value=v;el.classList.toggle('w',!v);if(v)filled++;else empty.push(s.label)});
       st.textContent=filled+'/16 拠点を読み取りました'+(empty.length?'。空欄（黄色）を確認してください：'+empty.join('・'):'。内容を確認して保存してください');
     }).catch(function(e){st.className='status err';st.textContent=e.message}).then(function(){$('e-read').disabled=false});
@@ -397,6 +398,8 @@ var API_URL='';
   function doSave(){
     var c=cred();if(!c)return;var rec=collect();
     if(!rec.date){alert('日付を入力してください');return}
+    var bad=SITES.filter(function(s){var t=rec[s.k][String(s.n)];return t&&!/^[A-Za-z]{3}$/.test(t)}).map(function(s){return s.label});
+    if(bad.length){alert('同盟名はアルファベット3文字で入力してください：'+bad.join('・'));return}
     var ex=P.some(function(p){return p.period===rec.period});
     if(ex&&(!cur||cur.period!==rec.period)&&!confirm(rec.period+'期は記録済みです。上書きしますか？'))return;
     var st=$('e-st');st.className='status';st.textContent='保存中…';

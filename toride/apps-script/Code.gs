@@ -113,6 +113,9 @@ function writeRow_(sh, p, editor) {
 function save_(p, editor) {
   if (!p || !(Number(p.period) >= 1 && Number(p.period) <= 8)) return { ok: false, error: '期は1〜8で指定してください' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(p.date || ''))) return { ok: false, error: '日付が不正です' };
+  var bad = [];
+  ['fortress', 'stronghold'].forEach(function (k) { Object.keys(p[k] || {}).forEach(function (n) { var t = String(p[k][n] || '').trim(); if (t && !/^[A-Za-z]{3}$/.test(t)) bad.push(n + (k === 'fortress' ? '号要塞' : '号砦')); }); });
+  if (bad.length) return { ok: false, error: '同盟名はアルファベット3文字で：' + bad.join('・') };
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var sh = sheet_(SHEET_REC);
@@ -171,7 +174,7 @@ function readShots_(images, known) {
   content.push({ type: 'text', text:
     'Whiteout Survival の「拠点争奪 → 砦」タブのスクリーンショットです。' +
     '各拠点（1〜4号要塞、1〜12号砦）について、「【XXX】同盟名 支配中」の【】内の同盟タグを読み取ってください。\n' +
-    '・タグは【】の中の英数字をそのまま書き写す。大文字小文字を区別する。\n' +
+    '・タグは必ずアルファベット3文字（例: GaL, RAV, lgo）。【】の中をそのまま書き写し、翻訳・カタカナ化・言い換えはしない。大文字小文字を区別する。\n' +
     '・小文字 l と大文字 I が紛らわしい場合は、既知のタグに合わせる。既知のタグ: ' + known.join(', ') + '\n' +
     '・支配同盟がない、または画像に写っていない拠点は空文字 "" にする。\n' +
     '・出力は次の JSON のみ。説明文は不要。\n' +
