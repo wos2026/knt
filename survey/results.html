@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KNT 英雄育成集計</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.kpi div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-family:var(--f-num);font-size:24px;font-weight:700}
+.kpi span{font-size:12px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--panel);color:var(--ink);font:inherit;font-size:13px;font-weight:700;padding:7px 12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed=true]{color:#0a1626}}
+:root[data-theme="dark"] .seg button[aria-pressed=true]{color:#0a1626}
+/* hero summary */
+.hs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.hc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.hc .t{display:flex;align-items:center;gap:6px;font-weight:800}
+.hc .t .own{margin-left:auto;font-size:11px;color:var(--muted);font-weight:500}
+.mini{display:grid;grid-template-columns:3.2em 1fr;gap:6px;align-items:center;font-size:11px;color:var(--muted)}
+.stack{display:flex;height:16px;border-radius:5px;overflow:hidden;background:var(--chip)}
+.stack i{display:block;height:100%;font-style:normal;font-family:var(--f-num);font-size:10px;font-weight:700;line-height:16px;text-align:center;color:#fff;overflow:hidden;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+/* table */
+.scroll{overflow:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line);background:var(--panel);max-height:75vh}
+table{border-collapse:separate;border-spacing:0;font-size:12px;min-width:100%}
+th,td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--chip);font-weight:700;font-size:11px;color:var(--muted);z-index:2;cursor:pointer;user-select:none}
+thead th.on{color:var(--accent)}
+thead th:first-child{left:0;z-index:3}
+tbody th{text-align:left;font-weight:800;background:var(--panel);position:sticky;left:0;z-index:1;max-width:9em;overflow:hidden;text-overflow:ellipsis}
+td.n{font-family:var(--f-num);font-weight:700}
+td.h{min-width:3.6em;padding:3px}
+.cell{border-radius:6px;padding:2px 3px;line-height:1.25}
+.cell b{display:block;font-family:var(--f-num);font-size:13px}
+.cell small{display:block;font-family:var(--f-num);font-size:10px;opacity:.85}
+.c0{background:transparent;color:var(--muted)}
+.c1{background:var(--l1)} .c2{background:var(--l2)} .c3{background:var(--l3);color:#fff} .c4{background:var(--l4);color:#fff} .c5{background:var(--l5);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .c3,:root:not([data-theme="light"]) .c4,:root:not([data-theme="light"]) .c5{color:#0a1626}}
+:root[data-theme="dark"] .c3,:root[data-theme="dark"] .c4,:root[data-theme="dark"] .c5{color:#0a1626}
+.memo{font-size:12px;display:flex;flex-direction:column;gap:6px}
+.memo div{background:var(--bg);border-radius:8px;padding:6px 9px}
+.memo b{margin-right:6px}
+input[type=password],input[type=text]{font:inherit;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.muted{color:var(--muted);font-size:12px}
+.demo{background:var(--chip);color:var(--accent);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap wide">
+  <header>
+    <h1 id="title">英雄育成状況 集計</h1>
+    <div class="sub" id="meta">読み込み中…</div>
+  </header>
+
+  <div class="demo" id="demoNote" hidden>表示確認用のサンプルデータです（実際の回答ではありません）</div>
+  <div class="notice" id="err" hidden></div>
+
+  <section class="card" id="passBox" hidden>
+    <h2>合言葉</h2>
+    <form class="tools" id="passForm"><input type="password" id="pass" placeholder="合言葉" autocomplete="current-password"><button class="btn pri">表示</button></form>
+  </section>
+
+  <div id="main" hidden>
+    <div class="kpi" id="kpi"></div>
+
+    <div class="tools" style="margin-top:16px">
+      <div class="seg" id="ftype"></div>
+      <button class="btn" id="reload" type="button">更新</button>
+      <button class="btn" id="csv" type="button">CSVを保存</button>
+      <a class="btn" href="./">回答ページへ</a>
+    </div>
+
+    <section style="margin-top:16px">
+      <h2>英雄ごとのまとめ <small>上：右上遠征スキルLv ／ 下：★</small></h2>
+      <div class="legend" id="legend" style="margin-bottom:8px"></div>
+      <div class="hs" id="hs"></div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h2>メンバー一覧 <small>列名をタップで並べ替え ・ 上段＝スキルLv、下段＝★-段</small></h2>
+      <div class="scroll"><table id="tbl"></table></div>
+    </section>
+
+    <section class="card" style="margin-top:20px" id="memoBox" hidden>
+      <h2>ひとこと</h2>
+      <div class="memo" id="memos"></div>
+    </section>
+  </div>
+
+  <footer>KNT · 4297サーバー ｜ 製作者「FURUKANA」</footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+  var C=window.SURVEY, H=C.HEROES, $=function(i){return document.getElementById(i)};
+  var rows=[], ftype='全部', sortKey='総力', sortDir=-1, PASSK='knt-survey-pass';
+  var DEMO=/[?&]demo=1/.test(location.search);
+  $('title').textContent=C.TITLE+' 集計'; document.title='KNT '+C.TITLE+' 集計';
+
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
+  function pw(s){ // 総力 "158.2M" → 数値
+    var m=String(s||'').replace(/,/g,'').match(/([\d.]+)\s*([kKmMbBgG万億]?)/); if(!m) return 0;
+    var n=parseFloat(m[1]), u=m[2]; return n*({k:1e3,K:1e3,m:1e6,M:1e6,b:1e9,B:1e9,g:1e9,G:1e9,'万':1e4,'億':1e8}[u]||1);
+  }
+  function starVal(v){ return v&&v.skill>0&&typeof v.star==='number' ? v.star+(v.star<5?(v.step||0)/6:0) : -1; }
+  function starTxt(v){ return !v||v.skill===0?'':('★'+v.star+(v.star<5?'-'+(v.step||0):'')); }
+  function lv5(r){ return H.filter(function(h){var v=r.heroes[h.name];return v&&v.skill===5}).length; }
+
+  function load(){
+    $('err').hidden=true;
+    if(DEMO){ rows=demo(); $('demoNote').hidden=false; return show(); }
+    if(!C.API_URL){ $('meta').textContent=''; $('err').textContent='送信先（API_URL）が未設定です。config.js を設定してください。'; $('err').hidden=false; return; }
+    var pass=''; try{pass=localStorage.getItem(PASSK)||''}catch(e){}
+    $('meta').textContent='読み込み中…';
+    fetch(C.API_URL+(pass?'?pass='+encodeURIComponent(pass):''))
+      .then(function(r){return r.json()})
+      .then(function(j){
+        if(j.needPass){ $('passBox').hidden=false; $('main').hidden=true; $('meta').textContent=''; if(pass){$('err').textContent=j.error;$('err').hidden=false;} return; }
+        if(!j.ok) throw new Error(j.error);
+        $('passBox').hidden=true; rows=j.rows||[]; show();
+      })
+      .catch(function(e){ $('meta').textContent=''; $('err').textContent='読み込みに失敗しました'+(e&&e.message?'：'+e.message:''); $('err').hidden=false; });
+  }
+  $('passForm').onsubmit=function(e){e.preventDefault(); try{localStorage.setItem(PASSK,$('pass').value)}catch(x){} load();};
+  $('reload').onclick=load;
+
+  function heroesShown(){ return H.filter(function(h){return ftype==='全部'||h.type===ftype}); }
+
+  function show(){
+    $('main').hidden=false;
+    var latest=rows.map(function(r){return r['回答日時']}).sort().pop()||'';
+    $('meta').textContent=(C.DEADLINE?'締切：'+C.DEADLINE+' ／ ':'')+'回答 '+rows.length+'人'+(latest?' ／ 最新 '+latest:'');
+    var tot=0,cnt=0,l5=0; rows.forEach(function(r){var p=pw(r['総力']);if(p){tot+=p;cnt++} l5+=lv5(r)});
+    var full=rows.filter(function(r){return lv5(r)===H.length}).length;
+    $('kpi').innerHTML=
+      '<div><b>'+rows.length+'</b><span>回答人数</span></div>'+
+      '<div><b>'+(cnt?(tot/cnt/1e6).toFixed(1)+'M':'—')+'</b><span>平均総力</span></div>'+
+      '<div><b>'+(rows.length?(l5/rows.length).toFixed(1):'—')+'</b><span>1人あたり スキルLv5の英雄数</span></div>'+
+      '<div><b>'+full+'</b><span>全'+H.length+'英雄 Lv5の人</span></div>';
+    var ft=$('ftype'); ft.innerHTML='';
+    ['全部','盾','槍','弓'].forEach(function(t){var b=document.createElement('button');b.textContent=t;b.setAttribute('aria-pressed',t===ftype);b.onclick=function(){ftype=t;show()};ft.appendChild(b)});
+    summary(); table(); memos();
+  }
+
+  var SK=[{k:5,l:'Lv5',c:'var(--l5)'},{k:4,l:'Lv4',c:'var(--l4)'},{k:3,l:'Lv3',c:'var(--l3)'},{k:2,l:'Lv1-2',c:'var(--l2)'},{k:0,l:'未所持',c:'var(--line)'}];
+  var ST=[{k:5,l:'★5',c:'var(--l5)'},{k:4,l:'★4',c:'var(--l4)'},{k:3,l:'★3',c:'var(--l3)'},{k:2,l:'★0-2',c:'var(--l2)'},{k:0,l:'未所持',c:'var(--line)'}];
+  function bucketSk(v){ if(!v||v.skill===0) return 0; return v.skill>=3?v.skill:2; }
+  function bucketSt(v){ if(!v||v.skill===0) return 0; return v.star>=3?v.star:2; }
+  function stack(list, fn){
+    var n=rows.length||1, c={}; rows.forEach(function(r){var k=fn(r);c[k]=(c[k]||0)+1});
+    return '<div class="stack">'+list.map(function(s){var x=c[s.k]||0; if(!x) return '';
+      var light=s.k<=2; return '<i style="width:'+(x/n*100)+'%;background:'+s.c+(light?';color:var(--ink)':'')+'" title="'+s.l+'：'+x+'人">'+x+'</i>'}).join('')+'</div>';
+  }
+  function summary(){
+    $('legend').innerHTML=SK.map(function(s,i){return '<span><i style="background:'+s.c+'"></i>'+s.l+' / '+ST[i].l+'</span>'}).join('');
+    $('hs').innerHTML=heroesShown().map(function(h){
+      var own=rows.filter(function(r){var v=r.heroes[h.name];return v&&v.skill>0}).length;
+      return '<div class="hc"><div class="t"><span class="ty '+h.type+'">'+h.type+'</span>'+esc(h.name)+' <span class="rar">'+h.rarity+'</span><span class="own">所持 '+own+'/'+rows.length+'</span></div>'+
+        '<div class="mini"><span>スキル</span>'+stack(SK,function(r){return bucketSk(r.heroes[h.name])})+'</div>'+
+        '<div class="mini"><span>★</span>'+stack(ST,function(r){return bucketSt(r.heroes[h.name])})+'</div></div>';
+    }).join('');
+  }
+  function table(){
+    var hs=heroesShown();
+    var cols=[{k:'総力',l:'総力'},{k:'大溶鉱炉',l:'溶鉱炉'},{k:'lv5',l:'Lv5数'}].concat(hs.map(function(h){return {k:'h:'+h.name,l:h.name,h:h}}));
+    var val=function(r,k){
+      if(k==='総力') return pw(r['総力']); if(k==='lv5') return lv5(r); if(k==='name') return r['プレイヤー名'];
+      if(k==='大溶鉱炉') return C.FURNACE.length-C.FURNACE.indexOf(r['大溶鉱炉']);
+      var v=r.heroes[k.slice(2)]; return v&&v.skill>0 ? v.skill*10+starVal(v) : -1;
+    };
+    var list=rows.slice().sort(function(a,b){var x=val(a,sortKey),y=val(b,sortKey);return (x>y?1:x<y?-1:0)*sortDir});
+    var th='<thead><tr><th data-k="name"'+(sortKey==='name'?' class="on"':'')+'>名前</th>'+cols.map(function(c){
+      return '<th data-k="'+esc(c.k)+'"'+(sortKey===c.k?' class="on"':'')+'>'+(c.h?'<span class="ty '+c.h.type+'">'+c.h.type+'</span><br>':'')+esc(c.l)+(sortKey===c.k?(sortDir<0?' ▼':' ▲'):'')+'</th>'}).join('')+'</tr></thead>';
+    var tb='<tbody>'+list.map(function(r){
+      return '<tr><th title="'+esc(r['回答日時'])+'">'+esc(r['プレイヤー名'])+'</th><td class="n">'+esc(r['総力'])+'</td><td>'+esc(r['大溶鉱炉'])+'</td><td class="n">'+lv5(r)+'</td>'+
+        hs.map(function(h){var v=r.heroes[h.name];
+          if(!v) return '<td class="h"><div class="cell c0">—</div></td>';
+          if(v.skill===0) return '<td class="h"><div class="cell c0"><small>未所持</small></div></td>';
+          return '<td class="h"><div class="cell c'+v.skill+'"><b>'+v.skill+'</b><small>'+starTxt(v)+'</small></div></td>'}).join('')+'</tr>';
+    }).join('')+'</tbody>';
+    $('tbl').innerHTML=th+tb;
+    [].forEach.call($('tbl').querySelectorAll('thead th'),function(t){t.onclick=function(){var k=t.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=k==='name'?1:-1} table()}});
+  }
+  function memos(){
+    var m=rows.filter(function(r){return r['ひとこと']});
+    $('memoBox').hidden=!m.length;
+    $('memos').innerHTML=m.map(function(r){return '<div><b>'+esc(r['プレイヤー名'])+'</b>'+esc(r['ひとこと'])+'</div>'}).join('');
+  }
+
+  $('csv').onclick=function(){
+    var head=['プレイヤー名','回答日時','大溶鉱炉','総力','兵士(盾)','兵士(槍)','兵士(弓)'];
+    H.forEach(function(h){head.push(h.name+' スキル',h.name+' ★')}); head.push('ひとこと');
+    var q=function(s){s=s==null?'':String(s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+    var lines=[head.map(q).join(',')].concat(rows.map(function(r){
+      var a=[r['プレイヤー名'],r['回答日時'],r['大溶鉱炉'],r['総力'],r['兵士(盾)'],r['兵士(槍)'],r['兵士(弓)']];
+      H.forEach(function(h){var v=r.heroes[h.name]; a.push(!v?'':v.skill===0?'未所持':v.skill, starTxt(v))}); a.push(r['ひとこと']);
+      return a.map(q).join(',')}));
+    var blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv'}), a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='英雄育成アンケート.csv'; document.body.appendChild(a); a.click(); a.remove();
+  };
+
+  function demo(){ // 表示確認用のダミー
+    var names=['サンプルA','サンプルB','サンプルC','サンプルD','サンプルE','サンプルF'], seed=7;
+    var rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280};
+    return names.map(function(n,i){var hs={}; H.forEach(function(h){
+      if(rnd()<0.12){hs[h.name]={skill:0};return}
+      var s=1+Math.floor(rnd()*5), st=Math.min(5,Math.floor(rnd()*6)); hs[h.name]={skill:s,star:st,step:st<5?Math.floor(rnd()*6):0}});
+      return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
+  }
+  load();
+})();
+</script>
+</body>
+</html>
