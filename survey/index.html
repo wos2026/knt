@@ -51,8 +51,8 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .lv.st button{font-size:13px}
 .hero.off .rowl.need-own{display:none}
 .hero.max .rowl.step{display:none}
-.howto{display:flex;gap:10px;align-items:flex-start;background:var(--chip);border-radius:10px;padding:10px;font-size:12px;line-height:1.6}
-.howto svg{flex:none}
+.howto{display:flex;flex-direction:column;gap:8px;background:var(--chip);border-radius:10px;padding:10px;font-size:12px;line-height:1.6}
+.howto img{display:block;width:100%;max-width:420px;height:auto;border-radius:8px;margin:0 auto}
 .bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center}
 .bar .btn.pri{flex:1;justify-content:center;font-size:16px;padding:13px}
 .prog{font-family:var(--f-num);font-size:12px;color:var(--muted);white-space:nowrap}
@@ -108,13 +108,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     <section class="card">
       <h2>英雄の育成状況 <small>英雄ごとに「遠征スキル」「★」「段」を選んでください</small></h2>
       <div class="howto">
-        <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true">
-          <rect x="1" y="1" width="52" height="52" rx="8" fill="var(--panel)" stroke="var(--line)"/>
-          <text x="10" y="13" font-size="7" fill="var(--muted)">探検</text>
-          <text x="35" y="13" font-size="7" fill="var(--muted)">遠征</text>
-          <circle cx="15" cy="21" r="5" fill="var(--l1)"/><circle cx="10" cy="33" r="5" fill="var(--l1)"/><circle cx="15" cy="45" r="5" fill="var(--l1)"/>
-          <circle cx="40" cy="22" r="7" fill="var(--knt)"/><circle cx="44" cy="34" r="5" fill="var(--l1)"/><circle cx="40" cy="45" r="5" fill="var(--l1)"/>
-        </svg>
+        <img src="howto-skill.jpg" width="640" height="458" alt="英雄のスキル画面。遠征の一番上（右上）のスキルを赤丸で囲んだ例">
         <div><b>スキル</b>：英雄画面 →「スキル」タブ → <b>遠征の一番上（右上）</b>のアイコンの Lv<br><b>★・段</b>：英雄画面の星の下の表示（例：<b>★4-4段</b> なら ★4・4段）<br>持っていない英雄は「未所持」を押すと他は不要です。</div>
       </div>
       <div id="heroes"></div>
