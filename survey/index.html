@@ -45,8 +45,8 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lv button[aria-pressed=true]{color:#0a1626}}
 :root[data-theme="dark"] .lv button[aria-pressed=true]{color:#0a1626}
 .hero.miss .nm::after{content:"未選択あり";font-size:11px;color:var(--knt);margin-left:auto}
-.rowl{display:grid;grid-template-columns:2.6em 1fr;gap:6px;align-items:center}
-.rowl>span{font-size:11px;font-weight:800;color:var(--muted)}
+.rowl{display:grid;grid-template-columns:4.6em 1fr;gap:6px;align-items:center}
+.rowl>span{font-size:11px;font-weight:800;color:var(--muted);line-height:1.25}
 .lv.st{grid-template-columns:repeat(6,1fr)}
 .lv.st button{font-size:13px}
 .hero.off .rowl.need-own{display:none}
@@ -206,7 +206,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         var v=hv(h.name);
         var d=document.createElement('div'); d.className='hero'; d.dataset.name=h.name;
         d.innerHTML='<div class="nm"><span class="ty '+h.type+'">'+h.type+'</span><span></span></div>'+
-          '<div class="rowl"><span>スキル</span><div class="lv sk"></div></div>'+
+          '<div class="rowl"><span>右上遠征<br>スキル</span><div class="lv sk"></div></div>'+
           '<div class="rowl need-own"><span>★</span><div class="lv st rs"></div></div>'+
           '<div class="rowl need-own step"><span>段</span><div class="lv st ds"></div></div>';
         d.querySelector('.nm span:last-child').textContent=h.name;
