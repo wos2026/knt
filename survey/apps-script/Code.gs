@@ -13,8 +13,12 @@
  * 任意：スクリプト プロパティに VIEW_PASS を登録すると、
  *       集計ページを見るときに合言葉が必要になります（回答は誰でも可）。
  *
+ * 締切：下の CLOSE_AT の日時を過ぎると送信を受け付けません。
  * 新しいアンケートを始めるとき：シート「回答」を名前変更して保管 → setup を再実行。
  */
+
+// この日時を過ぎると回答を受け付けません（日本時間）。空欄 '' なら止めません
+var CLOSE_AT = '2026-11-05T13:00:00+09:00';
 
 var SHEET = '回答';
 var SHEET_LOG = '送信ログ';
@@ -41,6 +45,7 @@ function doPost(e) {
   var req;
   try { req = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: '不正なリクエスト' }); }
   if (req.action !== 'submit') return json_({ ok: false, error: '不明な操作' });
+  if (CLOSE_AT && new Date() >= new Date(CLOSE_AT)) return json_({ ok: false, closed: true, error: '受付は終了しました' });
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(20000);

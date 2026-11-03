@@ -77,6 +77,10 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     <span class="deadline" id="deadline" hidden></span>
   </header>
 
+  <section class="card done" id="closed" hidden>
+    <h2>受付は終了しました</h2>
+    <div class="sub">締切（<span id="closedAt"></span>）を過ぎたため、回答を受け付けていません。<br>ご協力ありがとうございました。</div>
+  </section>
   <div class="notice" id="cfgWarn" hidden>まだ回答の送信先が設定されていません（管理者の設定待ち）。</div>
 
   <form id="form" novalidate>
@@ -165,6 +169,9 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   $('lead').textContent = C.LEAD;
   if (C.DEADLINE) { $('deadline').hidden = false; $('deadline').textContent = '締切：' + C.DEADLINE; }
   if (!C.API_URL) $('cfgWarn').hidden = false;
+  function isClosed(){ return !!C.CLOSE_AT && Date.now() >= new Date(C.CLOSE_AT).getTime(); }
+  function closeForm(){ $('form').hidden=true; $('done').hidden=true; $('cfgWarn').hidden=true; $('closed').hidden=false; $('closedAt').textContent=C.DEADLINE||C.CLOSE_AT; }
+  if (isClosed()) closeForm();
 
   function seg(el, opts, get, set){
     el.innerHTML = '';
@@ -264,6 +271,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     if(miss.length){ err.textContent='未入力：'+miss.join('、'); err.hidden=false;
       var first=document.querySelector('.hero.miss'); if(!$('name').value.trim()) $('name').focus(); else if(first&&miss.length===1) first.scrollIntoView({behavior:'smooth',block:'center'});
       return; }
+    if(isClosed()){ closeForm(); return; }
     if(!C.API_URL){ err.textContent='送信先が未設定のため送れません。管理者に連絡してください。'; err.hidden=false; return; }
     var heroes={}; H.forEach(function(h){ var v=st.heroes[h.name]; heroes[h.name]= v.s===0 ? {skill:0} : {skill:v.s, star:v.r, step:v.r===5?0:v.d}; });
     var body={ action:'submit', survey:C.TITLE, name:$('name').value.trim(), alliance:st.alliance, join:st.join, furnace:st.furnace,
@@ -272,6 +280,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     fetch(C.API_URL,{method:'POST',body:JSON.stringify(body)})
       .then(function(r){return r.json();})
       .then(function(j){
+        if(j.closed){ closeForm(); return; }
         if(!j.ok) throw new Error(j.error||'送信に失敗しました');
         showDone(body, j.updated);
       })
@@ -287,7 +296,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       d.innerHTML='<span></span><b></b>'; d.firstChild.textContent=h.name; d.lastChild.textContent=v.skill===0?'未所持':'Lv'+v.skill+' / ★'+v.star+(v.star<5?'-'+v.step:''); s.appendChild(d); });
     window.scrollTo({top:0,behavior:'smooth'});
   }
-  $('again').onclick=function(){ $('done').hidden=true; $('form').hidden=false; window.scrollTo({top:0}); };
+  $('again').onclick=function(){ if(isClosed()){ closeForm(); return; } $('done').hidden=true; $('form').hidden=false; window.scrollTo({top:0}); };
 
   load(); buildTop(); buildHeroes(); prog();
 })();
