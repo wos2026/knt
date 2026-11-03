@@ -36,7 +36,8 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .grp{font-size:12px;font-weight:800;color:var(--muted);margin:14px 0 6px;letter-spacing:.06em}
 .grp:first-of-type{margin-top:0}
 .hero{display:grid;grid-template-columns:1fr;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
-.hero .nm{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px}
+.hero .nm{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px}
+.face{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;border:1px solid var(--line)}
 .lv{display:grid;grid-template-columns:1.6fr repeat(5,1fr);gap:5px}
 .lv button{appearance:none;font:inherit;font-family:var(--f-num);font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;height:40px;cursor:pointer;padding:0}
 .lv button.no{font-family:var(--f-disp);font-size:12px}
@@ -210,7 +211,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       list.forEach(function(h){
         var v=hv(h.name);
         var d=document.createElement('div'); d.className='hero'; d.dataset.name=h.name;
-        d.innerHTML='<div class="nm"><span class="ty '+h.type+'">'+h.type+'</span><span></span></div>'+
+        d.innerHTML='<div class="nm">'+(h.icon?'<img class="face" src="'+h.icon+'" width="44" height="44" alt="">':'')+'<span class="ty '+h.type+'">'+h.type+'</span><span></span></div>'+
           '<div class="rowl"><span>右上遠征<br>スキル</span><div class="lv sk"></div></div>'+
           '<div class="rowl need-own"><span>★</span><div class="lv st rs"></div></div>'+
           '<div class="rowl need-own step"><span>段</span><div class="lv st ds"></div></div>';

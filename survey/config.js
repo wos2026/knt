@@ -36,23 +36,23 @@ var SURVEY = {
   // 盾兵士・槍兵士・弓兵士のプルダウン
   TROOP: ['火晶3', '火晶2', '火晶1', '該当なし'],
 
-  // type：盾 / 槍 / 弓   rarity：SSR / SR
+  // type：盾 / 槍 / 弓   rarity：SSR / SR   icon：顔アイコン画像（heroes フォルダ）
   HEROES: [
-    { name: 'ジェロニモ',   type: '盾', rarity: 'SSR' },
-    { name: 'ナタリア',     type: '盾', rarity: 'SSR' },
-    { name: 'フリント',     type: '盾', rarity: 'SSR' },
-    { name: 'フレンダー',   type: '槍', rarity: 'SSR' },
-    { name: 'ジャスミン',   type: '槍', rarity: 'SSR' },
-    { name: 'アロンゾ',     type: '弓', rarity: 'SSR' },
-    { name: 'ジンマン',     type: '弓', rarity: 'SSR' },
-    { name: 'セルゲイ',     type: '盾', rarity: 'SR' },
-    { name: 'ジェシー',     type: '槍', rarity: 'SR' },
-    { name: 'パトリック',   type: '槍', rarity: 'SR' },
-    { name: 'リンセツ',     type: '槍', rarity: 'SR' },
-    { name: 'ルム・ボーガン', type: '槍', rarity: 'SR' },
-    { name: 'バシティ',     type: '弓', rarity: 'SR' },
-    { name: 'ジーナ',       type: '弓', rarity: 'SR' },
-    { name: 'ソユン',       type: '弓', rarity: 'SR' },
-    { name: 'ジャセル',     type: '弓', rarity: 'SR' }
+    { name: 'ジェロニモ',   type: '盾', rarity: 'SSR', icon: 'heroes/jeronimo.jpg' },
+    { name: 'ナタリア',     type: '盾', rarity: 'SSR', icon: 'heroes/natalia.jpg' },
+    { name: 'フリント',     type: '盾', rarity: 'SSR', icon: 'heroes/flint.jpg' },
+    { name: 'フレンダー',   type: '槍', rarity: 'SSR', icon: 'heroes/philly.jpg' },
+    { name: 'ジャスミン',   type: '槍', rarity: 'SSR', icon: 'heroes/jasmine.jpg' },
+    { name: 'アロンゾ',     type: '弓', rarity: 'SSR', icon: 'heroes/alonso.jpg' },
+    { name: 'ジンマン',     type: '弓', rarity: 'SSR', icon: 'heroes/zinman.jpg' },
+    { name: 'セルゲイ',     type: '盾', rarity: 'SR', icon: 'heroes/sergey.jpg' },
+    { name: 'ジェシー',     type: '槍', rarity: 'SR', icon: 'heroes/jessie.jpg' },
+    { name: 'パトリック',   type: '槍', rarity: 'SR', icon: 'heroes/patrick.jpg' },
+    { name: 'リンセツ',     type: '槍', rarity: 'SR', icon: 'heroes/lingxue.jpg' },
+    { name: 'ルム・ボーガン', type: '槍', rarity: 'SR', icon: 'heroes/lumak.jpg' },
+    { name: 'バシティ',     type: '弓', rarity: 'SR', icon: 'heroes/bahiti.jpg' },
+    { name: 'ジーナ',       type: '弓', rarity: 'SR', icon: 'heroes/gina.jpg' },
+    { name: 'ソユン',       type: '弓', rarity: 'SR', icon: 'heroes/seoyoon.jpg' },
+    { name: 'ジャセル',     type: '弓', rarity: 'SR', icon: 'heroes/jasser.jpg' }
   ]
 };
