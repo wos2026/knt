@@ -29,7 +29,8 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .radios button[aria-pressed=true]{border-color:var(--accent);background:var(--chip)}
 .radios button[aria-pressed=true]::before{border-color:var(--accent);background:radial-gradient(var(--accent) 45%,transparent 50%)}
 .troops{display:grid;gap:10px}
-.troops .row{display:grid;grid-template-columns:3.2em 1fr;gap:8px;align-items:center}
+.troops .row{display:grid;grid-template-columns:5.2em 1fr;gap:8px;align-items:center}
+.troops select{width:100%}
 .troops .row b{font-size:13px}
 /* heroes */
 .grp{font-size:12px;font-weight:800;color:var(--muted);margin:14px 0 6px;letter-spacing:.06em}
@@ -99,7 +100,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         <span class="hint">領主ファイルの ✊ の数字</span>
       </div>
       <div class="f">
-        <span class="lab">兵士の最高ランク<span class="req">必須</span></span>
+        <span class="lab">兵士レベル<span class="req">必須</span></span>
         <div class="troops" id="troops"></div>
       </div>
     </section>
@@ -177,9 +178,11 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     var t = $('troops'); t.innerHTML='';
     ['盾','槍','弓'].forEach(function(k){
       var r=document.createElement('div'); r.className='row';
-      r.innerHTML='<b><span class="ty '+k+'">'+k+'</span></b><div class="seg"></div>';
+      r.innerHTML='<label><span class="ty '+k+'">'+k+'</span> <b>'+k+'兵士</b></label><select><option value="">選択してください</option></select>';
+      var sel=r.querySelector('select'), id='troop-'+k; sel.id=id; r.querySelector('label').htmlFor=id;
+      C.TROOP.forEach(function(o){ var op=document.createElement('option'); op.value=op.textContent=o; sel.appendChild(op); });
+      sel.value=st.troops[k]||''; sel.onchange=function(){ st.troops[k]=sel.value; save(); };
       t.appendChild(r);
-      seg(r.lastChild, C.TROOP, function(){return st.troops[k];}, function(v){st.troops[k]=v;});
     });
   }
   function hv(n){ return st.heroes[n] || (st.heroes[n] = {}); }
@@ -240,7 +243,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     if(!st.join) miss.push('参加可能時間');
     if(!st.furnace) miss.push('大溶鉱炉レベル');
     if(!$('power').value.trim()) miss.push('総力');
-    if(!st.troops.盾||!st.troops.槍||!st.troops.弓) miss.push('兵士の最高ランク');
+    if(!st.troops.盾||!st.troops.槍||!st.troops.弓) miss.push('兵士レベル');
     var mh=H.filter(function(h){return !done(st.heroes[h.name]);});
     document.querySelectorAll('.hero').forEach(function(d){
       d.classList.toggle('miss', !done(st.heroes[d.dataset.name])); });
