@@ -59,12 +59,45 @@ summary span{color:var(--muted);font-weight:500;font-size:12px}
 .legend{display:flex;flex-wrap:wrap;gap:6px}
 footer{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
 .empty{color:var(--muted);font-size:13px}
+
+/* toolbar & editor */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13px;font-weight:700;padding:8px 12px;border-radius:10px;cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0a1626}}
+.btn.del{color:var(--knt);border-color:var(--knt)}
+.btn.sm{font-size:11px;padding:3px 8px;border-radius:7px}
+.btn:disabled{opacity:.5;cursor:default}
+.status{font-size:12px;color:var(--muted)}
+.status.err{color:var(--knt)}
+summary .r{display:flex;gap:8px;align-items:center}
+.ov{position:fixed;inset:0;background:rgba(5,15,30,.55);display:none;z-index:20;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ov.on{display:block}
+.sheet{background:var(--bg);max-width:640px;margin:0 auto;min-height:100%;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px;display:flex;flex-direction:column;gap:14px}
+@media (min-width:680px){.sheet{margin:24px auto;min-height:0;border-radius:16px}}
+.sheet h3{margin:0;font-size:17px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.fs{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.fs>b{font-size:13px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:700}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+textarea{min-height:64px;resize:vertical}
+.er{display:grid;grid-template-columns:5.6em 1fr 1.2fr;gap:6px;align-items:center;font-size:12px;font-weight:700}
+.er input.t{font-family:var(--f-num);font-weight:700}
+.er input.w{border-color:#d08a00;background:color-mix(in srgb,#d08a00 12%,var(--bg))}
+.er.sep{border-top:2px solid var(--accent);padding-top:8px}
+.thumbs{display:flex;gap:6px;overflow-x:auto}
+.thumbs img{height:84px;border-radius:6px;border:1px solid var(--line)}
+.hint{font-size:11px;color:var(--muted);line-height:1.6}
+.acts{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.hist{font-size:12px;display:flex;flex-direction:column;gap:4px}
 </style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
+<div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 
-<!-- ===== 記録データ：期ごとに1件追加する ===== -->
+<!-- ===== 予備データ（API未接続時・読込失敗時に表示） ===== -->
 <script type="application/json" id="data">
 {
  "season": "今シーズン",
@@ -210,72 +243,194 @@ footer{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
 </script>
 
 <script>
+/* 保存先（Google Apps Script のウェブアプリURL）。空ならこのページ内の予備データを表示 */
+var API_URL='';
+
 (function(){
-  var D=JSON.parse(document.getElementById('data').textContent);
-  var P=D.periods.slice().sort(function(a,b){return a.period-b.period});
-  var TOTAL=8, MY='KNT';
+  var FALLBACK=JSON.parse(document.getElementById('data').textContent);
+  var TOTAL=8, MY='KNT', P=[], SRC='';
   var SITES=[];
   for(var i=1;i<=4;i++)SITES.push({k:'fortress',n:i,label:i+'号要塞',pt:2});
   for(var j=1;j<=12;j++)SITES.push({k:'stronghold',n:j,label:j+'号砦',pt:1});
   var WD=['日','月','火','水','木','金','土'];
-  function fmtDate(s){var d=new Date(s+'T00:00:00');return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-  // stable colour per alliance tag
+  var NOTE_OPTS=['違反あり','無人だった為、自動申請元が支配'];
+  function $(id){return document.getElementById(id)}
+  function fmtDate(s){var d=new Date(s+'T00:00:00');return isNaN(d)?s:(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){return ''}}
   var PAL=['#1d4f8f','#2f8a5b','#8a5a14','#6a3fb0','#0f7f8f','#a0407a','#4d6b1f','#b0561e','#3d5aa8','#7a6a12','#215f6e','#8f3b3b'];
-  var cmap={},ci=0;
+  var cmap={};
   function col(t){if(t===MY)return '#c62f3a';if(!(t in cmap)){var h=0;for(var x=0;x<t.length;x++)h=(h*31+t.charCodeAt(x))>>>0;cmap[t]=PAL[h%PAL.length]}return cmap[t]}
   function tag(t){return t?'<span class="tag" style="background:'+col(t)+'">'+esc(t)+'</span>':'<span class="tag none">未占領</span>'}
-  function note(p,s){return (p.notes||{})[s.k+':'+s.n]||''}
-  function badge(n){if(!n)return '';var v=n.indexOf('違反')>=0;return '<span class="nb'+(v?' v':'')+'" title=""+esc(n)+"">'+(v?'違反':'自動')+'</span>'}
   function owner(p,s){return (p[s.k]||{})[String(s.n)]||''}
+  function note(p,s){return (p.notes||{})[s.k+':'+s.n]||''}
+  function badge(n){if(!n)return '';var c=n.indexOf('違反')>=0?'v':'',t=c?'違反':(n.indexOf('自動')>=0?'自動':'メモ');return '<span class="nb '+c+'" title="'+esc(n)+'">'+t+'</span>'}
+  function knownTags(){var s={};P.forEach(function(p){SITES.forEach(function(x){var t=owner(p,x);if(t)s[t]=1})});return Object.keys(s).sort()}
 
-  var latest=P[P.length-1];
-  var h='';
-  h+='<header><h1>KNT 砦争奪履歴</h1><div class="sub">'+esc(D.season)+'（全'+TOTAL+'期）・記録済み '+P.length+'期'+(latest?'・最新 '+latest.period+'期 '+fmtDate(latest.date):'')+'</div></header>';
+  /* ---------- API ---------- */
+  function api(body){
+    return fetch(API_URL,{method:'POST',body:JSON.stringify(body)}).then(function(r){return r.json()})
+      .then(function(j){if(!j.ok)throw new Error(j.error||'失敗しました');return j});
+  }
+  function load(){
+    if(!API_URL){P=FALLBACK.periods;SRC='local';render();return}
+    $('root').innerHTML='<p class="empty">読み込み中…</p>';
+    fetch(API_URL).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw 0;P=j.periods;SRC='api';render()})
+      .catch(function(){P=FALLBACK.periods;SRC='offline';render()});
+  }
 
-  if(!P.length){document.getElementById('root').innerHTML=h+'<p class="empty">まだ記録がありません</p>';return}
+  /* ---------- 表示 ---------- */
+  function render(){
+    P=P.slice().sort(function(a,b){return a.period-b.period});
+    var latest=P[P.length-1];
+    var h='<header><h1>KNT 砦争奪履歴</h1><div class="sub">'+esc(FALLBACK.season)+'（全'+TOTAL+'期）・記録済み '+P.length+'期'+(latest?'・最新 '+latest.period+'期 '+fmtDate(latest.date):'')+'</div></header>';
+    if(SRC==='api')h+='<div class="tools"><button class="btn pri" data-act="new">＋ 記録を追加</button><button class="btn" data-act="hist">変更履歴</button></div>';
+    else if(SRC==='offline')h+='<div class="status err">保存先に接続できなかったため、予備データを表示しています（編集不可）</div>';
+    if(!P.length){$('root').innerHTML=h+'<p class="empty">まだ記録がありません</p>';return}
 
-  // season points
-  var pts={},det={};
-  P.forEach(function(p){SITES.forEach(function(s){var t=owner(p,s);if(!t)return;pts[t]=(pts[t]||0)+s.pt;det[t]=det[t]||{f:0,s:0};if(s.k==='fortress')det[t].f++;else det[t].s++;})});
-  var rk=Object.keys(pts).sort(function(a,b){return pts[b]-pts[a]||a.localeCompare(b)});
-  var max=pts[rk[0]]||1, prev=null, rn=0;
-  h+='<section class="card"><h2>シーズンポイント<small>要塞2pt・砦1pt／記録済み'+P.length+'期の累計</small></h2><div class="rank">';
-  rk.forEach(function(t,ix){if(pts[t]!==prev){rn=ix+1;prev=pts[t]}
-    h+='<div class="rk"><span class="n">'+rn+'</span>'+tag(t)+'<span class="bar"><i style="width:'+(pts[t]/max*100)+'%;background:'+col(t)+'"></i></span><span class="p">'+pts[t]+'pt</span><span></span><span></span><span class="d">要塞'+det[t].f+'回・砦'+det[t].s+'回</span></div>'});
-  if(P.length<TOTAL&&P[0].period!==1)h+='';
-  h+='</div>';
-  var missing=[];for(var m=1;m<=TOTAL;m++){if(!P.some(function(p){return p.period===m})&&m<latest.period)missing.push(m)}
-  if(missing.length)h+='<div class="sub">※ '+missing.join('・')+'期が未記録のため、シーズン累計は暫定です</div>';
-  h+='</section>';
-
-  // matrix
-  h+='<section><h2>拠点別の支配推移<small>左ほど新しい期・連続数は同じ同盟が続けて支配している期数</small></h2><div class="sub" style="margin:-4px 0 8px"><span class="nb v">違反</span> 違反あり　<span class="nb">自動</span> 無人のため自動申請元が支配</div><div class="scroll"><table><thead><tr><th style="text-align:left">拠点</th>';
-  for(var c=latest.period;c>=1;c--)h+='<th>'+c+'期</th>';
-  h+='</tr></thead><tbody>';
-  var byNo={};P.forEach(function(p){byNo[p.period]=p});
-  SITES.forEach(function(s,ix){
-    h+='<tr'+(ix===4?' class="sep"':'')+'><th>'+s.label+' <span class="pt">'+s.pt+'pt</span></th>';
-    for(var c=latest.period;c>=1;c--){var p=byNo[c];
-      if(!p){h+='<td></td>';continue}
-      var t=owner(p,s),st=0;
-      if(t){for(var b=c;b>=1&&byNo[b]&&owner(byNo[b],s)===t;b--)st++}
-      h+='<td'+(c===latest.period?' class="cur"':'')+'>'+tag(t)+badge(note(p,s))+(st>=2?'<span class="streak">'+st+'連続</span>':'')+'</td>'}
-    h+='</tr>'});
-  h+='</tbody></table></div></section>';
-
-  // per period
-  h+='<section><h2>期ごとの記録</h2><div style="display:flex;flex-direction:column;gap:8px">';
-  P.slice().reverse().forEach(function(p,ix){
-    h+='<details'+(ix===0?' open':'')+'><summary>'+p.period+'/'+TOTAL+'期<span>'+fmtDate(p.date)+'</span></summary><div class="grid">';
-    SITES.forEach(function(s){var n=note(p,s);h+='<div class="cell"><span>'+s.label+'</span><span>'+tag(owner(p,s))+'</span>'+(n?'<em class="cn">'+esc(n)+'</em>':'')+'</div>'});
+    var pts={},det={};
+    P.forEach(function(p){SITES.forEach(function(s){var t=owner(p,s);if(!t)return;pts[t]=(pts[t]||0)+s.pt;det[t]=det[t]||{f:0,s:0};if(s.k==='fortress')det[t].f++;else det[t].s++;})});
+    var rk=Object.keys(pts).sort(function(a,b){return pts[b]-pts[a]||a.localeCompare(b)});
+    var max=pts[rk[0]]||1,prev=null,rn=0;
+    h+='<section class="card"><h2>シーズンポイント<small>要塞2pt・砦1pt／記録済み'+P.length+'期の累計</small></h2><div class="rank">';
+    rk.forEach(function(t,ix){if(pts[t]!==prev){rn=ix+1;prev=pts[t]}
+      h+='<div class="rk"><span class="n">'+rn+'</span>'+tag(t)+'<span class="bar"><i style="width:'+(pts[t]/max*100)+'%;background:'+col(t)+'"></i></span><span class="p">'+pts[t]+'pt</span><span></span><span></span><span class="d">要塞'+det[t].f+'回・砦'+det[t].s+'回</span></div>'});
     h+='</div>';
-    if(p.memo&&p.memo.length)h+='<ul class="memo">'+p.memo.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
-    h+='</details>'});
-  h+='</div></section>';
+    var missing=[];for(var m=1;m<latest.period;m++){if(!P.some(function(p){return p.period===m}))missing.push(m)}
+    if(missing.length)h+='<div class="sub">※ '+missing.join('・')+'期が未記録のため、シーズン累計は暫定です</div>';
+    h+='</section>';
 
-  h+='<footer>製作者「FURUKANA」</footer>';
-  document.getElementById('root').innerHTML=h;
+    var byNo={};P.forEach(function(p){byNo[p.period]=p});
+    h+='<section><h2>拠点別の支配推移<small>左ほど新しい期・連続数は同じ同盟が続けて支配している期数</small></h2><div class="sub" style="margin:-4px 0 8px"><span class="nb v">違反</span> 違反あり　<span class="nb">自動</span> 無人のため自動申請元が支配</div><div class="scroll"><table><thead><tr><th style="text-align:left">拠点</th>';
+    for(var c=latest.period;c>=1;c--)h+='<th>'+c+'期</th>';
+    h+='</tr></thead><tbody>';
+    SITES.forEach(function(s,ix){
+      h+='<tr'+(ix===4?' class="sep"':'')+'><th>'+s.label+' <span class="pt">'+s.pt+'pt</span></th>';
+      for(var c=latest.period;c>=1;c--){var p=byNo[c];
+        if(!p){h+='<td></td>';continue}
+        var t=owner(p,s),st=0;
+        if(t){for(var b=c;b>=1&&byNo[b]&&owner(byNo[b],s)===t;b--)st++}
+        h+='<td'+(c===latest.period?' class="cur"':'')+'>'+tag(t)+badge(note(p,s))+(st>=2?'<span class="streak">'+st+'連続</span>':'')+'</td>'}
+      h+='</tr>'});
+    h+='</tbody></table></div></section>';
+
+    h+='<section><h2>期ごとの記録</h2><div style="display:flex;flex-direction:column;gap:8px">';
+    P.slice().reverse().forEach(function(p,ix){
+      h+='<details'+(ix===0?' open':'')+'><summary>'+p.period+'/'+TOTAL+'期<span class="r"><span>'+fmtDate(p.date)+'</span>'+(SRC==='api'?'<button class="btn sm" data-act="edit" data-p="'+p.period+'">修正</button>':'')+'</span></summary><div class="grid">';
+      SITES.forEach(function(s){var n=note(p,s);h+='<div class="cell"><span>'+s.label+'</span><span>'+tag(owner(p,s))+'</span>'+(n?'<em class="cn">'+esc(n)+'</em>':'')+'</div>'});
+      h+='</div>';
+      if(p.memo&&p.memo.length)h+='<ul class="memo">'+p.memo.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+      h+='</details>'});
+    h+='</div></section><footer>製作者「FURUKANA」</footer>';
+    $('root').innerHTML=h;
+  }
+
+  /* ---------- 編集画面 ---------- */
+  var shots=[], cur=null;
+  function ymd(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+  function nextFriday(){var l=P[P.length-1];if(l&&l.date){var d=new Date(l.date+'T00:00:00');d.setDate(d.getDate()+7);return ymd(d)}var t=new Date();t.setDate(t.getDate()-((t.getDay()+2)%7));return ymd(t)}
+  function close(){$('ov').classList.remove('on');document.body.style.overflow=''}
+  function open(html){$('sheet').innerHTML=html;$('ov').classList.add('on');$('ov').scrollTop=0;document.body.style.overflow='hidden'}
+
+  function openEditor(period){
+    shots=[];
+    var latest=P[P.length-1];
+    cur=period?P.filter(function(p){return p.period===period})[0]:null;
+    var pNo=cur?cur.period:Math.min((latest?latest.period:0)+1,TOTAL);
+    var tags=knownTags();
+    var h='<h3>'+(cur?pNo+'期の記録を修正':'記録を追加')+'<button class="btn sm" data-act="close">閉じる</button></h3>';
+    h+='<div class="fs"><b>編集する人</b><div class="two"><label class="f">合言葉<input id="e-pass" type="password" autocomplete="off" value="'+esc(ls('knt_toride_pass'))+'"></label><label class="f">名前（変更履歴に残ります）<input id="e-name" value="'+esc(ls('knt_toride_name'))+'"></label></div></div>';
+    h+='<div class="fs"><b>期と日付</b><div class="two"><label class="f">期<select id="e-period">';
+    for(var i=1;i<=TOTAL;i++)h+='<option value="'+i+'"'+(i===pNo?' selected':'')+'>'+i+'/'+TOTAL+'期'+(P.some(function(p){return p.period===i})?'（記録あり）':'')+'</option>';
+    h+='</select></label><label class="f">日付<input id="e-date" type="date" value="'+esc(cur?cur.date:nextFriday())+'"></label></div></div>';
+    h+='<div class="fs"><b>スクショから読み取る</b><div class="hint">拠点争奪 → 砦タブの画面を、1号要塞〜12号砦がすべて写るように撮って選んでください（6枚ほど）。読み取った結果は下の欄に入るので、確認してから保存してください。</div><input id="e-files" type="file" accept="image/*" multiple><div class="thumbs" id="e-thumbs"></div><div class="acts"><button class="btn" id="e-read" data-act="read" disabled>スクショを読み取る</button><span class="status" id="e-rs"></span></div></div>';
+    h+='<div class="fs"><b>支配同盟</b><div class="hint">未占領は空欄。メモ欄は「違反あり」「無人だった為、自動申請元が支配」から選ぶか自由に入力。</div>';
+    h+='<datalist id="dl-tag">'+tags.map(function(t){return '<option value="'+esc(t)+'">'}).join('')+'</datalist>';
+    h+='<datalist id="dl-note">'+NOTE_OPTS.map(function(t){return '<option value="'+esc(t)+'">'}).join('')+'</datalist>';
+    SITES.forEach(function(s,ix){
+      h+='<div class="er'+(ix===4?' sep':'')+'"><span>'+s.label+'</span><input class="t" list="dl-tag" id="t-'+s.k+'-'+s.n+'" value="'+esc(cur?owner(cur,s):'')+'" autocapitalize="off" autocorrect="off" spellcheck="false"><input list="dl-note" id="n-'+s.k+'-'+s.n+'" placeholder="メモ" value="'+esc(cur?note(cur,s):'')+'"></div>'});
+    h+='</div>';
+    h+='<div class="fs"><b>全体メモ</b><div class="hint">1行に1件（例：初回違反① ESJ（成功））</div><textarea id="e-memo">'+esc(cur&&cur.memo?cur.memo.join('\n'):'')+'</textarea></div>';
+    h+='<div class="acts"><span>'+(cur?'<button class="btn del" data-act="delete">この期を削除</button>':'')+'</span><span style="display:flex;gap:8px;align-items:center"><span class="status" id="e-st"></span><button class="btn pri" data-act="save">保存</button></span></div>';
+    open(h);
+    $('e-files').addEventListener('change',onFiles);
+    $('e-period').addEventListener('change',function(){var v=+this.value;var ex=P.filter(function(p){return p.period===v})[0];
+      if(ex&&(!cur||cur.period!==v)&&confirm(v+'期は記録済みです。その記録を読み込んで修正しますか？'))openEditor(v)});
+  }
+
+  function onFiles(e){
+    var files=[].slice.call(e.target.files||[]).slice(0,8);shots=[];$('e-thumbs').innerHTML='';$('e-read').disabled=true;
+    if(!files.length)return;
+    $('e-rs').textContent='画像を準備中…';
+    Promise.all(files.map(shrink)).then(function(list){shots=list;
+      $('e-thumbs').innerHTML=list.map(function(u){return '<img src="'+u+'" alt="">'}).join('');
+      $('e-read').disabled=false;$('e-rs').textContent=list.length+'枚 選択中'});
+  }
+  function shrink(file){return new Promise(function(res,rej){
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){var w=Math.min(800,img.width),hh=Math.round(img.height*w/img.width);
+      var c=document.createElement('canvas');c.width=w;c.height=hh;c.getContext('2d').drawImage(img,0,0,w,hh);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.85))};
+    img.onerror=rej;img.src=url})}
+
+  function cred(){var pass=$('e-pass').value.trim(),name=$('e-name').value.trim();
+    if(!pass){alert('合言葉を入力してください');return null}
+    if(!name){alert('名前を入力してください');return null}
+    ls('knt_toride_pass',pass);ls('knt_toride_name',name);return {pass:pass,name:name}}
+
+  function doRead(){
+    var c=cred();if(!c||!shots.length)return;
+    var st=$('e-rs');st.className='status';st.textContent='読み取り中…（10〜30秒ほど）';$('e-read').disabled=true;
+    api({action:'read',pass:c.pass,images:shots,known:knownTags()}).then(function(j){
+      var r=j.result||{},filled=0,empty=[];
+      SITES.forEach(function(s){var v=((r[s.k]||{})[String(s.n)]||'').trim(),el=$('t-'+s.k+'-'+s.n);
+        el.value=v;el.classList.toggle('w',!v);if(v)filled++;else empty.push(s.label)});
+      st.textContent=filled+'/16 拠点を読み取りました'+(empty.length?'。空欄（黄色）を確認してください：'+empty.join('・'):'。内容を確認して保存してください');
+    }).catch(function(e){st.className='status err';st.textContent=e.message}).then(function(){$('e-read').disabled=false});
+  }
+
+  function collect(){
+    var rec={period:+$('e-period').value,date:$('e-date').value,fortress:{},stronghold:{},notes:{},memo:[]};
+    SITES.forEach(function(s){rec[s.k][String(s.n)]=$('t-'+s.k+'-'+s.n).value.trim();var n=$('n-'+s.k+'-'+s.n).value.trim();if(n)rec.notes[s.k+':'+s.n]=n});
+    rec.memo=$('e-memo').value.split('\n').map(function(x){return x.trim()}).filter(Boolean);
+    return rec;
+  }
+  function doSave(){
+    var c=cred();if(!c)return;var rec=collect();
+    if(!rec.date){alert('日付を入力してください');return}
+    var ex=P.some(function(p){return p.period===rec.period});
+    if(ex&&(!cur||cur.period!==rec.period)&&!confirm(rec.period+'期は記録済みです。上書きしますか？'))return;
+    var st=$('e-st');st.className='status';st.textContent='保存中…';
+    api({action:'save',pass:c.pass,editor:c.name,record:rec}).then(function(j){P=j.periods;close();render()})
+      .catch(function(e){st.className='status err';st.textContent=e.message});
+  }
+  function doDelete(){
+    if(!cur)return;var c=cred();if(!c)return;
+    if(!confirm(cur.period+'期の記録を削除します。よろしいですか？（変更履歴には残ります）'))return;
+    var st=$('e-st');st.textContent='削除中…';
+    api({action:'delete',pass:c.pass,editor:c.name,period:cur.period}).then(function(j){P=j.periods;close();render()})
+      .catch(function(e){st.className='status err';st.textContent=e.message});
+  }
+  function openHist(){
+    var pass=ls('knt_toride_pass')||prompt('合言葉を入力してください');if(!pass)return;
+    open('<h3>変更履歴<button class="btn sm" data-act="close">閉じる</button></h3><div class="fs"><div class="hist" id="hl">読み込み中…</div><div class="hint">元に戻したいときは、スプレッドシートの「変更履歴」シートに変更前の内容が残っています。管理者に連絡してください。</div></div>');
+    api({action:'history',pass:pass}).then(function(j){ls('knt_toride_pass',pass);
+      $('hl').innerHTML=j.rows.length?j.rows.map(function(r){return '<div>'+esc(r.at)+'　'+esc(r.editor)+'　'+esc(r.period)+'期を'+esc(r.action)+'</div>'}).join(''):'まだ変更はありません'})
+      .catch(function(e){$('hl').innerHTML='<span class="status err">'+esc(e.message)+'</span>'});
+  }
+
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
+    if(a==='edit'){e.preventDefault();openEditor(+b.getAttribute('data-p'))}
+    else if(a==='new')openEditor(0);
+    else if(a==='close')close();
+    else if(a==='read')doRead();
+    else if(a==='save')doSave();
+    else if(a==='delete')doDelete();
+    else if(a==='hist')openHist();
+  });
+  $('ov').addEventListener('click',function(e){if(e.target===this)close()});
+
+  load();
 })();
 </script>
 </body>
