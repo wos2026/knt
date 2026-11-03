@@ -5,7 +5,7 @@
  * 使い方：
  *  1. 新しい Google スプレッドシートを作る
  *  2. 拡張機能 → Apps Script を開き、このコードを全部貼り付けて保存
- *  3. 関数「setup」を選んで ▶実行（初回だけ。権限の確認が出たら許可）
+ *  3. （省略可）関数「setup」を ▶実行。しなくても最初の回答時に自動でシートが作られます
  *  4. デプロイ → 新しいデプロイ → 種類「ウェブアプリ」
  *       次のユーザーとして実行：自分 / アクセスできるユーザー：全員
  *  5. 表示された URL（…/exec）を survey/config.js の API_URL に入れる
@@ -26,7 +26,13 @@ var BASE = ['回答日時', 'プレイヤー名', '所属同盟', '参加可能�
 
 function setup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sh = ss.getSheetByName(SHEET) || ss.insertSheet(SHEET);
+  var sh = ss.getSheetByName(SHEET);
+  if (!sh) {
+    // 最初からある空のシート（シート1）があれば「回答」に名前を変えて使う
+    var first = ss.getSheets()[0];
+    if (ss.getSheets().length === 1 && first.getLastRow() === 0) { sh = first.setName(SHEET); }
+    else { sh = ss.insertSheet(SHEET); }
+  }
   if (sh.getLastRow() === 0) { sh.appendRow(BASE); sh.setFrozenRows(1); sh.setFrozenColumns(2); }
   var log = ss.getSheetByName(SHEET_LOG) || ss.insertSheet(SHEET_LOG);
   if (log.getLastRow() === 0) { log.appendRow(['日時', 'プレイヤー名', '内容(JSON)']); log.setFrozenRows(1); }
@@ -113,7 +119,8 @@ function submit_(r) {
   sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 1).setNumberFormat('yyyy/mm/dd hh:mm');
 
   var log = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_LOG);
-  if (log) log.appendRow([new Date(), name, JSON.stringify(r)]);
+  if (!log) { setup(); log = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_LOG); }
+  log.appendRow([new Date(), name, JSON.stringify(r)]);
   return { ok: true, updated: updated };
 }
 
