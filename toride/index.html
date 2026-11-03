@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>KNT 砦争奪履歴</title>
+<title>4297サーバー砦占領履歴</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
 <style>
 :root{
@@ -283,7 +283,7 @@ var API_URL='';
   function render(){
     P=P.slice().sort(function(a,b){return a.period-b.period});
     var latest=P[P.length-1];
-    var h='<header><h1>KNT 砦争奪履歴</h1><div class="sub">'+esc(FALLBACK.season)+'（全'+TOTAL+'期）・記録済み '+P.length+'期'+(latest?'・最新 '+latest.period+'期 '+fmtDate(latest.date):'')+'</div></header>';
+    var h='<header><h1>4297サーバー砦占領履歴</h1><div class="sub">'+esc(FALLBACK.season)+'（全'+TOTAL+'期）・記録済み '+P.length+'期'+(latest?'・最新 '+latest.period+'期 '+fmtDate(latest.date):'')+'</div></header>';
     if(SRC==='api')h+='<div class="tools"><button class="btn pri" data-act="new">＋ 記録を追加</button><button class="btn" data-act="hist">変更履歴</button></div>';
     else if(SRC==='offline')h+='<div class="status err">保存先に接続できなかったため、予備データを表示しています（編集不可）</div>';
     if(!P.length){$('root').innerHTML=h+'<p class="empty">まだ記録がありません</p>';return}
