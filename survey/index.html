@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>KNT 英雄育成アンケート</title>
+<title>4575サーバーSVS参加者アンケート</title>
+<meta name="description" content="11月7日のSVSに向けた英雄育成アンケートです。締切：11月5日（木）13:00">
+<meta property="og:title" content="4575サーバーSVS参加者アンケート">
+<meta property="og:description" content="11月7日のSVSに向けた英雄育成アンケートです。締切：11月5日（木）13:00">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wos2026.github.io/knt/survey/">
+<meta property="og:site_name" content="4575サーバー">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -165,7 +172,6 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   var st = { alliance:'', join:'', furnace:'', troops:{盾:'',槍:'',弓:''}, heroes:{} };
 
   $('title').textContent = C.TITLE;
-  document.title = 'KNT ' + C.TITLE;
   $('lead').textContent = C.LEAD;
   if (C.DEADLINE) { $('deadline').hidden = false; $('deadline').textContent = '締切：' + C.DEADLINE; }
   if (!C.API_URL) $('cfgWarn').hidden = false;

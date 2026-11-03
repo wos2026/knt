@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>KNT 英雄育成集計</title>
+<title>4575サーバーSVS参加者アンケート 集計</title>
+<meta property="og:title" content="4575サーバーSVS参加者アンケート 集計">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -110,7 +111,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   var C=window.SURVEY, H=C.HEROES, $=function(i){return document.getElementById(i)};
   var all=[], rows=[], fally='全同盟', ftype='全部', sortKey='総力', sortDir=-1, PASSK='knt-survey-pass';
   var DEMO=/[?&]demo=1/.test(location.search);
-  $('title').textContent=C.TITLE+' 集計'; document.title='KNT '+C.TITLE+' 集計';
+  $('title').textContent=C.TITLE+' 集計';
 
   function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
   function pw(s){ // 総力 "158.2M" → 数値
