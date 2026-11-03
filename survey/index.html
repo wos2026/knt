@@ -284,7 +284,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         if(!j.ok) throw new Error(j.error||'送信に失敗しました');
         showDone(body, j.updated);
       })
-      .catch(function(e){ err.textContent=(e&&e.message)||'送信に失敗しました。電波の良いところでもう一度お試しください。'; err.hidden=false; })
+      .catch(function(e){ var m=(e&&e.message)||''; if(/fetch|network|load failed/i.test(m)||!m) m='送信できませんでした。電波の良いところでもう一度お試しください。何度やってもダメな場合は管理者に連絡してください。'; err.textContent=m; err.hidden=false; })
       .then(function(){ btn.disabled=false; btn.textContent='送信する'; });
   });
 
