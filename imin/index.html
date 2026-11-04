@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ホワサバ移民グループ予測 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+footer{text-align:center;font-size:.8rem;color:var(--muted)}
+/* Layout: one narrow column — finder first, then per-date group table, then method notes. Frosted-ice palette. */
+:root{
+  --bg:#eef3f7; --surface:#ffffff; --ink:#122133; --muted:#5b6b7d; --line:#d3dde7;
+  --ice:#1d6fa5; --ice-soft:#dcecf7; --frost:#f6fafc; --warn:#9a5b00; --warn-soft:#fdf1dc; --ok:#1d7a4f; --ok-soft:#ddf2e6;
+  --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1520; --surface:#132131; --ink:#e4edf5; --muted:#93a6b9; --line:#24384c;
+  --ice:#7cc4f0; --ice-soft:#173650; --frost:#0f1b28; --warn:#f2b55c; --warn-soft:#3a2a12; --ok:#6fd3a0; --ok-soft:#143326; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1520; --surface:#132131; --ink:#e4edf5; --muted:#93a6b9; --line:#24384c;
+  --ice:#7cc4f0; --ice-soft:#173650; --frost:#0f1b28; --warn:#f2b55c; --warn-soft:#3a2a12; --ok:#6fd3a0; --ok-soft:#143326; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:28px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(1.6rem,5vw,2.3rem);line-height:1.25;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:400;font-size:1.2rem;margin:0 0 4px}
+.lead{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+section{display:grid;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.finder{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+label.lbl{font-weight:700;font-size:.85rem;letter-spacing:.05em;color:var(--muted);width:100%}
+input#kingdom{font-family:var(--f-num);font-size:1.6rem;width:7.5ch;padding:6px 10px;border:2px solid var(--ice);border-radius:8px;background:var(--frost);color:var(--ink)}
+input#kingdom:focus-visible,button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
+.chip{font-family:var(--f-num);font-size:.9rem;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--frost);color:var(--ink);cursor:pointer}
+.chip:hover{border-color:var(--ice)}
+.chip[aria-pressed="true"]{background:var(--ice);border-color:var(--ice);color:var(--surface)}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.lbl.sub{margin:6px 0 0;font-size:.8rem}
+.mk{font-family:var(--f-body);font-size:.68rem;font-weight:700;margin-left:4px;color:var(--ice)}
+.chip[aria-pressed="true"] .mk{color:var(--surface)}
+.jpk{display:inline-flex;flex-wrap:wrap;gap:4px;white-space:normal}
+.jpk span{font-family:var(--f-num);font-size:.82rem;background:var(--frost);border:1px solid var(--line);border-radius:5px;padding:0 6px}
+.jpk span.me{background:var(--ice);border-color:var(--ice);color:var(--surface)}
+td.wrapcell{white-space:normal;min-width:180px}
+.summary{margin:0;font-weight:500}
+.summary strong{color:var(--ice)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:440px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.78rem;letter-spacing:.06em;color:var(--muted);font-weight:700;background:var(--frost)}
+tr:last-child td{border-bottom:0}
+tr.hit td{background:var(--ice-soft);font-weight:700}
+tr.none td{color:var(--muted)}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:999px;letter-spacing:.04em}
+.tag.off{background:var(--ok-soft);color:var(--ok)}
+.tag.pre{background:var(--ice-soft);color:var(--ice)}
+.est{color:var(--warn)}
+.dates{display:flex;flex-wrap:wrap;gap:6px}
+.notes{display:grid;gap:10px}
+.notes p,.notes li{margin:0;max-width:66ch}
+.notes ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
+.callout{background:var(--warn-soft);color:var(--ink);border-radius:8px;padding:12px 14px}
+.callout b{color:var(--warn)}
+.small{font-size:.85rem;color:var(--muted)}
+a{color:var(--ice)}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <h1>ホワサバ 移民グループ予測<br>2026年12月〜2027年12月</h1>
+  <p class="lead">移民はSVS明けの日曜に始まり、4週間ごとに開催されます。公式の過去3回分（9/13・10/11・11/8）を完全に再現できた規則で、次の14回分を予測しました。</p>
+</header>
+
+<section aria-labelledby="h-find">
+  <h2 id="h-find">王国番号で探す</h2>
+  <div class="panel finder">
+    <label class="lbl" for="kingdom">王国番号</label>
+    <input id="kingdom" type="number" inputmode="numeric" min="1" max="9999" value="4575">
+    <p class="lbl sub">日本国旗・同じ言語の王国（10/13時点の王国リスト、4008〜4326）</p>
+    <div class="chiprow">
+      <button class="chip jp" data-k="4014">4014<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4015">4015<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4028">4028<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4030">4030<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4052">4052<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4056">4056<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4062">4062<span class="mk">言</span></button>
+      <button class="chip jp" data-k="4064">4064<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4073">4073<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4086">4086<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4094">4094<span class="mk">言</span></button>
+      <button class="chip jp" data-k="4097">4097<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4103">4103<span class="mk">言</span></button>
+      <button class="chip jp" data-k="4125">4125<span class="mk">言</span></button>
+      <button class="chip jp" data-k="4136">4136<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4137">4137<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4148">4148<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4161">4161<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4171">4171<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4183">4183<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4194">4194<span class="mk">言</span></button>
+      <button class="chip jp" data-k="4196">4196<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4201">4201<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4206">4206<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4290">4290<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4297">4297<span class="mk">旗</span></button>
+      <button class="chip jp" data-k="4308">4308<span class="mk">旗言</span></button>
+      <button class="chip jp" data-k="4318">4318<span class="mk">旗言</span></button>
+    </div>
+  </div>
+  <p class="summary" id="summary"></p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>開始（日本時間）</th><th>区分</th><th>グループ</th><th>移民できる範囲</th><th>同じグループの日本系王国</th></tr></thead>
+    <tbody id="findBody"></tbody>
+  </table></div>
+  <p class="small"><span class="est">~</span> の付いた数字は推定の境目です（前後数王国ずれる可能性あり）。「旗」＝日本国旗、「言」＝言語設定が同じ言語。日本系の王国は10/13時点の王国リスト（4008〜4326）にある28王国です。</p>
+</section>
+
+<section aria-labelledby="h-date">
+  <h2 id="h-date">開催回ごとの全グループ</h2>
+  <div class="dates" id="dates" role="group" aria-label="開催回を選ぶ"></div>
+  <p class="small" id="dateInfo"></p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>グループ</th><th>王国番号</th><th>王国数</th><th>日本系の王国</th></tr></thead>
+    <tbody id="dateBody"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="h-how" class="notes">
+  <h2 id="h-how">予測の考え方</h2>
+  <ul>
+    <li>新しい王国はおよそ2週間ごとのまとまり（約40王国）で開かれ、移民のたびに各まとまりが2つ分「年をとり」ます。</li>
+    <li>グループは新しい順に「2・1・2・4・3・3・6・3・3」まとまりで区切られ、それより古い王国は6まとまりずつになります。この区切り方は7〜11月の公式発表で毎回同じでした。</li>
+    <li>このため古い王国のグループは12週間（3回）ごとに同じ組み合わせに戻ります。3回ごとにグループ数が1つ増えます。</li>
+    <li>4446以降の王国は、1回あたり約80王国（直近4回の実績は76〜84）増える前提で推定しています。</li>
+  </ul>
+  <div class="callout">
+    <p><b>注意点</b>　SVSの日程がずれると移民日もずれます。4575は2027年1月3日の回で初めて対象になる見込みですが、推定の境目（4568）に近いため、12月6日の回に入る可能性も少しあります。お手元の予想表にある11/22・12/20は、公式の4週間周期では開催されない日付です。</p>
+  </div>
+  <p class="small">出典：<a href="https://www.whiteoutsurvival.wiki/events/state-transfer-event/" target="_blank" rel="noopener">Whiteout Survival Wiki（王国移民）</a>、<a href="https://wostools.net/blog/state-transfer-september-2026" target="_blank" rel="noopener">WoS Tools 9月公式グループ</a>、<a href="https://wostools.net/blog/state-transfer-october-2026" target="_blank" rel="noopener">10月公式グループ</a>、11/8公式発表（whiteoutsurvival.wiki のスクリーンショット）。2026年11月4日時点の予測です。</p>
+</section>
+<footer>製作者「FURUKANA」</footer>
+</div>
+
+<script>
+const EV = [{"d":"2026-11-08","official":true,"g":[[4,19,0,0],[26,132,0,0],[140,312,0,0],[322,529,0,0],[536,803,0,0],[814,1070,0,0],[1082,1427,0,0],[1428,1822,0,0],[1823,2250,0,0],[2251,2680,0,0],[2681,2994,0,0],[2995,3175,0,0],[3176,3384,0,0],[3385,3745,0,0],[3746,3936,0,0],[3937,4117,0,0],[4118,4289,0,0],[4290,4367,0,0],[4368,4403,0,0],[4404,4487,0,0]]},{"d":"2026-12-06","official":false,"g":[[4,7,0,0],[14,60,0,0],[68,170,0,0],[179,399,0,0],[404,614,0,0],[617,892,0,0],[904,1182,0,0],[1190,1552,0,0],[1553,1976,0,0],[1977,2431,0,0],[2432,2783,0,0],[2784,3113,0,0],[3114,3315,0,0],[3316,3509,0,0],[3510,3855,0,0],[3856,4067,0,0],[4068,4210,0,0],[4211,4367,0,0],[4368,4445,0,1],[4446,4487,1,1],[4488,4567,1,1]]},{"d":"2027-01-03","official":false,"g":[[4,7,0,0],[14,99,0,0],[101,231,0,0],[240,463,0,0],[469,697,0,0],[702,976,0,0],[986,1308,0,0],[1313,1680,0,0],[1681,2122,0,0],[2123,2571,0,0],[2572,2876,0,0],[2877,3246,0,0],[3247,3453,0,0],[3454,3630,0,0],[3631,4007,0,0],[4008,4168,0,0],[4169,4289,0,0],[4290,4445,0,1],[4446,4527,1,1],[4528,4567,1,1],[4568,4647,1,1]]},{"d":"2027-01-31","official":false,"g":[[4,19,0,0],[26,132,0,0],[140,312,0,0],[322,529,0,0],[536,803,0,0],[814,1070,0,0],[1082,1427,0,0],[1428,1822,0,0],[1823,2250,0,0],[2251,2680,0,0],[2681,2994,0,0],[2995,3384,0,0],[3385,3571,0,0],[3572,3745,0,0],[3746,4117,0,0],[4118,4250,0,0],[4251,4367,0,0],[4368,4527,0,1],[4528,4607,1,1],[4608,4647,1,1],[4648,4727,1,1]]},{"d":"2027-02-28","official":false,"g":[[4,7,0,0],[14,60,0,0],[68,170,0,0],[179,399,0,0],[404,614,0,0],[617,892,0,0],[904,1182,0,0],[1190,1552,0,0],[1553,1976,0,0],[1977,2431,0,0],[2432,2783,0,0],[2784,3113,0,0],[3114,3509,0,0],[3510,3691,0,0],[3692,3855,0,0],[3856,4210,0,0],[4211,4326,0,0],[4327,4445,0,1],[4446,4607,1,1],[4608,4687,1,1],[4688,4727,1,1],[4728,4807,1,1]]},{"d":"2027-03-28","official":false,"g":[[4,7,0,0],[14,99,0,0],[101,231,0,0],[240,463,0,0],[469,697,0,0],[702,976,0,0],[986,1308,0,0],[1313,1680,0,0],[1681,2122,0,0],[2123,2571,0,0],[2572,2876,0,0],[2877,3246,0,0],[3247,3630,0,0],[3631,3798,0,0],[3799,4007,0,0],[4008,4289,0,0],[4290,4403,0,0],[4404,4527,0,1],[4528,4687,1,1],[4688,4767,1,1],[4768,4807,1,1],[4808,4887,1,1]]},{"d":"2027-04-25","official":false,"g":[[4,19,0,0],[26,132,0,0],[140,312,0,0],[322,529,0,0],[536,803,0,0],[814,1070,0,0],[1082,1427,0,0],[1428,1822,0,0],[1823,2250,0,0],[2251,2680,0,0],[2681,2994,0,0],[2995,3384,0,0],[3385,3745,0,0],[3746,3936,0,0],[3937,4117,0,0],[4118,4367,0,0],[4368,4487,0,1],[4488,4607,1,1],[4608,4767,1,1],[4768,4847,1,1],[4848,4887,1,1],[4888,4967,1,1]]},{"d":"2027-05-23","official":false,"g":[[4,7,0,0],[14,60,0,0],[68,170,0,0],[179,399,0,0],[404,614,0,0],[617,892,0,0],[904,1182,0,0],[1190,1552,0,0],[1553,1976,0,0],[1977,2431,0,0],[2432,2783,0,0],[2784,3113,0,0],[3114,3509,0,0],[3510,3855,0,0],[3856,4067,0,0],[4068,4210,0,0],[4211,4445,0,1],[4446,4567,1,1],[4568,4687,1,1],[4688,4847,1,1],[4848,4927,1,1],[4928,4967,1,1],[4968,5047,1,1]]},{"d":"2027-06-20","official":false,"g":[[4,7,0,0],[14,99,0,0],[101,231,0,0],[240,463,0,0],[469,697,0,0],[702,976,0,0],[986,1308,0,0],[1313,1680,0,0],[1681,2122,0,0],[2123,2571,0,0],[2572,2876,0,0],[2877,3246,0,0],[3247,3630,0,0],[3631,4007,0,0],[4008,4168,0,0],[4169,4289,0,0],[4290,4527,0,1],[4528,4647,1,1],[4648,4767,1,1],[4768,4927,1,1],[4928,5007,1,1],[5008,5047,1,1],[5048,5127,1,1]]},{"d":"2027-07-18","official":false,"g":[[4,19,0,0],[26,132,0,0],[140,312,0,0],[322,529,0,0],[536,803,0,0],[814,1070,0,0],[1082,1427,0,0],[1428,1822,0,0],[1823,2250,0,0],[2251,2680,0,0],[2681,2994,0,0],[2995,3384,0,0],[3385,3745,0,0],[3746,4117,0,0],[4118,4250,0,0],[4251,4367,0,0],[4368,4607,0,1],[4608,4727,1,1],[4728,4847,1,1],[4848,5007,1,1],[5008,5087,1,1],[5088,5127,1,1],[5128,5207,1,1]]},{"d":"2027-08-15","official":false,"g":[[4,7,0,0],[14,60,0,0],[68,170,0,0],[179,399,0,0],[404,614,0,0],[617,892,0,0],[904,1182,0,0],[1190,1552,0,0],[1553,1976,0,0],[1977,2431,0,0],[2432,2783,0,0],[2784,3113,0,0],[3114,3509,0,0],[3510,3855,0,0],[3856,4210,0,0],[4211,4326,0,0],[4327,4445,0,1],[4446,4687,1,1],[4688,4807,1,1],[4808,4927,1,1],[4928,5087,1,1],[5088,5167,1,1],[5168,5207,1,1],[5208,5287,1,1]]},{"d":"2027-09-12","official":false,"g":[[4,7,0,0],[14,99,0,0],[101,231,0,0],[240,463,0,0],[469,697,0,0],[702,976,0,0],[986,1308,0,0],[1313,1680,0,0],[1681,2122,0,0],[2123,2571,0,0],[2572,2876,0,0],[2877,3246,0,0],[3247,3630,0,0],[3631,4007,0,0],[4008,4289,0,0],[4290,4403,0,0],[4404,4527,0,1],[4528,4767,1,1],[4768,4887,1,1],[4888,5007,1,1],[5008,5167,1,1],[5168,5247,1,1],[5248,5287,1,1],[5288,5367,1,1]]},{"d":"2027-10-10","official":false,"g":[[4,19,0,0],[26,132,0,0],[140,312,0,0],[322,529,0,0],[536,803,0,0],[814,1070,0,0],[1082,1427,0,0],[1428,1822,0,0],[1823,2250,0,0],[2251,2680,0,0],[2681,2994,0,0],[2995,3384,0,0],[3385,3745,0,0],[3746,4117,0,0],[4118,4367,0,0],[4368,4487,0,1],[4488,4607,1,1],[4608,4847,1,1],[4848,4967,1,1],[4968,5087,1,1],[5088,5247,1,1],[5248,5327,1,1],[5328,5367,1,1],[5368,5447,1,1]]},{"d":"2027-11-07","official":false,"g":[[4,7,0,0],[14,60,0,0],[68,170,0,0],[179,399,0,0],[404,614,0,0],[617,892,0,0],[904,1182,0,0],[1190,1552,0,0],[1553,1976,0,0],[1977,2431,0,0],[2432,2783,0,0],[2784,3113,0,0],[3114,3509,0,0],[3510,3855,0,0],[3856,4210,0,0],[4211,4445,0,1],[4446,4567,1,1],[4568,4687,1,1],[4688,4927,1,1],[4928,5047,1,1],[5048,5167,1,1],[5168,5327,1,1],[5328,5407,1,1],[5408,5447,1,1],[5448,5527,1,1]]},{"d":"2027-12-05","official":false,"g":[[4,7,0,0],[14,99,0,0],[101,231,0,0],[240,463,0,0],[469,697,0,0],[702,976,0,0],[986,1308,0,0],[1313,1680,0,0],[1681,2122,0,0],[2123,2571,0,0],[2572,2876,0,0],[2877,3246,0,0],[3247,3630,0,0],[3631,4007,0,0],[4008,4289,0,0],[4290,4527,0,1],[4528,4647,1,1],[4648,4767,1,1],[4768,5007,1,1],[5008,5127,1,1],[5128,5247,1,1],[5248,5407,1,1],[5408,5487,1,1],[5488,5527,1,1],[5528,5607,1,1]]}];
+const JP = {"4014": "旗", "4015": "旗", "4028": "旗言", "4030": "旗", "4052": "旗言", "4056": "旗", "4062": "言", "4064": "旗", "4073": "旗", "4086": "旗", "4094": "言", "4097": "旗", "4103": "言", "4125": "言", "4136": "旗", "4137": "旗", "4148": "旗言", "4161": "旗", "4171": "旗", "4183": "旗言", "4194": "言", "4196": "旗", "4201": "旗", "4206": "旗言", "4290": "旗", "4297": "旗", "4308": "旗言", "4318": "旗言"};
+function jpIn(g,n){const ks=Object.keys(JP).map(Number).filter(k=>k>=g[0]&&k<=g[1]);if(!ks.length)return '<span class="small">—</span>';
+  return '<span class="jpk">'+ks.map(k=>`<span class="${k===n?'me':''}" title="${JP[k].includes('旗')?'日本国旗':''}${JP[k].includes('言')?' 同じ言語':''}">${k}<small>${JP[k]}</small></span>`).join('')+'</span>';}
+const W = ["日","月","火","水","木","金","土"];
+function jst(iso, addDays, h){const [y,m,d]=iso.split("-").map(Number);const t=new Date(Date.UTC(y,m-1,d+addDays,h));return t;}
+function fmt(t,withTime){return `${t.getUTCFullYear()}/${t.getUTCMonth()+1}/${t.getUTCDate()}（${W[t.getUTCDay()]}）`+(withTime?" 9:00":"");}
+function edge(n,est){return est?`<span class="est">~</span>${n}`:`${n}`;}
+function rng(g){return `<span class="num">${edge(g[0],g[2])}〜${edge(g[1],g[3])}</span>`;}
+function tag(e){return e.official?'<span class="tag off">公式</span>':'<span class="tag pre">予測</span>';}
+const inp=document.getElementById("kingdom");
+function renderFind(){
+  const n=parseInt(inp.value,10);
+  document.querySelectorAll(".chip[data-k]").forEach(c=>c.setAttribute("aria-pressed",String(+c.dataset.k===n)));
+  const rows=[];let first=null,count=0;
+  EV.forEach(e=>{
+    const i=e.g.findIndex(g=>n>=g[0]&&n<=g[1]);
+    const start=fmt(jst(e.d,0,0),true);
+    if(i<0){rows.push(`<tr class="none"><td class="num">${start}</td><td>${tag(e)}</td><td>—</td><td>対象外</td><td></td></tr>`);}
+    else{count++; if(!first)first=e; rows.push(`<tr><td class="num">${start}</td><td>${tag(e)}</td><td class="num">${i+1}</td><td>${rng(e.g[i])}</td><td class="wrapcell">${jpIn(e.g[i],n)}</td></tr>`);}
+  });
+  document.getElementById("findBody").innerHTML=rows.join("");
+  const s=document.getElementById("summary");
+  if(!Number.isFinite(n)){s.textContent="王国番号を入力してください。";return;}
+  s.innerHTML = count===0 ? `<strong class="num">${n}</strong> は表示期間内に対象となる回がありません。`
+    : `<strong class="num">${n}</strong> は全${EV.length}回中 <strong>${count}回</strong> 対象。最初は <strong>${fmt(jst(first.d,0,0),false)}</strong> の回です。`;
+}
+inp.addEventListener("input",renderFind);
+document.querySelectorAll(".chip[data-k]").forEach(c=>c.addEventListener("click",()=>{inp.value=c.dataset.k;renderFind();}));
+
+const dates=document.getElementById("dates");
+EV.forEach((e,i)=>{const b=document.createElement("button");b.className="chip";b.textContent=e.d.slice(2).replace(/-/g,"/");b.id="d"+i;b.addEventListener("click",()=>renderDate(i));dates.appendChild(b);});
+function renderDate(i){
+  const e=EV[i];
+  dates.querySelectorAll(".chip").forEach((c,j)=>c.setAttribute("aria-pressed",String(i===j)));
+  document.getElementById("dateInfo").innerHTML=`${tag(e)}　日本時間 ${fmt(jst(e.d,0,0),true)} 〜 ${fmt(jst(e.d,7,0),false)} 8:59　全${e.g.length}グループ`;
+  const n=parseInt(inp.value,10);
+  document.getElementById("dateBody").innerHTML=e.g.map((g,k)=>{const hit=n>=g[0]&&n<=g[1];return `<tr class="${hit?'hit':''}"><td class="num">${k+1}</td><td>${rng(g)}</td><td class="num">${g[2]||g[3]?'約':''}${g[1]-g[0]+1}</td><td class="wrapcell">${jpIn(g,n)}</td></tr>`;}).join("");
+}
+inp.addEventListener("input",()=>{const a=dates.querySelector('[aria-pressed="true"]');if(a)renderDate(+a.id.slice(1));});
+renderFind(); renderDate(1);
+</script>
+
+</body>
+</html>
