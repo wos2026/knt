@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="google" content="notranslate">
+<title>T9M SVS作戦</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* 凍土の作戦盤：氷の紺地に、火晶のオレンジを要所だけ。縦一列、カード化は役割のある箱だけ */
+:root{
+  --bg:#eef3f8; --panel:#ffffff; --ink:#14233a; --muted:#5b6b82; --line:#d3dde9;
+  --ice:#2f6fb3; --ice-soft:#e1ecf8; --ember:#d9622b; --ember-soft:#fbe9df;
+  --ok:#2c8a5a; --warn:#b07a12;
+  --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"Zen Kaku Gothic New","Noto Sans CJK JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1524; --panel:#132036; --ink:#e6eef8; --muted:#93a4bd; --line:#24344d;
+  --ice:#7fb4ec; --ice-soft:#1a2e4a; --ember:#f08a55; --ember-soft:#3a2219;
+  --ok:#5cc490; --warn:#e2b04a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1524; --panel:#132036; --ink:#e6eef8; --muted:#93a4bd; --line:#24344d;
+  --ice:#7fb4ec; --ice-soft:#1a2e4a; --ember:#f08a55; --ember-soft:#3a2219;
+  --ok:#5cc490; --warn:#e2b04a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+.wrap{max-width:880px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+header{display:grid;gap:10px;border-bottom:3px solid var(--ink);padding-bottom:18px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,5.5vw,40px);line-height:1.25;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--ember)}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:2px 12px}
+.chip.ura{background:var(--ember);color:#fff;border-color:var(--ember);font-weight:700}
+h2{font-family:var(--f-display);font-weight:400;font-size:21px;margin:0 0 12px;display:flex;align-items:baseline;gap:10px}
+h2 small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:500;line-height:1.5}
+h2{flex-wrap:wrap}
+section{min-width:0}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rule{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+.rule b{font-size:15px}
+.rule p{margin:0;color:var(--muted);font-size:14px}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:4px;margin-top:4px}
+.slot{white-space:nowrap}
+.slot{font-size:12px;text-align:center;border-radius:6px;padding:4px 2px;font-weight:700}
+.s-a{background:var(--ember-soft);color:var(--ember)}
+.s-b{background:var(--ice-soft);color:var(--ice)}
+.ratio{display:flex;height:26px;border-radius:6px;overflow:hidden;font-family:var(--f-mono);font-size:12px;font-weight:700;margin-top:4px}
+.ratio span{display:flex;align-items:center;justify-content:center;color:#fff}
+.r-in{background:#4a5d78}.r-la{background:var(--ice)}.r-mk{background:var(--ember)}
+.legend{font-size:12px;color:var(--muted)}
+.tl{list-style:none;margin:0;padding:0;display:grid;border-left:3px solid var(--ice);margin-left:6px}
+.tl li{position:relative;padding:4px 0 14px 22px;display:grid;grid-template-columns:96px 1fr;gap:12px}
+.tl li::before{content:"";position:absolute;left:-8px;top:10px;width:13px;height:13px;border-radius:50%;background:var(--bg);border:3px solid var(--ice)}
+.tl li.hot::before{border-color:var(--ember);background:var(--ember)}
+.tl time{font-family:var(--f-mono);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.tl li.hot time{color:var(--ember)}
+.tl b{display:block}
+.tl p{margin:0;color:var(--muted);font-size:14px}
+@media (max-width:520px){.tl li{grid-template-columns:1fr;gap:0}}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.box h3{margin:0 0 8px;font-size:16px}
+.box h3 .tag{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:6px;font-weight:500}
+.assign{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:14px}
+.assign .k{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;text-align:center}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;background:var(--ice-soft)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+tr.grp td{background:var(--bg);font-weight:700;font-size:13px;color:var(--ice)}
+.pill{font-size:12px;border-radius:999px;padding:1px 9px;font-weight:700}
+.p-start{background:var(--ice-soft);color:var(--ice)}
+.p-late{background:var(--ember-soft);color:var(--ember)}
+.enemy{display:flex;flex-wrap:wrap;gap:8px}
+.enemy span{font-size:13px;border:1px solid var(--line);border-radius:6px;padding:3px 10px;background:var(--panel)}
+.enemy span i{font-style:normal;font-family:var(--f-mono);font-size:11px;color:var(--ember);margin-left:4px}
+.checklist{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.checklist li::marker{color:var(--warn)}
+footer{font-size:12px;color:var(--muted);text-align:right;border-top:1px solid var(--line);padding-top:12px}
+@page{size:A3 landscape;margin:10mm 12mm}
+.p1,.p2{display:grid;gap:28px;min-width:0}
+.pcol{display:contents}
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#ffffff;--panel:#ffffff;--ink:#14233a;--muted:#4d5d74;--line:#c9d4e2;--ice:#2f6fb3;--ice-soft:#e1ecf8;--ember:#d9622b;--ember-soft:#fbe9df;color-scheme:light}
+  body{font-size:12.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:none;padding:0;gap:0;display:block}
+  .rule,.box,.tl li,tr,.enemy span{break-inside:avoid}
+  h2{break-after:avoid}
+  table{min-width:0!important}
+  .tablewrap{overflow:visible}
+  .p1{grid-template-columns:1fr 1fr 1.15fr;gap:16px 22px;align-items:start}
+  .p1>header{grid-column:1/-1}
+  #sec-plan,#sec-riders{grid-column:1/3}
+  #sec-roles{grid-column:1;grid-row:4}
+  #sec-place{grid-column:2;grid-row:4}
+  #sec-todo{grid-column:2;grid-row:5}
+  #sec-roles{grid-row:4/span 2}
+  #sec-roster{grid-column:3;grid-row:2/span 3}
+  #sec-relay{grid-column:3;grid-row:5/span 2}
+  #sec-roles{grid-row:4/span 3!important}
+  #sec-todo{grid-row:5/span 2!important}
+  #sec-roster td,#sec-roster th{padding:2px 8px;font-size:12px}
+  .p1 td,.p1 th{padding:3px 8px;font-size:12px}
+  .p1 .riders-t td{font-size:16px;padding:6px 12px;line-height:1.35}
+  .p1 .riders-t th{font-size:13px;padding:5px 12px}
+  #sec-riders .note{font-size:13px;line-height:1.5}
+  .p1 .note{font-size:11.5px;margin-top:4px}
+  .p1 h2{font-size:18px;margin-bottom:6px}
+  .p1 .team.main,.p1 .team.ghost{padding:14px 18px}
+  .p1 .team p{font-size:18px;line-height:1.65}
+  .p1 .team .nm{font-size:36px}
+  .p1 .banner{font-size:28px;padding:6px 16px;margin:0 0 10px}
+  .p1 .team .lbl{font-size:14px}
+  .p2{break-before:page;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:20px;align-items:start}
+  .pcol{display:grid;gap:16px;align-content:start}
+  footer{margin-top:8px}
+}</style>
+<style>
+.flow{display:grid;gap:10px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+.step .no{font-family:var(--f-display);font-size:22px;color:var(--ice);line-height:1.2}
+.step.alert .no{color:var(--ember)}
+.step b{display:block}
+.step p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.side{border-radius:8px;padding:8px 12px;font-size:13.5px}
+.side.main{background:var(--ice-soft)}
+.side.ghost{background:var(--ember-soft)}
+.side strong{display:block;font-size:12px;letter-spacing:.06em}
+.side.main strong{color:var(--ice)}.side.ghost strong{color:var(--ember)}
+.calc{font-family:var(--f-mono);font-size:13px;background:var(--bg);border-radius:6px;padding:6px 10px;margin-top:6px;overflow-x:auto;white-space:nowrap}
+.duo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:720px){.duo{grid-template-columns:1fr}}
+.banner{margin:0 0 12px;background:var(--ember);color:#fff;font-family:var(--f-display);font-size:clamp(22px,4vw,32px);text-align:center;padding:12px 16px;border-radius:10px;letter-spacing:.04em;text-wrap:balance}
+.riders-t{table-layout:fixed;width:100%}
+.riders-t th:first-child,.riders-t td:first-child{width:26%}
+.riders-t td{font-size:15px;line-height:1.4;padding:7px 12px;vertical-align:middle;white-space:normal}
+.riders-t th{padding:6px 12px}
+.riders-t td:not(:first-child),.riders-t th:not(:first-child){text-align:center}
+.team{align-content:start}
+.team.mid{background:var(--panel);border:1px solid var(--line);align-content:start;gap:6px}
+.team.mid .lbl{color:var(--ink)}
+.team .mh{font-size:12px;color:var(--muted);margin-top:-4px}
+.mrow{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.mk{font-size:13px;font-weight:700}
+.mv{font-family:var(--f-mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.team .mn{font-size:12px;color:var(--muted);margin-top:4px}
+.team{border-radius:10px;padding:14px 16px;display:grid;gap:4px}
+.team.main{background:var(--ice-soft)}.team.ghost{background:var(--ember-soft)}
+.team .lbl{font-size:12px;font-weight:700;letter-spacing:.08em}
+.team.main .lbl{color:var(--ice)}.team.ghost .lbl{color:var(--ember)}
+.team .nm{font-family:var(--f-display);font-size:30px;line-height:1.2}
+.team p{margin:0;font-size:17px;line-height:1.75}
+.team .lbl{font-size:13px}
+.team.main,.team.ghost{padding:18px 20px;gap:8px}
+@media print{.step,.team{break-inside:avoid}}
+</style>
+<style>
+.phase{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.ph{border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:var(--panel)}
+.ph .t{font-family:var(--f-mono);font-weight:700;font-size:14px;color:var(--ice)}
+.ph p{margin:4px 0 0;font-size:14px}
+.ph .buff{display:inline-block;font-size:12px;font-weight:700;background:var(--ember);color:#fff;border-radius:4px;padding:0 6px;margin-right:4px}
+.scene{display:grid;gap:8px}
+.scene h3{margin:0;font-size:17px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.scene h3 .who{font-size:12px;border-radius:999px;padding:1px 10px;font-weight:700}
+.who.enemy{background:var(--ember-soft);color:var(--ember)}
+.who.ours{background:var(--ice-soft);color:var(--ice)}
+td.tm{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:700}
+td .buff{font-size:11px;font-weight:700;background:var(--ember);color:#fff;border-radius:4px;padding:0 5px;margin-left:4px}
+.wrapcell td{white-space:normal}
+.key{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--ember);border-radius:6px;padding:10px 14px;font-size:14px;display:grid;gap:4px}
+.key b{color:var(--ember)}
+@media print{.ph,.key,.scene{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="p1">
+<header>
+  <div class="eyebrow">T9M 九十九束 ／ 王国4575 ／ STATE vs STATE</div>
+  <h1>SVS作戦シート <em>vs 4557</em></h1>
+  <div class="meta">
+    <span class="chip">11月7日（土）</span>
+    <span class="chip">SVS開始 10:00 UTC（日本時間 19:00）</span>
+    <span class="chip">整列 11:00〜11:30 UTC（日本時間 20:00〜20:30）</span>
+    <span class="chip">王城戦 12:00〜16:00 UTC（日本時間 21:00〜25:00）</span>
+    <span class="chip">時刻の指示はすべてUTC</span>
+    <span class="chip">第二世代</span>
+    
+  </div>
+</header>
+
+<section id="sec-plan">
+  <h2>作戦の考え方 <small><b>勝利条件：先に太陽城を連続3時間占領した同盟の勝ち。</b>誰も届かなければ、終了時点で合計占領時間が一番長い同盟の勝ち。T9Mの占領時間をできるだけ長く、相手の時間をできるだけ短くする。</small></h2>
+  <div class="banner">スタダは全員T9Mへ集まり初回ダッシュ！</div>
+  <div class="duo">
+    <div class="team main"><span class="lbl">メイン同盟　占領時間を一番稼ぐ</span><span class="nm">T9M</span><p>集結主は<b>ふじまる</b>・<b>ヨルカ</b>・<b>ヒデキ</b>。駐屯主は<b>ふじまる</b>で、最強の英雄で駐屯する。駐屯中に相手の集結が来たら、駐屯の差し込みで耐える。</p></div>
+    <div class="team mid">
+      <span class="lbl">兵種比率</span>
+      <span class="mh">盾：槍：弓</span>
+      <div class="mrow"><span class="mk">集結</span><span class="mv">40：20：40</span></div>
+      <div class="ratio"><span class="r-in" style="width:40%">40</span><span class="r-la" style="width:20%">20</span><span class="r-mk" style="width:40%">40</span></div>
+      <div class="mrow"><span class="mk">または</span><span class="mv">50：20：30</span></div>
+      <div class="ratio"><span class="r-in" style="width:50%">50</span><span class="r-la" style="width:20%">20</span><span class="r-mk" style="width:30%">30</span></div>
+      <div class="mrow"><span class="mk">駐屯</span><span class="mv">60：39：1</span></div>
+      <div class="ratio"><span class="r-in" style="width:60%">60</span><span class="r-la" style="width:39%">39</span><span class="r-mk" style="width:1%"></span></div>
+      <p class="mn"><b>弓1</b>を入れるのは、相手のターンを1回増やすため。</p>
+      <p class="mn">集結主から別の指示があればそちらを優先。</p>
+    </div>
+    <div class="team ghost"><span class="lbl">ゴースト同盟　奪い返してT9Mへ渡す役割</span><span class="nm">111</span><p>相手が城を取った直後を連続集結で叩いて奪い返し、T9Mに引き渡す。集結主は<b>イチカ</b>・<b>DONPEN</b>・<b>teno</b>。スタート時点で集結主が足りない場合は、ヨルカが111へ移る。DONPEN・tenoが参戦したら、ヨルカはT9Mへ戻る。</p></div>
+  </div>
+</section>
+
+
+<section id="sec-riders">
+  <h2>乗り手の固定 <small>集結が掛かったら乗り手は指定英雄で1分以内に乗る</small></h2>
+  <div class="tablewrap">
+  <table class="riders-t">
+    <thead><tr><th>集結主</th><th>フレンダー</th><th>ジェシー</th><th>ソユン</th><th>パトリック</th></tr></thead>
+    <tbody>
+      <tr><td><b>ふじまる</b>（駐屯・集結）</td><td>ホロロン</td><td>ﾀｹﾉｺ</td><td>クランク</td><td>まのり</td></tr>
+      <tr><td><b>ヨルカ</b></td><td>たもん</td><td>メグミルク</td><td>さんぺい</td><td>さくらわらびもち</td></tr>
+      <tr><td><b>ヒデキ</b></td><td>ニック</td><td>鬼塚（合流まではひだりさん）</td><td>いとち</td><td>omaaaa</td></tr>
+      <tr><td><b>イチカ</b>（111）</td><td>MuuuMuuu</td><td>nico</td><td>くるりん</td><td>roro</td></tr>
+      <tr><td><b>DONPEN</b>（111・合流後）</td><td>°ʚ現役jkﾅｶﾖｼ°ɞ°</td><td>無課金勢の美少女</td><td>ポッポ</td><td>くるくる</td></tr>
+      <tr><td><b>teno</b>（111・合流後）</td><td>boboa</td><td>ちょろりん</td><td>ぷにゃたん</td><td>とんぼ</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">MuuuMuuuは111で唯一のフレンダーLv5なのでイチカ隊へ。111のソユンLv5はくるりんだけなのでイチカ隊へ。DONPEN・teno隊のソユン枠はLv4。名簿のVC欄は確認できしだい記入。ふじまるの駐屯にも同じ4人が同じ英雄で入る。ふじまる隊に戦力・兵の上位4人を集めた。フレンダーLv5は隊長2人だけのため、Lv4のホロロン・たもんが担当。</p>
+</section>
+
+<section id="sec-roles">
+  <h2>役割とペットバフ</h2>
+  <div class="tablewrap">
+  <table class="wrapcell" style="min-width:560px">
+    <thead><tr><th>名前</th><th>役割</th><th>フェーズ1（21〜23時）</th><th>フェーズ2（23〜25時）</th></tr></thead>
+    <tbody>
+      <tr><td><b>ふじまる</b><br>T9M</td><td>駐屯主（最強の英雄で駐屯）。111が城を持ったまま耐える場面では、111へ移籍して駐屯</td><td>ペットバフ　開幕から<span class="buff">ON</span></td><td>そのまま駐屯主</td></tr>
+      <tr><td><b>ヒデキ</b><br>T9M</td><td>T9Mの集結主</td><td>温存</td><td>ペットバフ<span class="buff">ON</span></td></tr>
+      <tr><td><b>ヨルカ</b><br>T9M</td><td>T9Mの集結主。スタート時点で111の集結主が足りなければ111へ移り、イチカと集結。DONPEN・tenoが参戦したらT9Mへ戻る</td><td>温存</td><td>ペットバフ<span class="buff">ON</span></td></tr>
+      <tr><td><b>イチカ</b><br>111</td><td>ゴーストの1本目</td><td>ペットバフ<span class="buff">ON</span></td><td>温存分があれば使う</td></tr>
+      <tr><td><b>DONPEN</b><br>111・途中参加</td><td>ゴーストの2本目（集結主②）</td><td>温存（合流前）</td><td>ペットバフ<span class="buff">ON</span></td></tr>
+      <tr><td><b>teno</b><br>111・途中参加</td><td>ゴーストの3本目（集結主③）</td><td>温存（合流前）</td><td>ペットバフ<span class="buff">ON</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">DONPENとtenoはどちらも途中参加。スタート時点で111の集結主が足りなければ、ヨルカが111へ移ってイチカと集結する。その間、ヨルカの集結に乗るのは111のメンバー。T9Mの集結はふじまる・ヒデキの2人で回す。DONPEN・tenoが来たら、ヨルカはT9Mへ戻る。ペットバフは前半組と後半組に分け、どちらの時間帯にも誰かのバフが効いているようにする。</p>
+</section>
+
+<section id="sec-place">
+  <h2>王城移転の配置（案） <small>（ ）内は着弾秒数</small></h2>
+  <div class="tablewrap">
+  <table style="min-width:520px">
+    <thead><tr><th>班</th><th>集結主・駐屯主</th><th>乗り手（着弾秒数）</th></tr></thead>
+    <tbody>
+      <tr><td><b>ふじまる班</b></td><td>ふじまる（36秒）</td><td style="white-space:normal">ホロロン・ﾀｹﾉｺ（45秒）、クランク・まのり（47秒）</td></tr>
+      <tr><td><b>ヨルカ班</b></td><td>ヨルカ（39秒）</td><td style="white-space:normal">たもん・メグミルク（50秒）、さんぺい・さくらわらびもち（52秒）</td></tr>
+      <tr><td><b>イチカ班</b>（111）</td><td>イチカ（36〜39秒）</td><td style="white-space:normal">MuuuMuuu・roro・nico・くるりん（45〜50秒）</td></tr>
+      <tr><td><b>DONPEN班</b>（111）</td><td>DONPEN・teno（39〜43秒）</td><td style="white-space:normal">°ʚ現役jkﾅｶﾖｼ°ɞ°・無課金勢の美少女・ポッポ・くるくる（50〜55秒）、boboa・ちょろりん・ぷにゃたん・とんぼ（55〜58秒）</td></tr>
+      <tr><td><b>ヒデキ班</b></td><td>ヒデキ（43秒）</td><td style="white-space:normal">ニック・鬼塚（52秒）、いとち・omaaaa（55秒）、ひだり（55秒）</td></tr>
+      <tr><td><b>途中参加組</b></td><td>—</td><td style="white-space:normal">えび10・四駆郎（58〜66秒）</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">城に接するマスは数が限られるので、T9Mと111がどの面を使うかは州の移転配置の担当と調整する。</p>
+</section>
+
+<section id="sec-todo">
+  <h2>当日までに決めること</h2>
+  <ul class="checklist">
+    <li>DONPEN・tenoが何時に合流できるか（2人とも途中参加）</li>
+    <li>ヨルカ・ふじまるの111への移籍と、T9Mへの戻りを当日承認する人（両同盟のR4）</li>
+    <li>王城移転の配置（T9Mと111がどの面・どのマスを使うか）を州の担当と調整</li>
+    <li>各メンバーがVCを聞けるか（名簿のVC欄）</li>
+    <li>集結は40:20:40と50:20:30のどちらで行くか、集結主同士で合わせる</li>
+    <li>ステーションを城戦の時間に効果が出るよう取る時刻</li>
+  </ul>
+</section>
+
+<section id="sec-roster">
+  <h2>参加名簿</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>名前</th><th>参加</th><th>VC</th><th>戦力</th><th>兵（盾/槍/弓）</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="6">駐屯主・集結主</td></tr>
+      <tr><td>ふじまる</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">149M</td><td>火晶3／火晶3／火晶3</td><td>駐屯主（フェーズ1ペットバフ）</td></tr>
+      <tr><td>ヒデキ</td><td>—</td><td>—</td><td class="num">—</td><td>—</td><td>集結主（アンケート回答なし）</td></tr>
+      <tr><td>ヨルカ</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">147M</td><td>火晶3／火晶3／火晶3</td><td>集結主・駐屯回し（フェーズ2ペットバフ）</td></tr>
+      <tr class="grp"><td colspan="6">固定の乗り手（集結即乗り・駐屯）</td></tr>
+      <tr><td>クランク</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">69.3M</td><td>火晶1／火晶1／火晶1</td><td>ふじまる隊ソユン</td></tr>
+      <tr><td>まのり</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">67.4M</td><td>—／火晶1／—</td><td>ふじまる隊パトリック</td></tr>
+      <tr><td>ホロロン</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">67.2M</td><td>火晶2／火晶1／火晶1</td><td>ふじまる隊フレンダー</td></tr>
+      <tr><td>ﾀｹﾉｺ【ｲﾁﾐ】</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">66.7M</td><td>—／火晶1／火晶1</td><td>ふじまる隊ジェシー</td></tr>
+      <tr><td>たもん</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">64.7M</td><td>—／火晶1／—</td><td>ヨルカ隊フレンダー</td></tr>
+      <tr><td>メグミルク</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">63.0M</td><td>—／火晶1／—</td><td>ヨルカ隊ジェシー</td></tr>
+      <tr><td>さんぺい</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">51.2M</td><td>T10以下</td><td>ヨルカ隊ソユン</td></tr>
+      <tr><td>さくらわらびもち</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">39.3M</td><td>T10以下</td><td>ヨルカ隊パトリック</td></tr>
+      <tr class="grp"><td colspan="6">駐屯の補充・空き枠の乗り手（合流したら駐屯へ）</td></tr>
+      <tr><td>鬼塚権左衛門</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">57.1M</td><td>T10以下</td><td>ヒデキ隊ジェシー</td></tr>
+      <tr><td>ニック</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">55.8M</td><td>T10以下</td><td>ヒデキ隊フレンダー</td></tr>
+      <tr><td>omaaaa</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">45.1M</td><td>T10以下</td><td>ヒデキ隊パトリック</td></tr>
+      <tr><td>えび10</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">41.3M</td><td>T10以下</td><td>駐屯の補充・空き枠</td></tr>
+      <tr><td>四駆郎</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">38.8M</td><td>T10以下</td><td>駐屯の補充・空き枠</td></tr>
+      <tr><td>いとち</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">60.2M</td><td>T10以下</td><td>ヒデキ隊ソユン</td></tr>
+      <tr><td>ひだり</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">38.6M</td><td>T10以下</td><td>ヒデキ隊ジェシー（鬼塚合流まで）</td></tr>
+      <tr class="grp"><td colspan="6">111 集結主</td></tr>
+            <tr><td>DONPEN</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">92.8M</td><td>火晶2／火晶1／—</td><td>集結主②（フェーズ2ペットバフ）</td></tr>
+            <tr><td>teno</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">71.0M</td><td>火晶1／火晶1／—</td><td>集結主③（フェーズ2ペットバフ）</td></tr>
+      <tr class="grp"><td colspan="6">111 固定の乗り手</td></tr>
+            <tr><td>MuuuMuuu</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">72.1M</td><td>火晶1／火晶1／火晶1</td><td>イチカ隊フレンダー</td></tr>
+      <tr><td>くるりん</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">87.0M</td><td>火晶1／火晶1／—</td><td>イチカ隊ソユン</td></tr>
+            <tr><td>roro</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">69.3M</td><td>T10以下</td><td>イチカ隊パトリック</td></tr>
+            <tr><td>nico</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">66.0M</td><td>—／火晶1／—</td><td>イチカ隊ジェシー</td></tr>
+            <tr><td>boboa</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">62.8M</td><td>—／火晶1／—</td><td>teno隊フレンダー</td></tr>
+      <tr><td>ちょろりん</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">60.0M</td><td>T10以下</td><td>teno隊ジェシー</td></tr>
+      <tr><td>ぷにゃたん</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">53.2M</td><td>T10以下</td><td>teno隊ソユン</td></tr>
+            <tr><td>ポッポ</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">63.8M</td><td>火晶1／火晶1／火晶1</td><td>DONPEN隊ソユン</td></tr>
+            <tr><td>くるくる</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">57.8M</td><td>T10以下</td><td>DONPEN隊パトリック</td></tr>
+            <tr><td>無課金勢の美少女</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">57.6M</td><td>—／火晶1／—</td><td>DONPEN隊ジェシー</td></tr>
+            <tr><td>°ʚ現役jkﾅｶﾖｼ°ɞ°</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">49.2M</td><td>T10以下</td><td>DONPEN隊フレンダー</td></tr>
+      <tr class="grp"><td colspan="6">111 空き枠の乗り手・駐屯の補充</td></tr>
+            <tr><td>とんぼ</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">47.3M</td><td>T10以下</td><td>teno隊パトリック</td></tr>
+            <tr><td>ほたて</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">46.5M</td><td>T10以下</td><td>空き枠の乗り手</td></tr>
+            <tr><td>みさん</td><td><span class="pill p-late">途中</span></td><td>—</td><td class="num">45.0M</td><td>T10以下</td><td>空き枠の乗り手</td></tr>
+            <tr><td>ななせ</td><td><span class="pill p-start">21:00</span></td><td>—</td><td class="num">41.1M</td><td>T10以下</td><td>空き枠（ジェシー）</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="sec-relay">
+  <h2>当日の指示役</h2>
+  <div class="tablewrap">
+  <table style="min-width:0">
+    <thead><tr><th>役割</th><th>担当</th><th>やること</th></tr></thead>
+    <tbody>
+      <tr><td><b>全体指示</b></td><td>ひだり</td><td style="white-space:normal">VCで全体の動きを指示する</td></tr>
+      <tr><td><b>111との連携指示</b></td><td>ひだり</td><td style="white-space:normal">111への集結・帰還・引き渡しの指示</td></tr>
+      <tr><td><b>カウント役</b></td><td>メグミルク</td><td style="white-space:normal">111の5カウントと、差し込みの70秒前からの読み上げ</td></tr>
+      <tr><td><b>駐屯回し</b></td><td>ヨルカ</td><td style="white-space:normal">駐屯の入れ替えと補充を回す</td></tr>
+      <tr><td><b>事前偵察</b></td><td>さんぺい・まのり</td><td style="white-space:normal">相手の集結の秒数（行軍時間・着弾時刻）を事前に確認して知らせる</td></tr>
+      <tr><td><b>同盟チャット書き込み</b></td><td>さんぺい・まのり</td><td style="white-space:normal">Discordに入っていないメンバーのために、VCの指示を同盟チャットへ書き込む</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+
+</div>
+
+<div class="p2">
+<div class="pcol">
+<section>
+  <h2>時間の区切り</h2>
+  <div class="phase">
+    <div class="ph"><span class="t">フェーズ1　12:00〜14:00 UTC</span><p class="legend" style="margin:0">日本時間 21:00〜23:00</p><p>開幕のスタートダッシュ。集結主のペットバフは前半組が使う。</p></div>
+    <div class="ph"><span class="t">フェーズ2　14:00〜16:00 UTC</span><p class="legend" style="margin:0">日本時間 23:00〜25:00</p><p>前半組のペットバフが切れるので、温存していた後半組が使う。最後の1時間は全員で城を守る。</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>場面ごとの動き</h2>
+  <div class="flow">
+    <div class="step alert"><span class="no">0</span><div><b>10:00 UTC（日本19:00）　SVS開始</b><p><b style="color:var(--ember)">王城戦に参加しない人は必ずシールド！！</b></p>
+      <b style="margin-top:6px">11:00 UTC（日本20:00）　王城戦の参加者は整列開始</b><p><b style="color:var(--ember)">11:30 UTC（日本20:30）には整列を済ませる。</b>ログインして治療し、乗る英雄と比率を確認しておく。</p></div></div>
+    <div class="step"><span class="no">1</span><div><b>12:00 UTC（日本21:00）　スタートダッシュ</b>
+      <div class="split"><div class="side main"><strong>T9M</strong><b>全員単騎でダイヤ加速！</b>T9Mが王城に入ったら、あとは駐屯メンバーが入る。この時点で、フェーズ1担当の集結主（役割とペットバフの表のとおり）がペットバフON。</div><div class="side ghost"><strong>111</strong>全員待機、もしくはT9Mへ移動して<b>全員単騎加速！</b></div></div></div></div>
+    <div class="step alert"><span class="no">A</span><div><b>相手が城を持っているとき</b>
+      <div class="split"><div class="side ghost"><strong>0秒　混合集結</strong>T9Mと111の集結主が一斉に集結。111が同時に着弾し、<b>T9Mはその1秒後</b>に着弾させてT9Mが城に残る。T9Mは先に集結主が気持ち早めに当たって駐屯主の兵の損失を減らし、駐屯主が城に入る。</div><div class="side main"><strong>〜1分　T9Mが駐屯</strong>相手のゴーストが来る前に、余裕があれば駐屯 60:39:1 で固める。</div></div>
+      <p class="note" style="margin:6px 0 0">相手がわざと兵を抜いて、先に当たる集結主を城に入れてくることがある。兵が抜ける兆候が見えたら、その集結は到着前に行軍を戻す。</p>
+      <div class="split"><div class="side ghost"><strong>1〜2分　111の2本目</strong>城を取られていたら、111の別の集結主で奪い返す。</div><div class="side main"><strong>2〜3分　引き渡し</strong>T9Mに戻すか、駐屯主が111に移籍して駐屯で耐える。</div></div></div></div>
+    <div class="step"><span class="no">B</span><div><b>T9Mが城を持っているとき</b>
+      <div class="split"><div class="side main"><strong>相手の集結を見たら</strong>相手は6〜7連で来る想定。カウント役が相手の着弾70秒前から読み上げ、自分の行軍秒数で駐屯を送る。ダイヤ加速で微調整。</div><div class="side ghost"><strong>10秒以内に111の1本目</strong>相手の集結を見たら5カウントで集結を出す。差し込みが成功したら切る。抜かれていたら、相手は兵が減り比率も崩れ英雄も集結用なので、ほぼ抜ける。</div></div>
+      <div class="split"><div class="side main"><strong>1〜2分　T9Mに戻す</strong>できるだけT9Mに入れ替えて駐屯 60:39:1。無理なら盾中心に兵を補充。</div><div class="side ghost"><strong>2〜3分　111の2本目</strong>着弾時刻を合わせてきれいに当てる。</div></div></div></div>
+    <div class="step"><span class="no">5</span><div><b>15:00〜16:00 UTC（日本24:00〜25:00）　最後の1時間</b><p>全員で城を守る。15:30 UTC（日本24:30）までに駐屯を満杯に。</p></div></div>
+  </div>
+  <p class="note">乗り手が足りないときは、1本目の集結に乗った人が2本目にも乗る。そのぶん集結と集結の間隔を少し空ける。</p>
+</section>
+</div>
+
+<div class="pcol">
+<section>
+  <h2>差し込みのタイミング</h2>
+  <img src="sashikomi.png" alt="差し込みのタイミング：着弾70秒前からのカウントで、自分の秒数になったら出征ボタン" style="width:100%;border-radius:10px;border:1px solid var(--line);display:block">
+  <p class="note"><b>VCを聞けない人</b>は、敵の集結の残り時間が「自分の秒数 − 敵の集結主のタイル秒数」になったら送る。同時着は危ないので2〜3秒早めに。</p>
+</section>
+
+<section>
+  <h2>ダイヤ加速（行軍25%短縮）早見表</h2>
+  <div class="tablewrap">
+  <table style="min-width:420px">
+    <thead><tr><th>加速前の残り</th><th>加速後</th><th>メモ</th></tr></thead>
+    <tbody>
+      <tr><td class="num">残り20秒</td><td class="num"><b>15秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り16秒</td><td class="num"><b>12秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り12秒</td><td class="num"><b>9秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り8秒</td><td class="num"><b>6秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り4秒</td><td class="num"><b>3秒</b></td><td style="white-space:normal">口頭のカウントは1秒ほど遅れるので、このあたりが調整ポイント</td></tr>
+      <tr><td class="num">残り3秒</td><td class="num"><b>2.25秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り2秒</td><td class="num"><b>1.5秒</b></td><td style="white-space:normal"></td></tr>
+      <tr><td class="num">残り1秒</td><td class="num"><b>0.75秒</b></td><td style="white-space:normal">同時処理される可能性が高い範囲。ダイヤ加速</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">残り1カウントになったら同時処理されるので、ためらわず加速する。</p>
+</section>
+</div>
+
+<div class="pcol">
+<section>
+  <h2>太陽城までの着弾時間</h2>
+  <div class="tablewrap">
+  <table style="min-width:420px">
+    <thead><tr><th>城からの距離</th><th>着弾までの秒数</th><th>使い方</th></tr></thead>
+    <tbody>
+      <tr><td>城に接する列</td><td class="num">36・39・43</td><td>駐屯主・集結主</td></tr>
+      <tr><td>2列目</td><td class="num">45・47・50</td><td>固定の乗り手</td></tr>
+      <tr><td>3列目</td><td class="num">52・55・58</td><td>差し込み・空き枠の乗り手</td></tr>
+      <tr><td>4列目</td><td class="num">58・66</td><td>差し込みはこの距離まで</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">城の四方とも同じ並び。辺の中央寄りが36秒で一番近く、角に近いマスは43秒。</p>
+</section>
+
+<section>
+  <h2>相手 4557</h2>
+  <div class="enemy">
+    <span>Angry Yae<i>VOV</i></span><span>philipp_0211<i>VOV</i></span><span>Synn ~<i>VOV</i></span><span>Catherine<i>VOV</i></span>
+    <span>Penny<i>WTF</i></span><span>50 Bonez<i>NBK</i></span><span>Joker</span>
+  </div>
+  <p class="note">主力はVOV。偵察役がVOVの集結の発射と着弾時刻をすぐチャットに流し、T9Mの差し込みと111の5カウントの基準にする。</p>
+</section>
+
+<section>
+  <h2>全員が守るルール</h2>
+  <div class="rules">
+    <div class="rule">
+      <b>乗る英雄は集結も駐屯も同じ4種類</b>
+      <p>左の英雄（遠征スキルMAX）はこの4種類から。指名された人は<b>1分以内</b>に担当の集結主へ、指名のない人は<b>1分後</b>に空いている集結へ、空いている枠を左から順に埋める。</p>
+      <div class="slots"><span class="slot s-b">①フレンダー</span><span class="slot s-a">②ジェシー</span><span class="slot s-b">③ソユン</span><span class="slot s-a">④パトリック</span></div>
+      <p>ジェシー（与ダメージ+25%）とソユン（攻撃力+25%）は別のバフなので掛け算で効く。</p>
+    </div>
+    <div class="rule">
+      <b>VCのカウントで動く</b>
+      <p><b style="color:var(--ember);font-size:1.1em">5秒以内に集結画面に移れるよう、必ず部隊登録しておく。</b>差し込みは、カウント役が相手の着弾70秒前から読み上げる数字が<b>自分の行軍秒数になったら</b>押す。</p>
+    </div>
+    <div class="rule">
+      <b>バフと兵の管理</b>
+      <p>戦闘用のペットバフは温存し、合図が出たら入れる（4575にはまだ雪猿がいないので、今いるペットで）。出征容量アップがあれば使う。戦わない時間はシールド、負傷兵はこまめに治療し、病院がいっぱいになる前に下がる。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>各自の確認事項</h2>
+  <ol class="checklist" style="list-style:decimal">
+    <li>自分の都市から太陽城までの行軍秒数を確認しておく（下の着弾時間の表）。</li>
+    <li>集結や駐屯に乗ったら、自分の兵士数を覚えておく。兵を補充するときの目安にする。</li>
+    <li>駐屯は60:39:1（弓1は相手のターンを1回増やすため）なので、基本は盾が減っていく。砲台からは槍が削られるので、槍もこまめに補充する。</li>
+    <li>VCを聞けるかどうかを事前に伝えておく。</li>
+  </ol>
+</section>
+</div>
+
+<div class="pcol">
+<section id="sec-rally">
+  <h2>集結の乗り方</h2>
+  <img src="rally.png" alt="集結に乗るってどういうこと？ 兵を足す・スキルを足すの説明図" style="width:100%;border-radius:10px;border:1px solid var(--line);display:block">
+</section>
+</div>
+</div>
+
+<footer>T9M · 4575サーバー ｜ 製作者「FURUKANA」</footer>
+</div>
+
+</body>
+</html>
