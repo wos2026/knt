@@ -44,6 +44,9 @@ section{min-width:0}
 .rule p{margin:0;color:var(--muted);font-size:14px}
 .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:4px;margin-top:4px}
 .slot{white-space:nowrap}
+.tl2{display:grid;gap:4px}
+.tl2 span{display:flex;gap:10px;align-items:baseline;font-size:14px}
+.tl2 b{font-family:var(--f-mono);color:var(--ember);min-width:4.5em}
 .slot{font-size:12px;text-align:center;border-radius:6px;padding:4px 2px;font-weight:700}
 .s-a{background:var(--ember-soft);color:var(--ember)}
 .s-b{background:var(--ice-soft);color:var(--ice)}
@@ -208,8 +211,10 @@ td .buff{font-size:11px;font-weight:700;background:var(--ember);color:#fff;borde
       <div class="ratio"><span class="r-in" style="width:40%">40</span><span class="r-la" style="width:20%">20</span><span class="r-mk" style="width:40%">40</span></div>
       <div class="mrow"><span class="mk">または</span><span class="mv">50：20：30</span></div>
       <div class="ratio"><span class="r-in" style="width:50%">50</span><span class="r-la" style="width:20%">20</span><span class="r-mk" style="width:30%">30</span></div>
-      <div class="mrow"><span class="mk">駐屯</span><span class="mv">60：39：1</span></div>
+      <div class="mrow"><span class="mk">駐屯（ヨルカ・ふじまる・ヒデキ）</span><span class="mv">60：39：1</span></div>
       <div class="ratio"><span class="r-in" style="width:60%">60</span><span class="r-la" style="width:39%">39</span><span class="r-mk" style="width:1%"></span></div>
+      <div class="mrow"><span class="mk">駐屯（一般乗り手）</span><span class="mv">60：40：0</span></div>
+      <div class="ratio"><span class="r-in" style="width:60%">60</span><span class="r-la" style="width:40%">40</span></div>
       <p class="mn"><b>弓1</b>を入れるのは、相手のターンを1回増やすため。</p>
       <p class="mn">集結主から別の指示があればそちらを優先。</p>
     </div>
@@ -356,7 +361,7 @@ td .buff{font-size:11px;font-weight:700;background:var(--ember);color:#fff;borde
     <tbody>
       <tr><td><b>全体指示</b></td><td>ひだり</td><td style="white-space:normal">VCで全体の動きを指示する</td></tr>
       <tr><td><b>111との連携指示</b></td><td>ひだり</td><td style="white-space:normal">111への集結・帰還・引き渡しの指示</td></tr>
-      <tr><td><b>カウント役</b></td><td>メグミルク</td><td style="white-space:normal">差し込みの70秒前からの読み上げ</td></tr>
+      <tr><td><b>カウント役</b></td><td>鬼塚権左衛門</td><td style="white-space:normal">差し込みの70秒前からの読み上げ</td></tr>
       <tr><td><b>駐屯回し</b></td><td>ヨルカ</td><td style="white-space:normal">駐屯の入れ替えと補充を回す</td></tr>
       <tr><td><b>事前偵察</b></td><td>さんぺい・まのり</td><td style="white-space:normal">相手の集結の秒数（行軍時間・着弾時刻）を事前に確認して知らせる</td></tr>
       <tr><td><b>同盟チャット書き込み</b></td><td>さんぺい・まのり</td><td style="white-space:normal">Discordに入っていないメンバーのために、VCの指示を同盟チャットへ書き込む</td></tr>
@@ -450,10 +455,16 @@ td .buff{font-size:11px;font-weight:700;background:var(--ember);color:#fff;borde
   <h2>全員が守るルール</h2>
   <div class="rules">
     <div class="rule">
-      <b>乗る英雄は集結も駐屯も同じ4種類</b>
-      <p>左の英雄（遠征スキルMAX）はこの4種類から。指名された人は<b>1分以内</b>に担当の集結主へ、指名のない人は<b>1分後</b>に空いている集結へ、空いている枠を左から順に埋める。</p>
-      <div class="slots"><span class="slot s-b">①フレンダー</span><span class="slot s-a">②ジェシー</span><span class="slot s-b">③ソユン</span><span class="slot s-a">④パトリック</span></div>
-      <p>ジェシー（与ダメージ+25%）とソユン（攻撃力+25%）は別のバフなので掛け算で効く。</p>
+      <b>集結の乗り方</b>
+      <div class="tl2"><span><b>1分以内</b>指定の乗り手</span><span><b>2分後</b>指定の乗り手で遅れた人</span><span><b>3分後</b>一般の乗り手が集結を埋める</span></div>
+      <p>左の英雄は、下の英雄のうち<b>右上（遠征スキル）のレベルが一番高いお気に入り</b>。</p>
+      <div class="slots"><span class="slot s-a">ジェシー</span><span class="slot s-a">パトリック</span><span class="slot s-b">ソユン</span><span class="slot s-b">ジャセル</span><span class="slot s-a">フレンダー</span><span class="slot s-b">リンセツ</span></div>
+    </div>
+    <div class="rule">
+      <b>駐屯の入り方</b>
+      <p>ヨルカ・ふじまる・ヒデキは<b>60:39:1</b>、一般の乗り手は<b>60:40:0</b>。</p>
+      <p>左の英雄は、下の英雄のうち<b>右上のレベルが一番高いお気に入り</b>。</p>
+      <div class="slots"><span class="slot s-b">フリント</span><span class="slot s-b">セルゲイ</span><span class="slot s-a">パトリック</span><span class="slot s-a">ジンマン</span><span class="slot s-b">リンセツ</span><span class="slot s-a">ボーガン</span></div>
     </div>
     <div class="rule">
       <b>VCのカウントで動く</b>
@@ -471,7 +482,7 @@ td .buff{font-size:11px;font-weight:700;background:var(--ember);color:#fff;borde
   <ol class="checklist" style="list-style:decimal">
     <li>自分の都市から太陽城までの行軍秒数を確認しておく（下の着弾時間の表）。</li>
     <li>集結や駐屯に乗ったら、自分の兵士数を覚えておく。兵を補充するときの目安にする。</li>
-    <li>駐屯は60:39:1（弓1は相手のターンを1回増やすため）なので、基本は盾が減っていく。砲台からは槍が削られるので、槍もこまめに補充する。</li>
+    <li>駐屯はヨルカ・ふじまる・ヒデキが60:39:1（弓1は相手のターンを1回増やすため）、一般の乗り手は60:40:0。基本は盾が減っていく。砲台からは槍が削られるので、槍もこまめに補充する。</li>
     <li>VCを聞けるかどうかを事前に伝えておく。</li>
   </ol>
 </section>
