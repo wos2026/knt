@@ -1,153 +1,299 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>4297 SVS戦 11月7日 集結作戦</title>
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<title>4297 SVS戦 11月7日 作戦カード</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b1a2e;--card:#12284a;--line:#24467a;--ice:#bfe6ff;--tx:#eaf4ff;--mut:#8fb0d6;--warn:#ffb547}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 50% -200px,#1d4a85,transparent),var(--bg);color:var(--tx);font-family:"M PLUS Rounded 1c",system-ui,sans-serif;padding:16px 12px 40px}
-.wrap{max-width:1100px;margin:0 auto}
-h1{margin:4px 0 2px;font-size:clamp(22px,5vw,32px);font-weight:800;color:var(--ice);letter-spacing:.04em}
-.sub{color:var(--mut);font-size:13px;margin-bottom:14px}
-.alert{background:#3a2a0e;border:1px solid var(--warn);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.65;margin-bottom:12px}
-.alert b{color:var(--warn)}
-.info{background:#0f2340;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.7;margin-bottom:18px;color:#cfe3fa}
-h2{font-size:18px;margin:22px 0 10px;padding-left:10px;border-left:4px solid var(--ice);display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
-.meta{font-size:12.5px;color:var(--mut);font-weight:500}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px 6px}
-.card.warn{border-color:var(--warn)}
-.card header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.ln{font-weight:800;font-size:16.5px}
-.time{background:#3b1f5c;color:#e6cfff;font-size:12px;padding:2px 8px;border-radius:99px}
-.wnote{font-size:12px;color:var(--warn);margin-bottom:4px}
-ul{list-style:none;margin:0;padding:0}
-li{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:5px 0;border-top:1px dashed #23406b;font-size:14px}
-li.x .nm{text-decoration:line-through;color:var(--warn)}
-.h{font-size:11px;font-weight:800;min-width:62px;text-align:center;padding:2px 0;border-radius:6px}
-.fr{background:#2e6bd6}.ri{background:#1d9a8a}.so{background:#c2508a}.bo{background:#8a5cd6}.pa{background:#c98a1d}.no{background:#3a5274;color:#cfe0f5}
-.nm{flex:1;min-width:0;overflow-wrap:anywhere}
-.al{font-size:10.5px;color:var(--mut);border:1px solid #33557f;border-radius:5px;padding:0 4px;margin-left:5px;font-weight:500}
-.b{font-size:11px;color:#0b1a2e;background:#7f93ad;border-radius:5px;padding:1px 6px;font-weight:800}
-.b.lv5{background:#ffd166}.b.lv4{background:#9fe0ff}.b.lv3{background:#a8c0dc}
-.mn{flex-basis:100%;font-size:11.5px;color:var(--warn);padding-left:68px}
-.legend{font-size:12px;color:var(--mut);margin-top:22px;line-height:1.7}
-.copy{margin-top:18px;background:#2e6bd6;color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:800;cursor:pointer}
-.foot{margin-top:26px;font-size:11px;color:#6d8bb0;text-align:right}
+:root{--bg:#e3f2fd;--blue:#1e88e5;--blue2:#42a5f5;--navy:#0d47a1;--tx:#1f2d3d;--mut:#5f6f82;--bd:#bbdefb;--green:#2e7d32;--orange:#ef6c00}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"M PLUS 1p",system-ui,sans-serif;font-weight:500;line-height:1.6;padding:12px 12px 40px}
+.wrap{max-width:720px;margin:0 auto}
+.top{text-align:center;margin:6px 0 10px}
+.top h1{margin:0;font-size:20px;color:var(--navy);font-weight:800}
+.top p{margin:2px 0 0;font-size:12.5px;color:var(--mut)}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 0;margin-bottom:6px}
+nav a{flex:none;text-decoration:none;color:var(--navy);background:#fff;border:1px solid var(--bd);border-radius:99px;padding:4px 11px;font-size:12.5px;font-weight:700}
+.sheet{margin:0 0 30px;scroll-margin-top:52px}
+.hd{background:linear-gradient(90deg,var(--blue),var(--blue2));color:#fff;border-radius:16px;padding:12px 16px 14px;box-shadow:0 3px 0 #1565c0;margin-bottom:12px}
+.hd small{display:block;font-size:12px;font-weight:700;opacity:.9}
+.hd h2{margin:2px 0 0;font-size:24px;font-weight:800;letter-spacing:.02em}
+.box{background:#fff;border:2px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.box.warn{background:#fff8e1;border-color:#ffb74d}
+.box.pink{background:#fce4ec;border-color:#f48fb1}
+.lb{display:inline-block;background:var(--blue);color:#fff;font-weight:800;font-size:14px;border-radius:6px;padding:2px 10px;margin-bottom:8px}
+.warn .lb{background:var(--orange)}.pink .lb{background:#ec407a}
+.lbrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}.lbrow .lb{margin:0}
+.lbrow .t{font-weight:800;color:var(--blue);font-size:16px}
+table{width:100%;border-collapse:collapse}
+td{padding:8px 0;border-bottom:1px dashed #d6e6f5;vertical-align:top;font-size:14px}
+tr:last-child td{border-bottom:0}
+td.k{width:92px;font-weight:800;color:var(--navy)}
+.big{font-weight:800;font-size:15.5px}
+.note{font-size:12px;color:var(--mut);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.c{display:inline-block;color:#fff;font-weight:800;font-size:12px;border-radius:99px;padding:3px 11px;white-space:nowrap}
+.fr{background:#8e44ad}.ri{background:#00897b}.so{background:#e84393}.bo{background:#ef6c00}.pa{background:#2e7d32}.je{background:#d32f2f}.no{background:#78909c}
+.p{display:inline-block;background:#e3f2fd;border:1px solid #90caf9;color:var(--navy);font-weight:700;font-size:13px;border-radius:8px;padding:3px 9px}
+.p.hl{background:#fff3e0;border-color:#ffb74d}
+.est{font-weight:800;margin-top:8px}.est.g{color:var(--green)}.est.o{color:var(--orange)}
+ul.d{margin:6px 0 0;padding-left:20px;font-size:14px}ul.d li{margin:3px 0}
+ol.n{list-style:none;margin:0;padding:0;counter-reset:n}
+ol.n li{counter-increment:n;position:relative;padding:4px 0 6px 34px;font-size:14px}
+ol.n li::before{content:counter(n);position:absolute;left:0;top:4px;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+b{font-weight:800}
+.grp{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.grp h3{margin:0;color:var(--navy);font-size:18px;font-weight:800}
+.grp span{font-size:11.5px;color:var(--navy);font-weight:700;text-align:right}
+.mem{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:14px;font-weight:700}
+.mem .c{min-width:76px;text-align:center}
+.foot{text-align:center;font-size:11.5px;color:var(--mut);margin-top:-18px;margin-bottom:24px}
+.credit{text-align:center;font-size:11px;color:#7d93ab;margin-top:10px}
 </style></head><body><div class="wrap">
-<h1>4297 SVS戦 集結作戦</h1>
-<div class="sub">2026年11月7日（土）／集結主11名・乗り手指定</div>
-<div class="alert"><b>⚠ 変更点</b><br>熊ごろうさんが参加困難のため、<b>あきらさん</b>が集結主を代行。<br>→ zabton の乗り手「あきらくん」の枠が空くので差し替えが必要です。<br>候補：<b>mitunorin</b>（GaL・スタートから参加・兵舎 火晶5／5／5・今回未配置）</div>
-<div class="info">・各集結とも指定メンバーでフル枠です。<br>・当日の参加人数が減る可能性があるため、<b>先の盟主会でyw（移動）は控える</b>ようお願いします。<br>・gal側でDiscord未参加の方にも周知をお願いします。</div>
-<section><h2>強い3人（乗り手）<span class="meta">ローガン／レイナ／グレッグ・比率 5:2:3</span></h2><div class="grid">
-<article class="card"><header><div class="ln">KINAちゃん<span class="al">GaL</span></div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">Kさん</span><span class="al">GaL</span><span class="b lv5">5</span></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">ヤムチャしたhrさん</span><span class="al">RAV</span><span class="b lv5">5</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">センテンススプリング</span><span class="al">GaL</span><span class="b lv5">5</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">ジョセフ</span><span class="al">GaL</span><span class="b lv4">5/5/4</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">そこに愛はあるんか</span><span class="al">RAV</span><span class="b lv4">5/4/5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">666「Rokko」</span><span class="al">ARK</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">みち。</span><span class="al">RAV</span><span class="b lv5">5</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">ぽてちゃん<span class="al">GaL</span></div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">はなちゃん</span><span class="al">lgo</span><span class="b lv5">5</span></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">解体屋</span><span class="al">lgo</span><span class="b lv5">5</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">ゆいまる</span><span class="al">lgo</span><span class="b lv5">5</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">大和丸</span><span class="al">WSS</span><span class="b lv4">5/4/5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">トウカ</span><span class="al">lgo</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">けんぴ</span><span class="al">WSS</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ラーネイレ</span><span class="al">YEK</span><span class="b lv5">5</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">みえっぴ<span class="al">RAV</span></div><div class="time">22:00〜</div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">べりー</span><span class="al">WSS</span><span class="b lv5">5</span><div class="mn">〜24時</div></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">しろごま</span><span class="al">lgo</span><span class="b lv5">5</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">Ganesha</span><span class="al">RAV</span><span class="b lv5">5</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">utaka</span><span class="al">MOF</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">TamO</span><span class="al">lgo</span><span class="b lv4">5/4/5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">こたんちゃん</span><span class="al">GaL</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">まさくん</span><span class="al">RNE</span><span class="b lv4">5/4/5</span></li>
-</ul></article>
-</div></section>
-<section><h2>集結1<span class="meta">ジェロ／レイナ／グレッグ・比率 4:2:4</span></h2><div class="grid">
-<article class="card"><header><div class="ln">shin4BBB<span class="al">RAV</span></div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">やんや</span><span class="al">WSS</span><span class="b lv4">4</span></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">夜舞ちゃん</span><span class="al">GaL</span><span class="b lv3">4/4/3</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">Totuka</span><span class="al">RAV</span><span class="b lv4">4</span></li>
-<li class=""><span class="h bo">ボーガン</span><span class="nm">number</span><span class="al">RNE</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">カネキ</span><span class="al">GaL</span><span class="b lv5">5</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">やまやま</span><span class="al">GaL</span><span class="b lv4">4</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">OTO</span><span class="al">RAV</span><span class="b lv5">5</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">zabton</div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">かーく</span><span class="al">GaL</span><span class="b lv3">3/4/3</span></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">塩昆布</span><span class="al">WSS</span><span class="b lv3">4/3/4</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">しらたま</span><span class="al">GaL</span><span class="b lv4">4</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">キャミ</span><span class="al">GaL</span><span class="b lv4">4</span></li>
-<li class="x"><span class="h no">乗り手</span><span class="nm">あきらくん</span><span class="al">lgo</span><span class="b lv5">5</span><div class="mn">あきらさんが集結主に回るため要差し替え</div></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">れもぽぉん</span><span class="al">WSS</span><span class="b lv3">4/3/4</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">koojii@</span><span class="al">WSS</span><span class="b lv3">3/4/3</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">モフフちゃん</div></header><ul>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">Zebra God</span><span class="al">RAV</span><span class="b lv3">3/4/3</span></li>
-<li class=""><span class="h bo">ボーガン</span><span class="nm">きょん</span><span class="al">RAV</span><span class="b lv3">3/4/3</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">AKI</span><span class="al">GaL</span><span class="b lv3">4/3/4</span></li>
-<li class=""><span class="h pa">パトリック</span><span class="nm">いちち</span><span class="al">GaL</span><span class="b lv3">4/3/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">はるやま</span><span class="al">GaL</span><span class="b lv3">3/4/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">チンチラのりゅうは</span><span class="al">GaL</span><span class="b lv3">3/4/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">PAN</span><span class="al">GaL</span><span class="b lv3">3/3/4</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">もちもち<span class="al">RAV</span></div></header><ul>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">雷帝2026</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">Rei pon Q_Q</span><span class="al">WSS</span><span class="b lv2">2</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">ともちゃん</span><span class="al">lgo</span><span class="b lv3">3</span></li>
-<li class=""><span class="h pa">パトリック</span><span class="nm">コバ君</span><span class="al">RAV</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ツナマヨ</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">まるろー</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ＲＲＲ</span><span class="al">ARK</span><span class="b lv3">3</span></li>
-</ul></article>
-</div></section>
-<section><h2>集結主2<span class="meta">ジェロ／レイナ／グレッグ・比率 4:2:4</span></h2><div class="grid">
-<article class="card"><header><div class="ln">Kgonちゃん<span class="al">GaL</span></div></header><ul>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">シティーハンター</span><span class="al">WSS</span><span class="b lv3">3</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">りょうへい</span><span class="al">lgo</span><span class="b lv3">3</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">しゃけ</span><span class="al">WSS</span><span class="b lv2">3/2/3</span></li>
-<li class=""><span class="h pa">パトリック</span><span class="nm">カノン</span><span class="al">GaL</span><span class="b lv2">2</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">HYPONEX</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">キリン特茶</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">我が名はEclair</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">よしぽん<span class="al">WSS</span></div></header><ul>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">おぜる</span><span class="al">GaL</span><span class="b lv2">3/2/3</span></li>
-<li class=""><span class="h fr">フレンダー</span><span class="nm">moku</span><span class="al">lgo</span><span class="b lv1">2/1/1</span></li>
-<li class=""><span class="h ri">リンセツ</span><span class="nm">タンバティタニス</span><span class="al">GaL</span><span class="b lv0">—</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">1620</span><span class="al">RAV</span><span class="b lv2">2/4/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">MARK</span><span class="al">GaL</span><span class="b lv1">2/1/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ゆーき237 lgo</span><span class="al">lgo</span><span class="b lv2">2/3/3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">Beast</span><span class="al">RAV</span><span class="b lv2">3/2/3</span></li>
-</ul></article>
-<article class="card warn"><header><div class="ln">あきらさん</div></header><div class="wnote">⚠ 熊ごろうさん不参加のため急遽代役</div><ul>
-<li class=""><span class="h so">ソユン</span><span class="nm">そうすけ</span><span class="al">RNE</span><span class="b lv0">—</span></li>
-<li class=""><span class="h so">ソユン</span><span class="nm">みぃママ</span><span class="al">GaL</span><span class="b lv2">2</span></li>
-<li class=""><span class="h pa">パトリック</span><span class="nm">タジロー</span><span class="al">GaL</span><span class="b lv1">1</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">PEP</span><span class="al">GaL</span><span class="b lv0">—</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ゆのみち</span><span class="al">RAV</span><span class="b lv0">—</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">katuo16112812</span><span class="al">RNE</span><span class="b lv0">—</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ラパン</span><span class="al">GaL</span><span class="b lv1">2/2/1</span></li>
-</ul></article>
-<article class="card"><header><div class="ln">とんちゃん<span class="al">WSS</span></div><div class="time">21:15〜</div></header><ul>
-<li class=""><span class="h pa">パトリック</span><span class="nm">JCloud</span><span class="al">GaL</span><span class="b lv1">1</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">おちぇん</span><span class="al">GaL</span><span class="b lv1">1</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">明日か人</span><span class="al">RAV</span><span class="b lv1">2/1/2</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ちろちん</span><span class="al">WSS</span><span class="b lv4">4</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ショッパー</span><span class="al">RAV</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ちくわ</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-<li class=""><span class="h no">乗り手</span><span class="nm">ごろ姫</span><span class="al">GaL</span><span class="b lv3">3</span></li>
-</ul></article>
-</div></section>
-<div class="legend">名前右の数字＝兵舎の火晶段階（盾／槍／弓、そろっていれば1つ表示）。比率は 盾：槍：弓。</div>
-<button class="copy" id="cp">チャット貼り付け用テキストをコピー</button> <span id="ok" style="font-size:12px;color:var(--mut)"></span>
-<div class="foot">製作者「FURUKANA」</div>
-</div>
-<script>
-const T="4297 11月7日 SVS戦 集結作戦\n\n【強い3人（乗り手）】ローガン／レイナ／グレッグ 比率5:2:3\n■KINAちゃん\n・フレンダー：Kさん\n・フレンダー：ヤムチャしたhrさん\n・リンセツ：センテンススプリング\n・ソユン：ジョセフ\n・乗り手：そこに愛はあるんか\n・乗り手：666「Rokko」\n・乗り手：みち。\n\n■ぽてちゃん\n・フレンダー：はなちゃん\n・フレンダー：解体屋\n・リンセツ：ゆいまる\n・ソユン：大和丸\n・乗り手：トウカ\n・乗り手：けんぴ\n・乗り手：ラーネイレ\n\n■みえっぴ（22:00〜）\n・フレンダー：べりー（〜24時）\n・フレンダー：しろごま\n・リンセツ：Ganesha\n・ソユン：utaka\n・乗り手：TamO\n・乗り手：こたんちゃん\n・乗り手：まさくん\n\n【集結1】ジェロ／レイナ／グレッグ 比率4:2:4\n■shin4BBB\n・フレンダー：やんや\n・フレンダー：夜舞ちゃん\n・リンセツ：Totuka\n・ボーガン：number\n・乗り手：カネキ\n・乗り手：やまやま\n・乗り手：OTO\n\n■zabton\n・フレンダー：かーく\n・フレンダー：塩昆布\n・リンセツ：しらたま\n・ソユン：キャミ\n・乗り手：あきらくん（あきらさんが集結主に回るため要差し替え）\n・乗り手：れもぽぉん\n・乗り手：koojii@\n\n■モフフちゃん\n・リンセツ：Zebra God\n・ボーガン：きょん\n・ソユン：AKI\n・パトリック：いちち\n・乗り手：はるやま\n・乗り手：チンチラのりゅうは\n・乗り手：PAN\n\n■もちもち\n・リンセツ：雷帝2026\n・リンセツ：Rei pon Q_Q\n・ソユン：ともちゃん\n・パトリック：コバ君\n・乗り手：ツナマヨ\n・乗り手：まるろー\n・乗り手：ＲＲＲ\n\n【集結主2】ジェロ／レイナ／グレッグ 比率4:2:4\n■Kgonちゃん\n・リンセツ：シティーハンター\n・ソユン：りょうへい\n・ソユン：しゃけ\n・パトリック：カノン\n・乗り手：HYPONEX\n・乗り手：キリン特茶\n・乗り手：我が名はEclair\n\n■よしぽん\n・フレンダー：おぜる\n・フレンダー：moku\n・リンセツ：タンバティタニス\n・ソユン：1620\n・乗り手：MARK\n・乗り手：ゆーき237 lgo\n・乗り手：Beast\n\n■あきらさん ⚠\n・ソユン：そうすけ\n・ソユン：みぃママ\n・パトリック：タジロー\n・乗り手：PEP\n・乗り手：ゆのみち\n・乗り手：katuo16112812\n・乗り手：ラパン\n\n■とんちゃん（21:15〜）\n・パトリック：JCloud\n・乗り手：おちぇん\n・乗り手：明日か人\n・乗り手：ちろちん\n・乗り手：ショッパー\n・乗り手：ちくわ\n・乗り手：ごろ姫";
-document.getElementById('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(T);document.getElementById('ok').textContent='コピーしました'}catch(e){document.getElementById('ok').textContent='コピーできませんでした'}});
-</script></body></html>
+
+<div class="top"><h1>4297 SVS戦 作戦カード</h1><p>2026年11月7日（土）</p></div>
+<nav><a href="#c1">①全体ルール</a><a href="#c2">②21:00〜</a><a href="#c3">③22:00〜</a><a href="#c4">④強い3人</a><a href="#c5">⑤集結主1</a><a href="#c6">⑥集結主2</a><a href="#c7">⑦駐屯・控え</a></nav>
+
+<!-- ① -->
+<section class="sheet" id="c1">
+<div class="hd"><small>SvS 作戦 ①</small><h2>全体ルール</h2></div>
+<div class="box"><span class="lb">狙う相手</span>
+<table>
+<tr><td class="k">強い相手2人</td><td>本座ice정가동（約1,615）・Daoyi（約1,610）<br><b>どちらから当ててもOK</b></td></tr>
+<tr><td class="k">3番手</td><td>約1,400。21時台は撃たずに耐える</td></tr>
+</table><div class="note">相手の兵数は約160万の想定</div></div>
+
+<div class="box"><div class="lbrow"><span class="lb">強い3人の集結</span><span class="t">KINAちゃん・ぽてちゃん・みえっぴ</span></div>
+<table>
+<tr><td class="k">英雄</td><td class="big">ローガン／レイナ／グレッグ</td></tr>
+<tr><td class="k">比率</td><td class="big">盾50：槍20：弓30</td></tr>
+<tr><td class="k">乗り手</td><td><div class="chips"><span class="c ri">リンセツ×1</span><span class="c fr">フレンダー×2</span><span class="c so">ソユン×1</span></div></td></tr>
+</table></div>
+
+<div class="box"><span class="lb">その他の集結</span>
+<table>
+<tr><td class="k">英雄</td><td class="big">ジェロ／レイナ／グレッグ</td></tr>
+<tr><td class="k"></td><td>レイナの専用装備が育っていない人は ミア</td></tr>
+<tr><td class="k">比率</td><td class="big">盾40：槍20：弓40</td></tr>
+<tr><td class="k">乗り手</td><td><div class="chips"><span class="c pa">パトリック（1人まで）</span><span class="c fr">フレンダー（2人まで）</span><span class="c ri">リンセツ</span><span class="c bo">ボーガン</span><span class="c so">ソユン</span></div></td></tr>
+</table></div>
+
+<div class="box"><span class="lb">入れ替え後の駐屯</span>
+<table>
+<tr><td class="k">英雄</td><td class="big">ローガン／フレンダー／リオン</td></tr>
+<tr><td class="k">比率</td><td class="big">盾50：槍5：弓45</td></tr>
+<tr><td class="k">乗り手</td><td><div class="chips"><span class="c je">ジェシー×1</span><span class="c so">ソユン×2</span><span class="c pa">パトリック×1</span></div></td></tr>
+</table></div>
+
+<div class="box"><span class="lb">共通ルール</span>
+<ul class="d">
+<li>相手の着弾後<b>20秒以内</b>に当てる</li>
+<li>集結は<b>同着でずれないように</b>（待ち時間をそろえ、着弾時刻から逆算して出す）</li>
+<li>乗る順番：集結を出して<b>2分後からスキル担当4人</b>が乗る → <b>その後に残りの乗り手</b>が乗る</li>
+</ul></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ② -->
+<section class="sheet" id="c2">
+<div class="hd"><small>SvS 作戦 ②</small><h2>21:00〜 の動き</h2></div>
+<div class="box"><span class="lb">強い相手（先）</span>
+<div class="chips"><span class="p hl">① KINAちゃん</span><span class="p">② shin4BBB</span><span class="p">③ もちもち</span></div>
+<div class="est g">全体の削る想定 約148万</div>
+<ul class="d">
+<li>ペットバフは<b>21:05〜</b></li>
+<li>KINAちゃんは<b>箱だけ</b>付けておく</li>
+<li><b>僅差</b>ならペットバフを付けて抜く</li>
+<li><b>無理そう</b>ならペットバフは温存（みえっぴ合流後に使う）</li>
+</ul></div>
+
+<div class="box"><span class="lb">強い相手（もう1人）</span>
+<div style="font-size:14px;margin-bottom:6px">ペットバフなしで当てる</div>
+<div class="chips"><span class="p hl">① ぽてちゃん</span><span class="p">② zabton</span><span class="p">③ モフフちゃん</span><span class="p">④ よしぽん</span><span class="p">⑤ 熊ごろう</span><span class="p">⑥ Kgonちゃん</span><span class="p">⑦ とんちゃん</span></div>
+<div class="est o">全体の削る想定 約90万</div>
+<div class="note">とんちゃんは21:15〜</div></div>
+
+<div class="box"><div class="lbrow"><span class="lb">3番手</span><span class="t">撃たない</span></div>
+<div style="font-size:14px">抜いたあとに残った集結で受けて耐える</div></div>
+
+<div class="box warn"><span class="lb">みえっぴが来るまで（〜22:00）</span>
+<ul class="d"><li>GaL・RAVの<b>無理な入れ替えはしない</b></li><li>移動しながら、<b>相手に駐屯時間を取らせない</b>ことを優先</li></ul></div>
+
+<div class="box"><span class="lb">抜いたあと</span>
+<ol class="n">
+<li>残った強い集結が<b>入れ替えずにそのまま</b>3番手以下の集結を受けて耐える</li>
+<li>耐えきったら <b>ローガン／フレンダー／リオン（50：5：45）</b>に入れ替える</li>
+<li>強い相手2人に抜かれたら、<b>みえっぴが来るまでリードされるのは割り切る</b>。撃ち返せるときだけ同着で撃ち返す</li>
+</ol></div>
+
+<div class="box"><span class="lb">駐屯の守り方</span>
+<ul class="d">
+<li>駐屯は<b>単騎で抜かれないように、常に補充し続ける</b></li>
+<li>耐えられそうなときは <b>KINAちゃん or みえっぴ</b>で固める</li>
+<li>相手が<b>防衛英雄で集結</b>をかけてきたら、抜けない可能性あり</li>
+</ul></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ③ -->
+<section class="sheet" id="c3">
+<div class="hd"><small>SvS 作戦 ③</small><h2>22:00〜 みえっぴ合流</h2></div>
+<div class="box"><span class="lb">強い相手（先）</span>
+<div class="chips"><span class="p hl">① KINAちゃん</span><span class="p hl">② ぽてちゃん</span></div>
+<div class="est g">全体の削る想定 約182万</div></div>
+
+<div class="box"><div class="lbrow"><span class="lb">強い相手（もう1人）</span><span class="t">1発目は満タン想定（160万）</span></div>
+<div class="chips"><span class="p hl">① みえっぴ</span><span class="p">② shin4BBB</span><span class="p">③ zabton</span><span class="p">④ もちもち</span><span class="p">⑤ よしぽん</span><span class="p">⑥ 熊ごろう</span><span class="p">⑦ Kgonちゃん</span></div>
+<div class="est g">全体の削る想定 約170万</div></div>
+
+<div class="box"><span class="lb">3番手</span>
+<div class="chips"><span class="p">① モフフちゃん</span><span class="p">② とんちゃん</span></div>
+<div class="note">削り切れなければ、強い相手を割ったあと手の空いた集結で撃つ</div></div>
+
+<div class="box"><span class="lb">メモ</span>
+<ul class="d"><li>強い相手2人は<b>どちらから当ててもOK</b></li><li>みえっぴの乗り手は22時から（カード④）</li><li>駐屯の守り方はカード②と同じ</li></ul></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ④ -->
+<section class="sheet" id="c4">
+<div class="hd"><small>SvS 作戦 ④</small><h2>乗り手：強い3人</h2></div>
+<div class="box"><div class="grp"><h3>KINAちゃん</h3><span>ローガン／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>Kさん</div>
+<div class="mem"><span class="c fr">フレンダー</span>ヤムチャしたhrさん</div>
+<div class="mem"><span class="c ri">リンセツ</span>ありがとう！センテンススプリング</div>
+<div class="mem"><span class="c so">ソユン</span>ジョセフ</div>
+<div class="mem"><span class="c no">乗り手</span>そこに愛はあるんか</div>
+<div class="mem"><span class="c no">乗り手</span>666「Rokko」</div>
+<div class="mem"><span class="c no">乗り手</span>みち。</div></div>
+
+<div class="box"><div class="grp"><h3>ぽてちゃん</h3><span>ローガン／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>はなちゃん</div>
+<div class="mem"><span class="c fr">フレンダー</span>解体屋</div>
+<div class="mem"><span class="c ri">リンセツ</span>ゆいまる</div>
+<div class="mem"><span class="c so">ソユン</span>大和丸</div>
+<div class="mem"><span class="c no">乗り手</span>トウカ</div>
+<div class="mem"><span class="c no">乗り手</span>けんぴ</div>
+<div class="mem"><span class="c no">乗り手</span>ラーネイレ</div></div>
+
+<div class="box"><div class="grp"><h3>みえっぴ</h3><span>22:00〜　ローガン／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>べりー（〜24時）</div>
+<div class="mem"><span class="c fr">フレンダー</span>しろごま</div>
+<div class="mem"><span class="c ri">リンセツ</span>Ganesha</div>
+<div class="mem"><span class="c so">ソユン</span>utaka</div>
+<div class="mem"><span class="c no">乗り手</span>TamO</div>
+<div class="mem"><span class="c no">乗り手</span>こたんちゃん</div>
+<div class="mem"><span class="c no">乗り手</span>まさくん</div></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ⑤ -->
+<section class="sheet" id="c5">
+<div class="hd"><small>SvS 作戦 ⑤</small><h2>乗り手：集結主 1</h2></div>
+<div class="box"><div class="grp"><h3>shin4BBB</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>やんや</div>
+<div class="mem"><span class="c fr">フレンダー</span>夜舞ちゃん</div>
+<div class="mem"><span class="c ri">リンセツ</span>Totuka</div>
+<div class="mem"><span class="c bo">ボーガン</span>number</div>
+<div class="mem"><span class="c no">乗り手</span>カネキ</div>
+<div class="mem"><span class="c no">乗り手</span>やまやま</div>
+<div class="mem"><span class="c no">乗り手</span>OTO</div></div>
+
+<div class="box"><div class="grp"><h3>zabton</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>かーく</div>
+<div class="mem"><span class="c fr">フレンダー</span>塩昆布@WSS</div>
+<div class="mem"><span class="c ri">リンセツ</span>しらたま</div>
+<div class="mem"><span class="c so">ソユン</span>キャミ</div>
+<div class="mem"><span class="c no">乗り手</span>あきらくん</div>
+<div class="mem"><span class="c no">乗り手</span>れもぽぉん@WSS</div>
+<div class="mem"><span class="c no">乗り手</span>koojii@</div></div>
+
+<div class="box"><div class="grp"><h3>モフフちゃん</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c ri">リンセツ</span>Zebra God</div>
+<div class="mem"><span class="c bo">ボーガン</span>きょん</div>
+<div class="mem"><span class="c so">ソユン</span>AKI</div>
+<div class="mem"><span class="c pa">パトリック</span>いちち</div>
+<div class="mem"><span class="c no">乗り手</span>はるやま</div>
+<div class="mem"><span class="c no">乗り手</span>チンチラのりゅうは</div>
+<div class="mem"><span class="c no">乗り手</span>PAN</div></div>
+
+<div class="box"><div class="grp"><h3>もちもち</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c ri">リンセツ</span>雷帝2026</div>
+<div class="mem"><span class="c ri">リンセツ</span>Rei pon Q_Q</div>
+<div class="mem"><span class="c so">ソユン</span>ともちゃん</div>
+<div class="mem"><span class="c pa">パトリック</span>コバ君</div>
+<div class="mem"><span class="c no">乗り手</span>ツナマヨ</div>
+<div class="mem"><span class="c no">乗り手</span>まるろー</div>
+<div class="mem"><span class="c no">乗り手</span>ＲＲＲ</div></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ⑥ -->
+<section class="sheet" id="c6">
+<div class="hd"><small>SvS 作戦 ⑥</small><h2>乗り手：集結主 2</h2></div>
+<div class="box"><div class="grp"><h3>Kgonちゃん</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c ri">リンセツ</span>シティーハンター</div>
+<div class="mem"><span class="c so">ソユン</span>りょうへい</div>
+<div class="mem"><span class="c so">ソユン</span>しゃけ</div>
+<div class="mem"><span class="c pa">パトリック</span>カノン</div>
+<div class="mem"><span class="c no">乗り手</span>HYPONEX</div>
+<div class="mem"><span class="c no">乗り手</span>キリン特茶</div>
+<div class="mem"><span class="c no">乗り手</span>我が名はEclair</div></div>
+
+<div class="box"><div class="grp"><h3>よしぽん</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c fr">フレンダー</span>おぜる</div>
+<div class="mem"><span class="c fr">フレンダー</span>moku</div>
+<div class="mem"><span class="c ri">リンセツ</span>タンバティタニス</div>
+<div class="mem"><span class="c so">ソユン</span>1620</div>
+<div class="mem"><span class="c no">乗り手</span>MARK</div>
+<div class="mem"><span class="c no">乗り手</span>ゆーき237 lgo</div>
+<div class="mem"><span class="c no">乗り手</span>Beast</div></div>
+
+<div class="box"><div class="grp"><h3>熊ごろう</h3><span>ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c so">ソユン</span>そうすけ</div>
+<div class="mem"><span class="c so">ソユン</span>みぃママ</div>
+<div class="mem"><span class="c pa">パトリック</span>タジロー</div>
+<div class="mem"><span class="c no">乗り手</span>PEP</div>
+<div class="mem"><span class="c no">乗り手</span>ゆのみち</div>
+<div class="mem"><span class="c no">乗り手</span>katuo16112812</div>
+<div class="mem"><span class="c no">乗り手</span>ラパン</div></div>
+
+<div class="box"><div class="grp"><h3>とんちゃん</h3><span>21:15〜　ジェロ／レイナ／グレッグ</span></div>
+<div class="mem"><span class="c pa">パトリック</span>JCloud</div>
+<div class="mem"><span class="c no">乗り手</span>おちぇん</div>
+<div class="mem"><span class="c no">乗り手</span>明日か人</div>
+<div class="mem"><span class="c no">乗り手</span>ちろちん</div>
+<div class="mem"><span class="c no">乗り手</span>ショッパー</div>
+<div class="mem"><span class="c no">乗り手</span>ちくわ</div>
+<div class="mem"><span class="c no">乗り手</span>ごろ姫</div></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<!-- ⑦ -->
+<section class="sheet" id="c7">
+<div class="hd"><small>SvS 作戦 ⑦</small><h2>駐屯・控え</h2></div>
+<div class="box"><div class="grp"><h3>mitunorin 駐屯</h3><span>21:00〜</span></div>
+<div class="mem"><span class="c je">ジェシー</span>シロウ</div>
+<div class="mem"><span class="c so">ソユン</span>くまきち</div>
+<div class="mem"><span class="c pa">パトリック</span>シバコ（グレッグのときはセルゲイ）</div>
+<div class="mem"><span class="c so">ソユン</span>めめち</div></div>
+
+<div class="box"><span class="lb">駐屯ルール</span>
+<ul class="d"><li>ぽてちゃんの集結が残った場所に<b>援軍で入る</b></li><li><b>盾と弓を中心</b>に送る</li><li>英雄：<b>ローガン／フレンダー／グレッグ or リオン</b>（50：5：45）</li></ul></div>
+
+<div class="box"><span class="lb">乗り手（控えも全員ここ）</span>
+<div style="font-size:14px">yu1Fury・BLACKPANDA・黒猫パンチ・ミント・halohalo・Fivemen・Shou3・カスタード・はんじゅくタマゴ・Dios・白猫・Himemi（23:30〜）</div></div>
+
+<div class="box"><span class="lb">足りないとき駐屯から移す</span>
+<ol class="n">
+<li>みえっぴのフレンダー担当 → <b>白猫</b>、23:30以降は<b>Himemi</b>（24時にべりーが抜けたあとも）</li>
+<li>みえっぴのスキルなし乗り手 → <b>Dios・Shou3・カスタード</b></li>
+<li>その他の集結 → <b>はんじゅくタマゴ</b>から順に</li>
+</ol></div>
+
+<div class="box pink"><span class="lb">ひとこと</span>
+<div style="font-size:14.5px">全員揃わないと厳しい相手だけに中々苦戦にはなると思うけど、勝てれば<b>ジャイアントキリング</b>なので楽しんでね！<br>あとは<b>臨機応変に</b></div></div>
+</section>
+<div class="foot">SvS 作戦カード</div>
+
+<div class="credit">製作者「FURUKANA」</div>
+</div></body></html>
