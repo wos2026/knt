@@ -8,34 +8,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b1726; --bg2:#10223a; --card:#13294a; --card2:#183258;
-    --line:#2a4a75; --text:#e8f1fb; --sub:#9db6d3; --ice:#7fd3ff; --ice2:#bfe9ff;
-    --main:#ff9a3c; --mainbg:rgba(255,154,60,.16);
-    --ghost:#5b8def; --ghostbg:rgba(91,141,239,.18);
-    --red:#ff5d6c; --redbg:rgba(255,93,108,.16);
+    --bg:#f4f7fb; --bg2:#ffffff; --card:#ffffff; --card2:#f6f9fd;
+    --line:#d5e0ed; --text:#1c2b3e; --sub:#5d6f87; --ice:#1f78d1; --ice2:#123f73;
+    --main:#f28a1e; --mainbg:rgba(242,138,30,.12);
+    --ghost:#3f7be0; --ghostbg:rgba(63,123,224,.10);
+    --red:#e03445; --redbg:rgba(224,52,69,.07);
     --grey:#8a96a8; --greybg:rgba(138,150,168,.16);
-    --green:#5fd68a; --yellow:#ffe14d;
+    --green:#1f9d55; --yellow:#b57d00;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP",system-ui,sans-serif;line-height:1.65;font-size:15px}
-  body{background:radial-gradient(1200px 600px at 80% -10%,#1d3f6b 0%,transparent 60%),radial-gradient(900px 500px at -10% 20%,#14345a 0%,transparent 55%),var(--bg)}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#e3f0fd 0%,transparent 60%),radial-gradient(900px 500px at -10% 20%,#eef5fd 0%,transparent 55%),var(--bg)}
   a{color:var(--ice)}
   .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 60px}
-  header.hero{padding:28px 22px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#17365f,#0f2340);position:relative;overflow:hidden}
+  header.hero{padding:28px 22px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#ffffff,#e8f2fd);position:relative;overflow:hidden}
   header.hero::after{content:"❄";position:absolute;right:18px;top:-10px;font-size:120px;opacity:.07}
-  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--bg);background:var(--ice);padding:2px 10px;border-radius:99px}
+  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--ice);padding:2px 10px;border-radius:99px}
   h1{margin:10px 0 6px;font-size:clamp(22px,4.6vw,34px);font-weight:900;letter-spacing:.02em}
   .hero .meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--sub);font-size:14px}
   .hero .meta b{color:var(--ice2)}
   .vs{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .vs .srv{padding:6px 14px;border-radius:10px;font-weight:900;font-size:18px}
-  .vs .us{background:var(--ice);color:var(--bg)}
-  .vs .them{background:#2b3e5c;color:#cfe0f3}
+  .vs .us{background:var(--ice);color:#fff}
+  .vs .them{background:#e3e8ef;color:#4a5a70}
   nav.toc{margin:16px 0 6px;display:flex;flex-wrap:wrap;gap:6px}
   nav.toc a{font-size:13px;text-decoration:none;color:var(--ice2);border:1px solid var(--line);background:var(--bg2);padding:4px 10px;border-radius:99px}
-  section{margin-top:22px;padding:20px;border:1px solid var(--line);border-radius:16px;background:rgba(19,41,74,.72)}
+  section{margin-top:22px;padding:20px;border:1px solid var(--line);border-radius:16px;background:#ffffff;box-shadow:0 2px 10px rgba(30,60,100,.05)}
   h2{margin:0 0 14px;font-size:19px;display:flex;align-items:center;gap:10px}
-  h2 .no{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--ice);color:var(--bg);font-size:14px;font-weight:900}
+  h2 .no{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--ice);color:#fff;font-size:14px;font-weight:900}
   h3{font-size:15px;margin:16px 0 8px;color:var(--ice2)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -43,33 +43,33 @@
   .box{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px}
   .box .lbl{font-size:12px;color:var(--sub);font-weight:700;letter-spacing:.06em}
   .box .big{font-size:17px;font-weight:700;margin-top:2px}
-  .win{border-color:var(--ice);box-shadow:0 0 0 1px rgba(127,211,255,.25) inset}
+  .win{border-color:var(--ice);box-shadow:0 0 0 1px rgba(31,120,209,.2) inset}
   ul{margin:6px 0;padding-left:1.2em} li{margin:3px 0}
   .note{font-size:13px;color:var(--sub)}
-  .warn{background:var(--redbg);border:1px solid rgba(255,93,108,.5);border-radius:12px;padding:12px 14px}
-  .warn b{color:#ffb3bb}
+  .warn{background:var(--redbg);border:1px solid rgba(224,52,69,.4);border-radius:12px;padding:12px 14px}
+  .warn b{color:#c8202f}
   .pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;margin-right:4px;vertical-align:1px}
   .p-main{background:var(--main);color:#2a1300}
   .p-ghost{background:var(--ghost);color:#fff}
   .p-red{background:var(--red);color:#fff}
   .p-grey{background:var(--grey);color:#fff}
-  .p-ice{background:var(--ice);color:var(--bg)}
+  .p-ice{background:var(--ice);color:#fff}
   table{border-collapse:collapse;width:100%;font-size:13.5px}
   th,td{border:1px solid var(--line);padding:6px 8px;text-align:center;white-space:nowrap}
-  th{background:#1b3a66;color:var(--ice2);font-weight:700}
+  th{background:#e6eef8;color:var(--ice2);font-weight:700}
   td.l{text-align:left;white-space:normal;min-width:120px}
   .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
-  .hl{background:rgba(255,225,77,.22);color:var(--yellow);font-weight:700}
+  .hl{background:#fff3b0;color:#7a5600;font-weight:700}
   /* seat map */
   .seat td,.seat th{padding:6px 7px}
-  .seat td.pos{font-weight:900;color:var(--ice2);background:#16325a}
+  .seat td.pos{font-weight:900;color:var(--ice2);background:#eaf2fb}
   .seat td.sec{color:var(--sub);font-weight:700}
-  .seat td.lead-main{background:var(--mainbg);color:#ffd0a3;font-weight:700;border-left:3px solid var(--main)}
-  .seat td.lead-ghost{background:var(--ghostbg);color:#cfe0ff;font-weight:700;border-left:3px solid var(--ghost)}
+  .seat td.lead-main{background:var(--mainbg);color:#b35c00;font-weight:700;border-left:3px solid var(--main)}
+  .seat td.lead-ghost{background:var(--ghostbg);color:#1d4fb0;font-weight:700;border-left:3px solid var(--ghost)}
   .seat td.lead-none{color:var(--sub)}
   .seat td.red-zone{background:rgba(255,93,108,.06)}
   .seat td.grey-zone{background:rgba(138,150,168,.07)}
-  .seat .late{color:#7aa2ff;font-size:12px}
+  .seat .late{color:#6a8fd8;font-size:12px}
   .seat .g{color:var(--green);font-weight:700}
   .seat .r{color:var(--red);font-size:12px;font-weight:700}
   .seat tr.edge td{opacity:.8}
@@ -78,12 +78,12 @@
   .filter{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
   .filter input{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 12px;font-size:15px;min-width:220px;font-family:inherit}
   .filter .res{font-size:13px;color:var(--ice2)}
-  td.hit{outline:2px solid var(--yellow);outline-offset:-2px;background:rgba(255,225,77,.18)!important;color:#fff!important}
+  td.hit{outline:2px solid #e0a800;outline-offset:-2px;background:#fff3b0!important;color:#000!important}
   /* timeline */
   .tl{position:relative;margin-left:8px;padding-left:22px;border-left:2px solid var(--line)}
   .tl .ev{position:relative;margin:0 0 16px}
-  .tl .ev::before{content:"";position:absolute;left:-30px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--ice);box-shadow:0 0 0 4px rgba(127,211,255,.18)}
-  .tl .ev.key::before{background:var(--yellow);box-shadow:0 0 0 4px rgba(255,225,77,.2)}
+  .tl .ev::before{content:"";position:absolute;left:-30px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--ice);box-shadow:0 0 0 4px rgba(31,120,209,.15)}
+  .tl .ev.key::before{background:var(--yellow);box-shadow:0 0 0 4px rgba(224,168,0,.2)}
   .tl .t{font-weight:900;color:var(--ice);font-size:16px;margin-right:8px}
   .tl .ev.key .t{color:var(--yellow)}
   .tl .ttl{font-weight:700}
@@ -96,12 +96,12 @@
   .step{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
   .step.m{border-left:4px solid var(--main)}
   .step.gst{border-left:4px solid var(--ghost)}
-  .step.redt{color:#ffc2c8}
+  .step.redt{color:#b8202e}
   .step b.k{color:var(--ice2)}
   .arrow{display:grid;place-items:center;color:var(--sub);font-size:12px;text-align:center}
   .down{text-align:center;color:var(--sub);font-size:13px;margin:-4px 0}
   @media(max-width:760px){.flow{grid-template-columns:1fr}.arrow{display:none}}
-  .callout{background:linear-gradient(90deg,rgba(255,225,77,.22),rgba(255,225,77,.08));border:1px solid rgba(255,225,77,.6);border-radius:14px;padding:16px}
+  .callout{background:linear-gradient(90deg,#fff6c9,#fffbe8);border:1px solid #f0d36a;border-radius:14px;padding:16px}
   .callout h3{margin-top:0;color:var(--yellow)}
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chips span{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:13px}
@@ -109,7 +109,7 @@
   .ally:last-child{border-bottom:0}
   .ally .an{font-weight:900;color:var(--ice);font-size:14px}
   svg text{font-family:"Noto Sans JP",sans-serif}
-  .mapwrap{background:#fff;border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .mapwrap{background:#fff;border:1px solid var(--line);border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .mapwrap svg{display:block;width:100%;min-width:720px;height:auto}
   footer{margin-top:28px;text-align:center;color:var(--sub);font-size:12px}
 </style>
@@ -186,7 +186,7 @@
   <h2><span class="no">3</span>太陽城 配置図</h2>
   <div class="mapwrap"><svg viewBox="30 40 1120 830" id="sunmap" role="img" aria-label="太陽城の周りの位置番号と集結主の配置"></svg></div>
   <div class="legend" style="margin-top:10px">
-    <span style="--c:rgba(127,211,255,.7)">#4148 陣地（東側）</span>
+    <span style="--c:rgba(70,170,255,.45)">#4148 陣地（東側）</span>
     <span style="--c:var(--main)">メイン(KNT)集結主</span>
     <span style="--c:var(--ghost)">ゴースト(SEA)集結主</span>
     <span style="--c:#8a96a8">保留・途中参加枠</span>
@@ -209,7 +209,7 @@
       <li>当日移籍者の承認：各同盟盟主・わかさんをR4にするので、適宜承認作業にご協力を</li>
       <li>ホワイトリスト付与</li></ul></div>
     <div class="ev"><span class="t">19:00</span><span class="ttl">戦闘フェーズ開始</span>
-      <ul><li>都市攻撃・集結攻撃・タイルキルあり → <b style="color:#ffb3bb">シールド必須</b></li></ul></div>
+      <ul><li>都市攻撃・集結攻撃・タイルキルあり → <b style="color:#c8202f">シールド必須</b></li></ul></div>
     <div class="ev"><span class="t">19:30</span><span class="ttl">SEAステーション取得 3件</span>
       <ul><li>きのこサブで対応予定。状況によりご協力ください</li></ul></div>
     <div class="ev"><span class="t">20:00</span><span class="ttl">王城への移転が解禁</span>
@@ -416,7 +416,7 @@ function cell(x, zone){
   return `<td class="${zone}" data-n="${esc(o.n)}">${o.g?`<span class="g">${esc(o.n)}</span>`:esc(o.n)}</td>`;
 }
 let h = `<tr><th rowspan="2">前列<br>秒数</th><th rowspan="2">位置</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>（追加）</th></tr>
-<tr><th>集結主</th><th style="background:#7a2731">フレンダー</th><th style="background:#7a2731">ジェシー</th><th style="background:#7a2731">ソユン</th><th style="background:#7a2731">パトリック</th><th style="background:#4b5566" colspan="2">指定なし（左記のいずれか）</th><th></th></tr>`;
+<tr><th>集結主</th><th style="background:#fbe0e3;color:#a3202d">フレンダー</th><th style="background:#fbe0e3;color:#a3202d">ジェシー</th><th style="background:#fbe0e3;color:#a3202d">ソユン</th><th style="background:#fbe0e3;color:#a3202d">パトリック</th><th style="background:#e9ecf1;color:#4a5566" colspan="2">指定なし（左記のいずれか）</th><th></th></tr>`;
 for (const s of seats){
   const lc = s.side==="main"?"lead-main":s.side==="ghost"?"lead-ghost":"lead-none";
   h += `<tr class="${s.edge?'edge':''}"><td class="sec">${s.sec}</td><td class="pos">${s.pos}</td>`;
