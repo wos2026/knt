@@ -5,9 +5,9 @@
  * ========================================================= */
 var SURVEY = {
   // Apps Script を「ウェブアプリ」でデプロイした URL（https://script.google.com/macros/s/…/exec）
-  API_URL: '',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyYCPzv5DC1KHd_CTsFs2xQKGdzpvwROCp-1yC_duJz_S9HgJ5m_IVDQGv-5t1zUBLt7A/exec',
 
-  TITLE: '11月21日 4148王国 王城戦 英雄育成アンケート（準備中）',
+  TITLE: '11月21日 4148王国 王城戦 英雄育成アンケート',
   // 空欄なら表示しません。例：'11月14日 14:00'
   DEADLINE: '11月18日（水）24:00まで',
   // この日時を過ぎると回答ページが受付終了になります（日本時間）。空欄なら止めません
