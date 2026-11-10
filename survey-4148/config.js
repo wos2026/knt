@@ -106,7 +106,6 @@ var SURVEY = {
     { name: 'ジャスミン', type: '槍', rarity: 'SSR', icon: '../survey/heroes/jasmine.jpg' },
     { name: 'アロンゾ', type: '弓', rarity: 'SSR', icon: '../survey/heroes/alonso.jpg' },
     { name: 'ジンマン', type: '弓', rarity: 'SSR', icon: '../survey/heroes/zinman.jpg' },
-    { name: 'セルゲイ', type: '盾', rarity: 'SR', icon: '../survey/heroes/sergey.jpg' },
     { name: 'ジェシー', type: '槍', rarity: 'SR', icon: '../survey/heroes/jessie.jpg' },
     { name: 'パトリック', type: '槍', rarity: 'SR', icon: '../survey/heroes/patrick.jpg' },
     { name: 'リンセツ', type: '槍', rarity: 'SR', icon: '../survey/heroes/lingxue.jpg' },
