@@ -98,7 +98,7 @@ var SURVEY = {
 
   FURNACE: ['FC5', 'FC4', 'FC3', 'FC2', 'FC1'],
   // 盾兵士・槍兵士・弓兵士のプルダウン
-  TROOP: ['FC5', 'FC4', 'FC3', 'FC2', 'FC1', '該当なし'],
+  TROOP: ['T11', 'FC5', 'FC4', 'FC3', 'FC2', 'FC1', '該当なし'],
 
   // type：盾 / 槍 / 弓   rarity：見出し（この順に表示）   icon：顔アイコン画像
   HEROES: [
