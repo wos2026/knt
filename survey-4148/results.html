@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>4148王国 王城戦アンケート 集計</title>
-<meta property="og:title" content="4148王国 王城戦アンケート 集計">
+<title>4148王国 兵器工場アンケート 集計</title>
+<meta property="og:title" content="4148王国 兵器工場アンケート 集計">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="../survey/style.css">
 <style>
@@ -169,12 +169,12 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     var latest=rows.map(function(r){return r['回答日時']}).sort().pop()||'';
     $('meta').textContent=(fally!=='全同盟'?fally+' ／ ':'')+(C.DEADLINE?'締切：'+C.DEADLINE+' ／ ':'')+'回答 '+rows.length+'人'+(latest?' ／ 最新 '+latest:'');
     var tot=0,cnt=0,l5=0; rows.forEach(function(r){var p=pw(r['総力']);if(p){tot+=p;cnt++} l5+=lv5(r)});
-    var dash=rows.filter(function(r){return r['参加可能時間']===C.JOIN[0]}).length;
+    var NOJOIN=C.JOIN[C.JOIN.length-1]; var dash=rows.filter(function(r){return r['参加可能時間']&&r['参加可能時間']!==NOJOIN}).length;
     $('kpi').innerHTML=
       '<div><b>'+rows.length+(C.MEMBERS&&fally==='全同盟'?' / '+C.MEMBERS.length:'')+'</b><span>回答人数</span></div>'+
       '<div><b>'+(cnt?(tot/cnt/1e6).toFixed(1)+'M':'—')+'</b><span>平均総力</span></div>'+
       '<div><b>'+(rows.length?(l5/rows.length).toFixed(1):'—')+'</b><span>1人あたり スキルLv5の英雄数</span></div>'+
-      '<div><b>'+dash+' / '+rows.length+'</b><span>21:00スタートダッシュ可</span></div>';
+      '<div><b>'+dash+' / '+rows.length+'</b><span>参加予定（'+C.JOIN.filter(function(j){return j!==NOJOIN}).map(function(j){return j.replace('から参加','')+' '+rows.filter(function(r){return r['参加可能時間']===j}).length}).join('・')+'）</span></div>';
     var ft=$('ftype'); ft.innerHTML='';
     ['全部','盾','槍','弓'].forEach(function(t){var b=document.createElement('button');b.textContent=t;b.setAttribute('aria-pressed',t===ftype);b.onclick=function(){ftype=t;show()};ft.appendChild(b)});
     summary(); table(); memos(); missing();
@@ -200,7 +200,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   }
   function table(){
     var hs=heroesShown();
-    var cols=[{k:'所属同盟',l:'同盟'},{k:'参加',l:'参加'},{k:'総力',l:'総力'},{k:'大溶鉱炉',l:'溶鉱炉'},{k:'lv5',l:'Lv5数'}].concat(hs.map(function(h){return {k:'h:'+h.name,l:h.name,h:h}}));
+    var cols=[{k:'所属同盟',l:'同盟'},{k:'参加',l:'兵器工場'},{k:'総力',l:'総力'},{k:'大溶鉱炉',l:'溶鉱炉'},{k:'lv5',l:'Lv5数'}].concat(hs.map(function(h){return {k:'h:'+h.name,l:h.name,h:h}}));
     var val=function(r,k){
       if(k==='総力') return pw(r['総力']); if(k==='lv5') return lv5(r); if(k==='所属同盟') return r['所属同盟']||''; if(k==='参加') return C.JOIN.length-C.JOIN.indexOf(r['参加可能時間']); if(k==='name') return r['プレイヤー名'];
       if(k==='大溶鉱炉') return C.FURNACE.length-C.FURNACE.indexOf(r['大溶鉱炉']);
@@ -220,7 +220,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     [].forEach.call($('tbl').querySelectorAll('thead th'),function(t){t.onclick=function(){var k=t.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=k==='name'?1:-1} table()}});
   }
   function tag(a){ var m=String(a||'').match(/^\[([^\]]+)\]/); return m?m[1]:(a||'—'); }
-  function joinTag(j){ if(!j) return '—'; return j===C.JOIN[0] ? '<span class="jt on" title="'+esc(j)+'">21時〜</span>' : '<span class="jt" title="'+esc(j)+'">'+esc(j.length>6?j.slice(0,6)+'…':j)+'</span>'; }
+  function joinTag(j){ if(!j) return '—'; var no=j===C.JOIN[C.JOIN.length-1]; var t=j.replace('から参加',''); return '<span class="jt'+(no?'':' on')+'" title="'+esc(j)+'">'+esc(t.length>7?t.slice(0,7)+'…':t)+'</span>'; }
   function nk(x){ return String(x||'').normalize('NFKC').replace(/\s+/g,'').toLowerCase(); }
   function missing(){
     var box=$('missBox'); if(!C.MEMBERS||!C.MEMBERS.length){ box.hidden=true; return; }
@@ -253,7 +253,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     return names.map(function(n,i){var hs={}; H.forEach(function(h){
       if(rnd()<0.12){hs[h.name]={skill:0};return}
       var s=1+Math.floor(rnd()*5), st=Math.min(5,Math.floor(rnd()*6)); hs[h.name]={skill:s,star:st,step:st<5?Math.floor(rnd()*6):0}});
-      return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3],'参加可能時間':C.JOIN[i%4?0:1],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
+      return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3],'参加可能時間':C.JOIN[i%C.JOIN.length],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
   }
   load();
   setInterval(function(){ if(isClosed() && $('closedBox').hidden) closeView(); }, 30000);
