@@ -51,6 +51,9 @@ td.h{min-width:3.6em;padding:3px}
 :root[data-theme="dark"] .c3,:root[data-theme="dark"] .c4,:root[data-theme="dark"] .c5{color:#0a1626}
 .jt{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;background:var(--chip);color:var(--muted)}
 .jt.on{background:var(--ok-bg);color:var(--ok)}
+.miss{display:flex;flex-wrap:wrap;gap:6px}
+.miss span{background:var(--knt-bg);color:var(--knt);font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.miss em{font-style:normal;color:var(--ok);font-weight:700;font-size:13px}
 .memo{font-size:12px;display:flex;flex-direction:column;gap:6px}
 .memo div{background:var(--bg);border-radius:8px;padding:6px 9px}
 .memo b{margin-right:6px}
@@ -98,6 +101,11 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     <section style="margin-top:20px">
       <h2>メンバー一覧 <small>列名をタップで並べ替え ・ 上段＝スキルLv、下段＝★-段</small></h2>
       <div class="scroll"><table id="tbl"></table></div>
+    </section>
+
+    <section class="card" style="margin-top:20px" id="missBox" hidden>
+      <h2>未回答 <small id="missN"></small></h2>
+      <div class="miss" id="missList"></div>
     </section>
 
     <section class="card" style="margin-top:20px" id="memoBox" hidden>
@@ -163,13 +171,13 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     var tot=0,cnt=0,l5=0; rows.forEach(function(r){var p=pw(r['総力']);if(p){tot+=p;cnt++} l5+=lv5(r)});
     var dash=rows.filter(function(r){return r['参加可能時間']===C.JOIN[0]}).length;
     $('kpi').innerHTML=
-      '<div><b>'+rows.length+'</b><span>回答人数</span></div>'+
+      '<div><b>'+rows.length+(C.MEMBERS&&fally==='全同盟'?' / '+C.MEMBERS.length:'')+'</b><span>回答人数</span></div>'+
       '<div><b>'+(cnt?(tot/cnt/1e6).toFixed(1)+'M':'—')+'</b><span>平均総力</span></div>'+
       '<div><b>'+(rows.length?(l5/rows.length).toFixed(1):'—')+'</b><span>1人あたり スキルLv5の英雄数</span></div>'+
       '<div><b>'+dash+' / '+rows.length+'</b><span>21:00スタートダッシュ可</span></div>';
     var ft=$('ftype'); ft.innerHTML='';
     ['全部','盾','槍','弓'].forEach(function(t){var b=document.createElement('button');b.textContent=t;b.setAttribute('aria-pressed',t===ftype);b.onclick=function(){ftype=t;show()};ft.appendChild(b)});
-    summary(); table(); memos();
+    summary(); table(); memos(); missing();
   }
 
   var SK=[{k:5,l:'Lv5',c:'var(--l5)'},{k:4,l:'Lv4',c:'var(--l4)'},{k:3,l:'Lv3',c:'var(--l3)'},{k:2,l:'Lv1-2',c:'var(--l2)'},{k:0,l:'未所持',c:'var(--line)'}];
@@ -213,6 +221,14 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   }
   function tag(a){ var m=String(a||'').match(/^\[([^\]]+)\]/); return m?m[1]:(a||'—'); }
   function joinTag(j){ if(!j) return '—'; return j===C.JOIN[0] ? '<span class="jt on" title="'+esc(j)+'">21時〜</span>' : '<span class="jt" title="'+esc(j)+'">'+esc(j.length>6?j.slice(0,6)+'…':j)+'</span>'; }
+  function nk(x){ return String(x||'').normalize('NFKC').replace(/\s+/g,'').toLowerCase(); }
+  function missing(){
+    var box=$('missBox'); if(!C.MEMBERS||!C.MEMBERS.length){ box.hidden=true; return; }
+    var got={}; all.forEach(function(r){ got[nk(r['プレイヤー名'])]=1; });
+    var m=C.MEMBERS.filter(function(n){ return !got[nk(n)]; });
+    box.hidden=false; $('missN').textContent=m.length+'人';
+    $('missList').innerHTML = m.length ? m.map(function(n){return '<span>'+esc(n)+'</span>'}).join('') : '<em>全員回答済みです</em>';
+  }
   function memos(){
     var m=rows.filter(function(r){return r['ひとこと']});
     $('memoBox').hidden=!m.length;

@@ -28,6 +28,7 @@ input[type=text]:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed=true]{color:#0a1626}}
 :root[data-theme="dark"] .seg button[aria-pressed=true]{color:#0a1626}
 .hint.warn{color:var(--knt);font-weight:700}
+#nameSel{width:100%}
 select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-width:12em}
 select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .radios{display:flex;flex-direction:column;gap:6px}
@@ -93,12 +94,13 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   <form id="form" novalidate>
     <section class="card">
       <div class="f">
-        <label class="lab" for="name">プレイヤー名<span class="req">必須</span></label>
+        <label class="lab" for="nameSel" id="nameLab">プレイヤー名<span class="req">必須</span></label>
+        <select id="nameSel" hidden><option value="">名前を選んでください</option></select>
         <input type="text" id="name" autocomplete="nickname" placeholder="ゲーム内の名前">
-        <span class="hint warn">ホワサバと同じ名前を入力して下さい</span>
+        <span class="hint warn" id="nameHint">ホワサバと同じ名前を入力して下さい</span>
         <span class="hint">同じ名前でもう一度送ると、前の回答が上書きされます。</span>
       </div>
-      <div class="f">
+      <div class="f" id="allianceF">
         <label class="lab" for="alliance">所属同盟<span class="req">必須</span></label>
         <select id="alliance"><option value="">選択してください</option></select>
       </div>
@@ -188,7 +190,24 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       el.appendChild(b);
     });
   }
+  var OTHER='（リストにない・手入力）';
+  function buildName(){
+    if(!C.MEMBERS||!C.MEMBERS.length){ $('nameLab').htmlFor='name'; return; }
+    var sel=$('nameSel'), inp=$('name'); sel.hidden=false;
+    C.MEMBERS.concat([OTHER]).forEach(function(m){ var o=document.createElement('option'); o.value=o.textContent=m; sel.appendChild(o); });
+    function sync(){
+      var manual = sel.value===OTHER;
+      inp.hidden=!manual; $('nameHint').hidden=!manual;
+      if(!manual) inp.value=sel.value;
+      else if(C.MEMBERS.indexOf(inp.value)>=0) inp.value='';
+    }
+    var cur=inp.value;
+    sel.value = !cur ? '' : (C.MEMBERS.indexOf(cur)>=0 ? cur : OTHER);
+    sync();
+    sel.onchange=function(){ sync(); save(); if(sel.value===OTHER) inp.focus(); };
+  }
   function buildTop(){
+    if(C.ALLIANCE_FIXED){ st.alliance=C.ALLIANCE_FIXED; $('allianceF').hidden=true; }
     var al=$('alliance'); al.length=1;
     C.ALLIANCES.forEach(function(a){ var o=document.createElement('option'); o.value=o.textContent=a; al.appendChild(o); });
     al.value=st.alliance||''; al.onchange=function(){ st.alliance=al.value; save(); };
@@ -275,7 +294,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     var err=$('err'); err.hidden=true;
     var miss=validate();
     if(miss.length){ err.textContent='未入力：'+miss.join('、'); err.hidden=false;
-      var first=document.querySelector('.hero.miss'); if(!$('name').value.trim()) $('name').focus(); else if(first&&miss.length===1) first.scrollIntoView({behavior:'smooth',block:'center'});
+      var first=document.querySelector('.hero.miss'); if(!$('name').value.trim()) ($('nameSel').hidden||$('nameSel').value===OTHER?$('name'):$('nameSel')).focus(); else if(first&&miss.length===1) first.scrollIntoView({behavior:'smooth',block:'center'});
       return; }
     if(isClosed()){ closeForm(); return; }
     if(!C.API_URL){ err.textContent='送信先が未設定のため送れません。管理者に連絡してください。'; err.hidden=false; return; }
@@ -304,7 +323,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   }
   $('again').onclick=function(){ if(isClosed()){ closeForm(); return; } $('done').hidden=true; $('form').hidden=false; window.scrollTo({top:0}); };
 
-  load(); buildTop(); buildHeroes(); prog();
+  load(); buildName(); buildTop(); buildHeroes(); prog();
 })();
 </script>
 </body>
