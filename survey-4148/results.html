@@ -67,6 +67,10 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   </header>
 
   <div class="demo" id="demoNote" hidden>表示確認用のサンプルデータです（実際の回答ではありません）</div>
+  <section class="card" id="closedBox" hidden>
+    <h2>集計の公開は終了しました</h2>
+    <div class="sub">アンケートの締切（<span id="closedAt"></span>）を過ぎたため、集計結果は表示されません。</div>
+  </section>
   <div class="notice" id="err" hidden></div>
 
   <section class="card" id="passBox" hidden>
@@ -122,7 +126,10 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   function starTxt(v){ return !v||v.skill===0?'':('★'+v.star+(v.star<5?'-'+(v.step||0):'')); }
   function lv5(r){ return H.filter(function(h){var v=r.heroes[h.name];return v&&v.skill===5}).length; }
 
+  function isClosed(){ return !DEMO && !!C.CLOSE_AT && Date.now() >= new Date(C.CLOSE_AT).getTime(); }
+  function closeView(){ all=[]; rows=[]; $('main').hidden=true; $('passBox').hidden=true; $('err').hidden=true; $('demoNote').hidden=true; $('meta').textContent=''; $('closedAt').textContent=C.DEADLINE||C.CLOSE_AT; $('closedBox').hidden=false; }
   function load(){
+    if(isClosed()) return closeView();
     $('err').hidden=true;
     if(DEMO){ all=demo(); $('demoNote').hidden=false; return show(); }
     if(!C.API_URL){ $('meta').textContent=''; $('err').textContent='送信先（API_URL）が未設定です。config.js を設定してください。'; $('err').hidden=false; return; }
@@ -131,6 +138,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     fetch(C.API_URL+(pass?'?pass='+encodeURIComponent(pass):''))
       .then(function(r){return r.json()})
       .then(function(j){
+        if(j.closed) return closeView();
         if(j.needPass){ $('passBox').hidden=false; $('main').hidden=true; $('meta').textContent=''; if(pass){$('err').textContent=j.error;$('err').hidden=false;} return; }
         if(!j.ok) throw new Error(j.error);
         $('passBox').hidden=true; all=j.rows||[]; show();
@@ -232,6 +240,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
       return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3],'参加可能時間':C.JOIN[i%4?0:1],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
   }
   load();
+  setInterval(function(){ if(isClosed() && $('closedBox').hidden) closeView(); }, 30000);
 })();
 </script>
 </body>

@@ -13,12 +13,12 @@
  * 任意：スクリプト プロパティに VIEW_PASS を登録すると、
  *       集計ページを見るときに合言葉が必要になります（回答は誰でも可）。
  *
- * 締切：下の CLOSE_AT の日時を過ぎると送信を受け付けません。
+ * 締切：下の CLOSE_AT の日時を過ぎると送信を受け付けず、集計ページも見られなくなります。
  * 新しいアンケートを始めるとき：シート「回答」を名前変更して保管 → setup を再実行。
  */
 
 // この日時を過ぎると回答を受け付けません（日本時間）。空欄 '' なら止めません
-var CLOSE_AT = ''; // 締切が決まったら設定
+var CLOSE_AT = '2026-11-19T00:00:00+09:00'; // 11月18日 24:00
 
 var SHEET = '回答';
 var SHEET_LOG = '送信ログ';
@@ -40,6 +40,8 @@ function setup() {
 
 /* ---------- 入口 ---------- */
 function doGet(e) {
+  // 締切後は集計結果を返さない（回答はスプレッドシートで確認）
+  if (CLOSE_AT && new Date() >= new Date(CLOSE_AT)) return json_({ ok: false, closed: true, error: '集計の公開は終了しました' });
   var pass = prop_('VIEW_PASS');
   if (pass && String((e && e.parameter && e.parameter.pass) || '') !== pass) {
     return json_({ ok: false, needPass: true, error: pass && e && e.parameter && e.parameter.pass ? '合言葉が違います' : '合言葉が必要です' });
