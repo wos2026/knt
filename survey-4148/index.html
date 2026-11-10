@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>4148サーバーSVS参加者アンケート</title>
-<meta name="description" content="11月7日のSVSに向けた英雄育成アンケートです。締切：11月5日（木）13:00">
-<meta property="og:title" content="4148サーバーSVS参加者アンケート">
-<meta property="og:description" content="11月7日のSVSに向けた英雄育成アンケートです。締切：11月5日（木）13:00">
+<title>4148王国 王城戦アンケート</title>
+<meta name="description" content="11月21日の王城戦に向けた英雄育成アンケートです。">
+<meta property="og:title" content="4148王国 王城戦アンケート">
+<meta property="og:description" content="11月21日の王城戦に向けた英雄育成アンケートです。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wos2026.github.io/knt/survey-4148/">
-<meta property="og:site_name" content="4148サーバー">
+<meta property="og:site_name" content="4148王国">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
 <link rel="stylesheet" href="../survey/style.css">
@@ -160,7 +160,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     </div>
   </section>
 
-  <footer>T9M · 4148サーバー ｜ 製作者「FURUKANA」</footer>
+  <footer>KNT · 4148王国 ｜ 製作者「FURUKANA」</footer>
 </div>
 
 <script>document.write('<script src="config.js?v='+Date.now()+'"><\/script>')</script>
@@ -217,7 +217,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
   }
   function buildHeroes(){
     var box=$('heroes'); box.innerHTML='';
-    ['SSR','SR'].forEach(function(rar){
+    H.map(function(h){return h.rarity;}).filter(function(r,i,arr){return arr.indexOf(r)===i;}).forEach(function(rar){
       var list=H.filter(function(h){return h.rarity===rar;});
       if(!list.length) return;
       var g=document.createElement('div'); g.className='grp'; g.textContent=rar; box.appendChild(g);
