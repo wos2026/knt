@@ -51,6 +51,11 @@ td.h{min-width:3.6em;padding:3px}
 :root[data-theme="dark"] .c3,:root[data-theme="dark"] .c4,:root[data-theme="dark"] .c5{color:#0a1626}
 .jt{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;background:var(--chip);color:var(--muted)}
 .jt.on{background:var(--ok-bg);color:var(--ok)}
+.jt.or{background:#ffeedd;color:#c25a00}
+.jt.no{background:#fde4ef;color:#c2185b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .jt.or{background:#3a2814;color:#ffb366}:root:not([data-theme="light"]) .jt.no{background:#3a1a2a;color:#ff8fbf}}
+:root[data-theme="dark"] .jt.or{background:#3a2814;color:#ffb366}
+:root[data-theme="dark"] .jt.no{background:#3a1a2a;color:#ff8fbf}
 .miss{display:flex;flex-wrap:wrap;gap:6px}
 .miss span{background:var(--knt-bg);color:var(--knt);font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
 .miss em{font-style:normal;color:var(--ok);font-weight:700;font-size:13px}
@@ -223,7 +228,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     [].forEach.call($('tbl').querySelectorAll('thead th'),function(t){t.onclick=function(){var k=t.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=k==='name'?1:-1} table()}});
   }
   function tag(a){ var m=String(a||'').match(/^\[([^\]]+)\]/); return m?m[1]:(a||'—'); }
-  function joinTag(j){ if(!j) return '—'; var no=j===C.JOIN[C.JOIN.length-1]; var t=j.replace('から参加',''); return '<span class="jt'+(no?'':' on')+'" title="'+esc(j)+'">'+esc(t.length>7?t.slice(0,7)+'…':t)+'</span>'; }
+  function joinTag(j){ if(!j) return '—'; var cls = j===C.JOIN[C.JOIN.length-1] ? ' no' : /^23/.test(j) ? ' or' : /^21/.test(j) ? ' on' : ''; var t=j.replace('から参加',''); return '<span class="jt'+cls+'" title="'+esc(j)+'">'+esc(t.length>7?t.slice(0,7)+'…':t)+'</span>'; }
   function nk(x){ return String(x||'').normalize('NFKC').replace(/\s+/g,'').toLowerCase(); }
   function missing(){
     var box=$('missBox'); if(!C.MEMBERS||!C.MEMBERS.length){ box.hidden=true; return; }
