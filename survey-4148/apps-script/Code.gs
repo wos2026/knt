@@ -75,10 +75,12 @@ function submit_(r) {
   // 基本項目の列が足りなければ追加（古いシートでも動くように）
   BASE.forEach(function (c) { if (head.indexOf(c) < 0) { head.push(c); sh.getRange(1, head.length).setValue(c); } });
 
-  // 英雄の列（スキル列「名前」と星列「名前★」）がなければ右端に追加
+  // 英雄の列（スキル列「名前」、星列「名前★」、専用装備列「名前専用」）がなければ右端に追加
   Object.keys(heroes).forEach(function (h) {
     var col = clean_(h, 30);
-    [col, col + '★'].forEach(function (c) {
+    var cols = [col, col + '★'];
+    if (heroes[h] && typeof heroes[h].gear === 'number') cols.push(col + '専用');
+    cols.forEach(function (c) {
       if (col && head.indexOf(c) < 0) { head.push(c); sh.getRange(1, head.length).setValue(c); }
     });
   });
@@ -105,6 +107,7 @@ function submit_(r) {
     var star = Math.min(5, Math.max(0, Number(v.star) || 0));
     var step = Math.min(5, Math.max(0, Number(v.step) || 0));
     put(col + '★', star === 5 ? '★5' : '★' + star + '-' + step); // 例：★4-4（★4・4段）
+    if (typeof v.gear === 'number') { var g = Math.min(10, Math.max(0, Number(v.gear) || 0)); put(col + '専用', g); }
   });
 
   // 同じ名前（大文字小文字・全角半角・空白を無視）の行があれば上書き
@@ -139,6 +142,7 @@ function list_() {
       if (x instanceof Date) x = Utilities.formatDate(x, 'Asia/Tokyo', 'yyyy/MM/dd HH:mm');
       if (BASE.indexOf(h) >= 0) { o[h] = x; return; }
       if (x === '') return;
+      if (/専用$/.test(h)) { var gh = o.heroes[h.slice(0, -2)] || (o.heroes[h.slice(0, -2)] = {}); if (x !== '未所持') gh.gear = Number(x); return; }
       var star = /★$/.test(h), name = star ? h.slice(0, -1) : h;
       var hv = o.heroes[name] || (o.heroes[name] = {});
       if (x === '未所持') { hv.skill = 0; return; }

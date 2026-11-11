@@ -93,13 +93,13 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     </div>
 
     <section style="margin-top:16px">
-      <h2>英雄ごとのまとめ <small>上：右上遠征スキルLv ／ 下：★</small></h2>
+      <h2>英雄ごとのまとめ <small>右上遠征スキルLv ／ ★ ／ 専用装備</small></h2>
       <div class="legend" id="legend" style="margin-bottom:8px"></div>
       <div class="hs" id="hs"></div>
     </section>
 
     <section style="margin-top:20px">
-      <h2>メンバー一覧 <small>列名をタップで並べ替え ・ 上段＝スキルLv、下段＝★-段</small></h2>
+      <h2>メンバー一覧 <small>列名をタップで並べ替え ・ 上段＝スキルLv、下段＝★-段・専用装備</small></h2>
       <div class="scroll"><table id="tbl"></table></div>
     </section>
 
@@ -182,6 +182,9 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
 
   var SK=[{k:5,l:'Lv5',c:'var(--l5)'},{k:4,l:'Lv4',c:'var(--l4)'},{k:3,l:'Lv3',c:'var(--l3)'},{k:2,l:'Lv1-2',c:'var(--l2)'},{k:0,l:'未所持',c:'var(--line)'}];
   var ST=[{k:5,l:'★5',c:'var(--l5)'},{k:4,l:'★4',c:'var(--l4)'},{k:3,l:'★3',c:'var(--l3)'},{k:2,l:'★0-2',c:'var(--l2)'},{k:0,l:'未所持',c:'var(--line)'}];
+  var GS=[{k:5,l:'専Lv10',c:'var(--l5)'},{k:4,l:'専Lv7-9',c:'var(--l4)'},{k:3,l:'専Lv4-6',c:'var(--l3)'},{k:2,l:'専Lv1-3',c:'var(--l2)'},{k:1,l:'専なし',c:'var(--l1)'},{k:0,l:'未所持',c:'var(--line)'}];
+  function bucketGs(v){ if(!v||v.skill===0||typeof v.gear!=='number') return 0; var g=v.gear; return g>=10?5:g>=7?4:g>=4?3:g>=1?2:1; }
+  function gearTxt(v){ return v&&typeof v.gear==='number' ? (v.gear?'専Lv'+v.gear:'専なし') : ''; }
   function bucketSk(v){ if(!v||v.skill===0) return 0; return v.skill>=3?v.skill:2; }
   function bucketSt(v){ if(!v||v.skill===0) return 0; return v.star>=3?v.star:2; }
   function stack(list, fn){
@@ -190,12 +193,12 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
       var light=s.k<=2; return '<i style="width:'+(x/n*100)+'%;background:'+s.c+(light?';color:var(--ink)':'')+'" title="'+s.l+'：'+x+'人">'+x+'</i>'}).join('')+'</div>';
   }
   function summary(){
-    $('legend').innerHTML=SK.map(function(s,i){return '<span><i style="background:'+s.c+'"></i>'+s.l+' / '+ST[i].l+'</span>'}).join('');
+    $('legend').innerHTML=SK.map(function(s,i){return '<span><i style="background:'+s.c+'"></i>'+s.l+' / '+ST[i].l+(H.some(function(h){return h.gear})?' / '+GS[i].l:'')+'</span>'}).join('');
     $('hs').innerHTML=heroesShown().map(function(h){
       var own=rows.filter(function(r){var v=r.heroes[h.name];return v&&v.skill>0}).length;
       return '<div class="hc"><div class="t">'+(h.icon?'<img class="face" src="'+h.icon+'" width="36" height="36" alt="">':'')+'<span class="ty '+h.type+'">'+h.type+'</span>'+esc(h.name)+' <span class="rar">'+h.rarity+'</span><span class="own">所持 '+own+'/'+rows.length+'</span></div>'+
         '<div class="mini"><span>スキル</span>'+stack(SK,function(r){return bucketSk(r.heroes[h.name])})+'</div>'+
-        '<div class="mini"><span>★</span>'+stack(ST,function(r){return bucketSt(r.heroes[h.name])})+'</div></div>';
+        '<div class="mini"><span>★</span>'+stack(ST,function(r){return bucketSt(r.heroes[h.name])})+'</div>'+(h.gear?'<div class="mini"><span>専用</span>'+stack(GS,function(r){return bucketGs(r.heroes[h.name])})+'</div>':'')+'</div>';
     }).join('');
   }
   function table(){
@@ -214,7 +217,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
         hs.map(function(h){var v=r.heroes[h.name];
           if(!v) return '<td class="h"><div class="cell c0">—</div></td>';
           if(v.skill===0) return '<td class="h"><div class="cell c0"><small>未所持</small></div></td>';
-          return '<td class="h"><div class="cell c'+v.skill+'"><b>'+v.skill+'</b><small>'+starTxt(v)+'</small></div></td>'}).join('')+'</tr>';
+          return '<td class="h"><div class="cell c'+v.skill+'"><b>'+v.skill+'</b><small>'+starTxt(v)+'</small>'+(gearTxt(v)?'<small>'+gearTxt(v)+'</small>':'')+'</div></td>'}).join('')+'</tr>';
     }).join('')+'</tbody>';
     $('tbl').innerHTML=th+tb;
     [].forEach.call($('tbl').querySelectorAll('thead th'),function(t){t.onclick=function(){var k=t.dataset.k; if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=k==='name'?1:-1} table()}});
@@ -237,11 +240,11 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
 
   $('csv').onclick=function(){
     var head=['プレイヤー名','所属同盟','参加可能時間','回答日時','大溶鉱炉','総力','兵士(盾)','兵士(槍)','兵士(弓)'];
-    H.forEach(function(h){head.push(h.name+' スキル',h.name+' ★')}); head.push('ひとこと');
+    H.forEach(function(h){head.push(h.name+' スキル',h.name+' ★'); if(h.gear) head.push(h.name+' 専用装備')}); head.push('ひとこと');
     var q=function(s){s=s==null?'':String(s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
     var lines=[head.map(q).join(',')].concat(rows.map(function(r){
       var a=[r['プレイヤー名'],r['所属同盟'],r['参加可能時間'],r['回答日時'],r['大溶鉱炉'],r['総力'],r['兵士(盾)'],r['兵士(槍)'],r['兵士(弓)']];
-      H.forEach(function(h){var v=r.heroes[h.name]; a.push(!v?'':v.skill===0?'未所持':v.skill, starTxt(v))}); a.push(r['ひとこと']);
+      H.forEach(function(h){var v=r.heroes[h.name]; a.push(!v?'':v.skill===0?'未所持':v.skill, starTxt(v)); if(h.gear) a.push(v&&typeof v.gear==='number'?v.gear:'')}); a.push(r['ひとこと']);
       return a.map(q).join(',')}));
     var blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv'}), a=document.createElement('a');
     a.href=URL.createObjectURL(blob); a.download='英雄育成アンケート.csv'; document.body.appendChild(a); a.click(); a.remove();
@@ -252,7 +255,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     var rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280};
     return names.map(function(n,i){var hs={}; H.forEach(function(h){
       if(rnd()<0.12){hs[h.name]={skill:0};return}
-      var s=1+Math.floor(rnd()*5), st=Math.min(5,Math.floor(rnd()*6)); hs[h.name]={skill:s,star:st,step:st<5?Math.floor(rnd()*6):0}});
+      var s=1+Math.floor(rnd()*5), st=Math.min(5,Math.floor(rnd()*6)); hs[h.name]={skill:s,star:st,step:st<5?Math.floor(rnd()*6):0}; if(h.gear) hs[h.name].gear=Math.floor(rnd()*11);});
       return {'回答日時':'2026/11/0'+(i+1)+' 21:00','プレイヤー名':n,'所属同盟':C.ALLIANCES[i%3],'参加可能時間':C.JOIN[i%C.JOIN.length],'大溶鉱炉':C.FURNACE[i%C.FURNACE.length],'総力':(80+rnd()*120).toFixed(1)+'M','兵士(盾)':C.TROOP[1],'兵士(槍)':C.TROOP[2],'兵士(弓)':C.TROOP[2],'ひとこと':i===0?'ジーナの★上げ中です':'',heroes:hs}});
   }
   load();

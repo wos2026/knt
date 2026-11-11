@@ -132,7 +132,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         </figure>
         <figure>
           <img src="../survey/howto-star.jpg" width="640" height="192" alt="英雄画面の星の表示。★4-4段の部分を赤枠で囲んだ例">
-          <figcaption><b>★・段</b>：英雄画面の星の上の表示。例：<b>★4-4段</b> なら「★4」「4段」を選択</figcaption>
+          <figcaption><b>★・段</b>：英雄画面の星の上の表示。例：<b>★4-4段</b> なら「★4」「4段」を選択<br><b>専用装備</b>：英雄画面の「装備」タブにある専用装備のLv（持っていなければ「なし」）</figcaption>
         </figure>
         <div class="note">持っていない英雄は「未所持」を押せば、★・段は不要です。</div>
       </div>
@@ -225,7 +225,8 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     });
   }
   function hv(n){ return st.heroes[n] || (st.heroes[n] = {}); }
-  function done(v){ return v && (v.s===0 || (v.s>=1 && typeof v.r==='number' && (v.r===5 || typeof v.d==='number'))); }
+  var GEAR={}; H.forEach(function(h){ if(h.gear) GEAR[h.name]=1; });
+  function done(v,name){ return v && (v.s===0 || (v.s>=1 && typeof v.r==='number' && (v.r===5 || typeof v.d==='number') && (!GEAR[name] || typeof v.g==='number'))); }
   function chips(box, vals, label, cur, on){
     vals.forEach(function(n){
       var b=document.createElement('button'); b.type='button'; b.textContent=label(n);
@@ -247,20 +248,23 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         d.innerHTML='<div class="nm">'+(h.icon?'<img class="face" src="'+h.icon+'" width="44" height="44" alt="">':'')+'<span class="ty '+h.type+'">'+h.type+'</span><span></span></div>'+
           '<div class="rowl"><span>右上遠征<br>スキル</span><div class="lv sk"></div></div>'+
           '<div class="rowl need-own"><span>★</span><div class="lv st rs"></div></div>'+
-          '<div class="rowl need-own step"><span>段</span><div class="lv st ds"></div></div>';
+          '<div class="rowl need-own step"><span>段</span><div class="lv st ds"></div></div>'+
+          (h.gear?'<div class="rowl need-own"><span>専用<br>装備</span><div class="lv st gs"></div></div>':'');
         d.querySelector('.nm span:last-child').textContent=h.name;
         function sync(){ d.classList.toggle('off', v.s===0); d.classList.toggle('max', v.r===5);
-          if(done(v)) d.classList.remove('miss'); save(); }
+          if(done(v,h.name)) d.classList.remove('miss'); save(); }
         chips(d.querySelector('.sk'),[0,1,2,3,4,5],function(n){return n===0?'未所持':'Lv'+n;},v.s,function(n){v.s=n;sync();});
         chips(d.querySelector('.rs'),[0,1,2,3,4,5],function(n){return '★'+n;},v.r,function(n){v.r=n; if(n===5) v.d=0; sync();});
         chips(d.querySelector('.ds'),[0,1,2,3,4,5],function(n){return n+'段';},v.d,function(n){v.d=n;sync();});
+        if(h.gear){ var gl=[]; for(var gi=0; gi<=(C.GEAR_MAX||10); gi++) gl.push(gi);
+          chips(d.querySelector('.gs'),gl,function(n){return n===0?'なし':'Lv'+n;},v.g,function(n){v.g=n;sync();}); }
         d.classList.toggle('off', v.s===0); d.classList.toggle('max', v.r===5);
         box.appendChild(d);
       });
     });
   }
   function prog(){
-    var n=H.filter(function(h){return done(st.heroes[h.name]);}).length;
+    var n=H.filter(function(h){return done(st.heroes[h.name],h.name);}).length;
     $('prog').textContent='英雄 '+n+'/'+H.length;
   }
   function save(){
@@ -283,9 +287,9 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     if(!st.furnace) miss.push('大溶鉱炉レベル');
     if(!$('power').value.trim()) miss.push('総力');
     if(!st.troops.盾||!st.troops.槍||!st.troops.弓) miss.push('兵士レベル');
-    var mh=H.filter(function(h){return !done(st.heroes[h.name]);});
+    var mh=H.filter(function(h){return !done(st.heroes[h.name],h.name);});
     document.querySelectorAll('.hero').forEach(function(d){
-      d.classList.toggle('miss', !done(st.heroes[d.dataset.name])); });
+      d.classList.toggle('miss', !done(st.heroes[d.dataset.name],d.dataset.name)); });
     if(mh.length) miss.push('英雄（'+mh.length+'人分）');
     return miss;
   }
@@ -299,7 +303,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       return; }
     if(isClosed()){ closeForm(); return; }
     if(!C.API_URL){ err.textContent='送信先が未設定のため送れません。管理者に連絡してください。'; err.hidden=false; return; }
-    var heroes={}; H.forEach(function(h){ var v=st.heroes[h.name]; heroes[h.name]= v.s===0 ? {skill:0} : {skill:v.s, star:v.r, step:v.r===5?0:v.d}; });
+    var heroes={}; H.forEach(function(h){ var v=st.heroes[h.name]; heroes[h.name]= v.s===0 ? {skill:0} : {skill:v.s, star:v.r, step:v.r===5?0:v.d}; if(v.s!==0 && h.gear) heroes[h.name].gear=v.g; });
     var body={ action:'submit', survey:C.TITLE, name:$('name').value.trim(), alliance:st.alliance, join:st.join, furnace:st.furnace,
       power:$('power').value.trim(), troops:st.troops, heroes:heroes, memo:$('memo').value.trim() };
     var btn=$('send'); btn.disabled=true; btn.textContent='送信中…';
@@ -319,7 +323,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     $('doneMsg').textContent = b.name+' さんの回答を'+(updated?'更新しました（前の回答を上書き）。':'受け付けました。');
     var s=$('sum'); s.innerHTML='';
     H.forEach(function(h){ var v=b.heroes[h.name]; var d=document.createElement('div');
-      d.innerHTML='<span></span><b></b>'; d.firstChild.textContent=h.name; d.lastChild.textContent=v.skill===0?'未所持':'Lv'+v.skill+' / ★'+v.star+(v.star<5?'-'+v.step:''); s.appendChild(d); });
+      d.innerHTML='<span></span><b></b>'; d.firstChild.textContent=h.name; d.lastChild.textContent=v.skill===0?'未所持':'Lv'+v.skill+' / ★'+v.star+(v.star<5?'-'+v.step:'')+(typeof v.gear==='number'?' / 専'+(v.gear?'Lv'+v.gear:'なし'):''); s.appendChild(d); });
     window.scrollTo({top:0,behavior:'smooth'});
   }
   $('again').onclick=function(){ if(isClosed()){ closeForm(); return; } $('done').hidden=true; $('form').hidden=false; window.scrollTo({top:0}); };

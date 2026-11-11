@@ -98,20 +98,22 @@ var SURVEY = {
 
   FURNACE: ['FC5', 'FC4', 'FC3', 'FC2', 'FC1'],
   // 盾兵士・槍兵士・弓兵士のプルダウン
+  // 専用装備のレベル上限
+  GEAR_MAX: 10,
   TROOP: ['T11', 'FC5', 'FC4', 'FC3', 'FC2', 'FC1', '該当なし'],
 
-  // type：盾 / 槍 / 弓   rarity：見出し（この順に表示）   icon：顔アイコン画像
+  // type：盾 / 槍 / 弓   rarity：見出し（この順に表示）   icon：顔アイコン画像   gear：専用装備あり
   HEROES: [
-    { name: 'アクモス', type: '盾', rarity: '第4世代', icon: 'heroes/akmos.jpg' },
-    { name: 'レイナ', type: '槍', rarity: '第4世代', icon: 'heroes/reina.jpg' },
-    { name: 'リオン', type: '弓', rarity: '第4世代', icon: 'heroes/lion.jpg' },
-    { name: 'ローガン', type: '盾', rarity: '第3世代', icon: 'heroes/logan.jpg' },
-    { name: 'ミア', type: '槍', rarity: '第3世代', icon: 'heroes/mia.jpg' },
-    { name: 'グレッグ', type: '弓', rarity: '第3世代', icon: 'heroes/greg.jpg' },
-    { name: 'ジェロニモ', type: '盾', rarity: 'SSR', icon: '../survey/heroes/jeronimo.jpg' },
-    { name: 'フレンダー', type: '槍', rarity: 'SSR', icon: '../survey/heroes/philly.jpg' },
-    { name: 'アロンゾ', type: '弓', rarity: 'SSR', icon: '../survey/heroes/alonso.jpg' },
-    { name: 'ジンマン', type: '弓', rarity: 'SSR', icon: '../survey/heroes/zinman.jpg' },
+    { name: 'アクモス', type: '盾', rarity: '第4世代', icon: 'heroes/akmos.jpg', gear: true },
+    { name: 'レイナ', type: '槍', rarity: '第4世代', icon: 'heroes/reina.jpg', gear: true },
+    { name: 'リオン', type: '弓', rarity: '第4世代', icon: 'heroes/lion.jpg', gear: true },
+    { name: 'ローガン', type: '盾', rarity: '第3世代', icon: 'heroes/logan.jpg', gear: true },
+    { name: 'ミア', type: '槍', rarity: '第3世代', icon: 'heroes/mia.jpg', gear: true },
+    { name: 'グレッグ', type: '弓', rarity: '第3世代', icon: 'heroes/greg.jpg', gear: true },
+    { name: 'ジェロニモ', type: '盾', rarity: 'SSR', icon: '../survey/heroes/jeronimo.jpg', gear: true },
+    { name: 'フレンダー', type: '槍', rarity: 'SSR', icon: '../survey/heroes/philly.jpg', gear: true },
+    { name: 'アロンゾ', type: '弓', rarity: 'SSR', icon: '../survey/heroes/alonso.jpg', gear: true },
+    { name: 'ジンマン', type: '弓', rarity: 'SSR', icon: '../survey/heroes/zinman.jpg', gear: true },
     { name: 'ジェシー', type: '槍', rarity: 'SR', icon: '../survey/heroes/jessie.jpg' },
     { name: 'パトリック', type: '槍', rarity: 'SR', icon: '../survey/heroes/patrick.jpg' },
     { name: 'リンセツ', type: '槍', rarity: 'SR', icon: '../survey/heroes/lingxue.jpg' },
