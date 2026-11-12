@@ -51,14 +51,14 @@ function heroGroup(h) { return h.gen ? '第' + h.gen + '世代' : 'SR'; }
 
 /* 世代ごとの初期値（作成ページで書き換え可能） */
 function genDefaults(gen) {
-  var fc = [];
-  for (var i = gen + 1; i >= 1; i--) fc.push('FC' + i);
+  var fcAll = [];
+  for (var j = 8; j >= 1; j--) fcAll.push('FC' + j);
   return {
     heroes: HERO_DB.filter(function (h) { return h.gen <= gen; })
       .sort(function (a, b) { return (b.gen || 0) - (a.gen || 0); })
       .map(function (h) { return h.id; }),
-    furnace: fc.concat(['L30', 'L29', 'L28以下']),
-    troop: (gen >= 4 ? ['T11'] : []).concat(fc, ['該当なし'])
+    furnace: fcAll.concat(['L30', 'L29', 'L28以下']),
+    troop: ['T12', 'T11'].concat(fcAll, ['該当なし'])
   };
 }
 

@@ -110,8 +110,8 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
         <div class="radios" id="join"></div>
       </div>
       <div class="f">
-        <span class="lab">大溶鉱炉レベル<span class="req">必須</span></span>
-        <div class="seg" id="furnace"></div>
+        <label class="lab" for="furnace">大溶鉱炉レベル<span class="req">必須</span></label>
+        <select id="furnace"><option value="">選択してください</option></select>
       </div>
       <div class="f">
         <label class="lab" for="power">総力<span class="req">必須</span></label>
@@ -234,7 +234,8 @@ function start(C){
     C.ALLIANCES.forEach(function(a){ var o=document.createElement('option'); o.value=o.textContent=a; al.appendChild(o); });
     al.value=st.alliance||''; al.onchange=function(){ st.alliance=al.value; save(); };
     seg($('join'), C.JOIN, function(){return st.join;}, function(v){st.join=v;});
-    seg($('furnace'), C.FURNACE, function(){return st.furnace;}, function(v){st.furnace=v;});
+    var fs=$('furnace'); C.FURNACE.forEach(function(v){ var o=document.createElement('option'); o.value=o.textContent=v; fs.appendChild(o); });
+    fs.value=st.furnace; fs.onchange=function(){ st.furnace=fs.value; };
     var t = $('troops'); t.innerHTML='';
     ['盾','槍','弓'].forEach(function(k){
       var r=document.createElement('div'); r.className='row';
