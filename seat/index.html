@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KNT 王城戦 席順ボード</title>
+<style>
+:root{--navy:#1d3557;--blue:#457b9d;--sky:#e7f0f8;--line:#d5dde6;--txt:#1f2933;--muted:#6b7785;
+--r0:#c0392b;--r1:#1f5fa8;--r2:#2e7d32;--r3:#6d6d6d}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;color:var(--txt);background:#f4f7fa}
+header{background:var(--navy);color:#fff;padding:12px 18px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;letter-spacing:.05em}
+header span{font-size:12px;opacity:.75}
+.modes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid var(--line)}
+.modes button{border:1px solid var(--blue);background:#fff;color:var(--navy);padding:8px 14px;border-radius:20px;font-size:14px;cursor:pointer;font-family:inherit}
+.modes button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.modes label{font-size:13px;color:var(--muted);margin-left:6px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.board{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px}
+svg#map{width:100%;height:auto;display:block;user-select:none;-webkit-user-select:none}
+svg#map .tile{cursor:pointer}
+svg#map .off{cursor:not-allowed}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:4px 8px 6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+aside{display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.card h2{font-size:14px;margin:0 0 8px;color:var(--navy)}
+#ctx{background:var(--sky);border-color:#c6d8ea;font-size:13px;line-height:1.6}
+#ctx .big{font-size:15px;font-weight:700;color:var(--navy)}
+textarea,input,select{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+textarea{width:100%;min-height:72px;resize:vertical}
+button.b{font-family:inherit;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--txt)}
+button.b:hover{border-color:var(--blue)}
+button.p{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.w{color:#b42318}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+ol#roster{list-style:none;margin:10px 0 0;padding:0;max-height:52vh;overflow:auto}
+#roster li{display:flex;align-items:center;gap:5px;padding:5px 4px;border-bottom:1px solid #eef1f4;cursor:pointer;border-radius:6px}
+#roster li.armed{background:#fff4cc}
+#roster li .no{width:22px;text-align:right;font-size:12px;color:var(--muted)}
+#roster li .hd{cursor:grab;color:#9aa5b1;padding:0 2px}
+#roster li input{flex:1;min-width:0;padding:4px 6px}
+#roster li select{padding:4px 2px;font-size:12px}
+#roster li .seat{font-size:11px;width:56px;text-align:center;color:var(--muted)}
+#roster li .seat.ok{color:var(--navy);font-weight:700}
+#roster li .mini{border:none;background:none;cursor:pointer;color:#8592a0;font-size:13px;padding:2px 3px}
+.sw{display:inline-block;width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c9d2db;cursor:pointer;padding:0}
+.sw.on{box-shadow:0 0 0 2px #111}
+.al{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid #eef1f4}
+.al input{width:110px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{border:none;border-radius:14px;padding:4px 10px;font-size:12px;color:#fff;cursor:pointer;font-family:inherit}
+.row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.row input{flex:1;min-width:120px}
+.muted{color:var(--muted);font-size:12px}
+#modal{position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
+#modal[hidden]{display:none}
+#modal .box{background:#fff;border-radius:12px;max-width:960px;width:100%;max-height:92vh;overflow:auto;padding:16px}
+#modal img{max-width:100%;display:block;margin:8px auto;border:1px solid var(--line)}
+#modal textarea{min-height:240px;font-size:12px}
+#howto{max-width:1500px;margin:12px auto 0;padding:0 14px}
+#howto details{background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:12px;padding:10px 16px}
+#howto summary{font-weight:700;color:var(--navy);cursor:pointer;font-size:15px}
+#howto ol{margin:8px 0 4px;padding-left:22px;font-size:13.5px;line-height:1.75}
+#howto b{color:var(--navy)}
+footer{text-align:center;font-size:11px;color:var(--muted);padding:6px 0 18px}
+</style>
+</head>
+<body>
+<header><h1>王城戦 席順ボード</h1></header>
+<div id="howto"><details open><summary>使い方（タップで開閉）</summary><ol>
+<li><b>モードを選ぶ</b>：国内王城戦はレッドゾーン全部、SVSは「左側」「右側」のどちらかを使います（使わない側はグレー）。配置はモードごとに別々に保存されます。</li>
+<li><b>同盟と色を決める</b>：「同盟とカラー」に同盟名を入れ、8色から色を選びます。「＋ 同盟を追加」で同盟を増やせます。</li>
+<li><b>メンバーを入れる</b>：1行に1人ずつ入力して「メンバー追加」。名前の後ろに同盟名を書くとその同盟に入ります（例：たろう GaL）。順番は ▲▼ で入れ替えできます。</li>
+<li><b>自動配置</b>：メンバーの上から順に、着弾の速いタイル（36秒〜）へ自動で並べます。「未配置だけ追加」は空いているタイルに追加だけします。</li>
+<li><b>手で調整</b>：メンバー（またはマップ上の人）をタップ → 移動先のタイルをタップ。人がいるタイルなら入れ替わります。空きタイルをタップすると、その場で名前を入れられます。</li>
+<li><b>共有する</b>：「画像をダウンロード」で席順画像を保存、「席順をテキストでコピー」でチャットやLINEに貼れます。</li>
+</ol><div class="muted">※数字は太陽城までの着弾秒数（ペットバフ無し、参考秒数）。入力内容はこの端末のブラウザに自動保存されます。</div></details></div>
+<div class="modes">
+  <button data-mode="all">国内王城戦（全レッドゾーン）</button>
+  <button data-mode="left">SVS 左側</button>
+  <button data-mode="right">SVS 右側</button>
+  <label id="centerWrap"><input type="checkbox" id="center"> 中央の縦1列も使う</label>
+</div>
+<main>
+  <section class="board">
+    <svg id="map" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="legend" id="legend"></div>
+  </section>
+  <aside>
+    <div class="card" id="ctx"></div>
+    <div class="card">
+      <h2>同盟とカラー</h2>
+      <div id="alliances"></div>
+      <div class="acts"><button class="b" id="addAl">＋ 同盟を追加</button></div>
+    </div>
+    <div class="card">
+      <h2>メンバー（上から強い順）</h2>
+      <textarea id="bulk" placeholder="1行に1人。名前の後ろに同盟名を書くとその同盟に入ります&#10;例）&#10;たろう&#10;はなこ KNT&#10;じろう ABC"></textarea>
+      <div class="acts"><span class="muted" style="align-self:center">同盟の指定がない人は</span><select id="bulkAl"></select><button class="b p" id="addBulk">メンバー追加</button></div>
+      <div class="acts">
+        <button class="b" id="auto" title="メンバーの上から順に、速いタイルへ並べ直します">自動配置（やり直し）</button>
+        <button class="b" id="autoFill" title="未配置の人だけ、空いている速いタイルへ">未配置だけ追加</button>
+        <button class="b w" id="clearSeats">配置クリア</button>
+      </div>
+      <ol id="roster"></ol>
+      <div class="acts"><button class="b w" id="clearAll">メンバー全削除</button></div>
+    </div>
+    <div class="card">
+      <h2>共有・保存</h2>
+      <div class="acts">
+        <button class="b p" id="dlImg" hidden>画像をダウンロード</button>
+        <button class="b" id="makeImg">画像を表示</button>
+        <button class="b" id="copyText">席順をテキストでコピー</button>
+        <button class="b" id="dataBtn">データ書き出し／読み込み</button>
+      </div>
+      <p class="muted" id="dlMsg"></p>
+      <p class="muted">配置はこの端末のブラウザに自動保存されます。別の端末へ移すときは「データ書き出し」を使ってください。</p>
+    </div>
+  </aside>
+</main>
+<footer>製作者「FURUKANA」</footer>
+<div id="modal" hidden><div class="box" id="mbox"></div></div>
+
+<script>
+(function(){
+const N=14,C0=4,C1=9,W=44,H=32,PAD=24;
+const PALETTE=['#c0392b','#e67e22','#d4a017','#2e7d32','#0f8b8d','#1f5fa8','#7b3fa0','#d63384'];
+const MODE_LABEL={all:'国内王城戦（全レッドゾーン）',left:'SVS（左側）',right:'SVS（右側）'};
+// 着弾秒数（画像3より）: 行 s=a+b、列 d=a-b。下半分は上下対称
+const T={4:[[-2,66],[0,66],[2,66]],5:[[-5,66],[-3,58],[-1,58],[1,58],[3,58],[5,66]],
+6:[[-6,66],[-4,58],[-2,52],[0,50],[2,52],[4,58],[6,66]],
+7:[[-7,66],[-5,55],[-3,47],[-1,43],[1,43],[3,47],[5,55],[7,66]],
+8:[[-8,66],[-6,55],[-4,45],[-2,39],[2,39],[4,45],[6,55],[8,66]],
+9:[[-7,58],[-5,45],[-3,36],[3,36],[5,45],[7,58]],
+10:[[-8,58],[-6,47],[-4,36],[4,36],[6,47],[8,58]],
+11:[[-9,66],[-7,52],[-5,39],[5,39],[7,52],[9,66]],
+12:[[-8,58],[-6,43],[6,43],[8,58]],
+13:[[-9,66],[-7,50],[7,50],[9,66]]};
+function secOf(a,b){const s=a+b,d=a-b,k=Math.min(s,26-s),r=T[k];if(!r)return null;const f=r.find(x=>x[0]===d);return f?f[1]:null;}
+function dirOf(a,b){
+  const ai=a<C0?-1:a>C1?1:0, bi=b<C0?-1:b>C1?1:0;
+  if(ai<0&&bi<0)return'北';if(ai>0&&bi<0)return'東';if(ai>0&&bi>0)return'南';if(ai<0&&bi>0)return'西';
+  if(bi<0)return'北東';if(ai>0)return'南東';if(bi>0)return'南西';return'北西';}
+const DIRS=['北東','南東','南西','北西','北','東','南','西'];
+const tiles=[];
+for(let a=0;a<N;a++)for(let b=0;b<N;b++){
+  if(a>=C0&&a<=C1&&b>=C0&&b<=C1)continue;
+  const da=a<C0?C0-a:a>C1?a-C1:0, db=b<C0?C0-b:b>C1?b-C1:0;
+  tiles.push({k:a+'-'+b,a,b,d:a-b,s:a+b,sec:secOf(a,b),dir:dirOf(a,b),ring:Math.max(da,db)});
+}
+const TM=Object.fromEntries(tiles.map(t=>[t.k,t]));
+
+// ---- state ----
+const KEY='knt-oujou-seat-v1';
+let st={mode:'all',center:true,players:[],seats:{all:{},left:{},right:{}},nid:1,alliances:[{id:'a1',name:'',color:PALETTE[5]}]};
+try{const raw=localStorage.getItem(KEY);if(raw){const o=JSON.parse(raw);if(o&&o.players)st=Object.assign(st,o);}}catch(e){}
+function fixState(){
+  if(!Array.isArray(st.alliances)||!st.alliances.length)st.alliances=[{id:'a1',name:'',color:PALETTE[5]}];
+  const seen=new Set();st.alliances.forEach((x,i)=>{if(seen.has(x.id))x.id='al'+i+Math.random().toString(36).slice(2,6);seen.add(x.id);});
+  st.players.forEach(p=>{delete p.role;if(!st.alliances.some(a=>a.id===p.al))p.al=st.alliances[0].id;});
+}
+fixState();
+let armed=null, selTile=null, bulkAl=st.alliances[0].id;
+const AL=id=>st.alliances.find(a=>a.id===id)||st.alliances[0];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+const seats=()=>st.seats[st.mode];
+function active(t){
+  if(st.mode==='all')return true;
+  if(t.d===0)return st.center;
+  return st.mode==='left'?t.d<0:t.d>0;}
+function tileOf(pid){const S=seats();for(const k in S)if(S[k]===pid)return k;return null;}
+const P=id=>st.players.find(p=>p.id===id);
+
+// ---- svg ----
+const vx=(a,b)=>PAD+N*W+(a-b)*W, vy=(a,b)=>PAD+(a+b)*H;
+const pt=(a,b)=>vx(a,b).toFixed(1)+','+vy(a,b).toFixed(1);
+const VW=2*N*W+2*PAD, VH=2*N*H+2*PAD;
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fit(name,max){let u=0,out='';for(const ch of name){const w=/[ -~｡-ﾟ]/.test(ch)?1:2;if(u+w>max)return out+'…';u+=w;out+=ch;}return out;}
+function heat(sec){if(sec==null)return'#dcdff5';const t=Math.max(0,Math.min(1,(sec-36)/30));
+  const h=8+t*200, l=86+t*8;return`hsl(${h.toFixed(0)},75%,${l.toFixed(0)}%)`;}
+function buildSvg(exp){
+  const S=seats();let g='';
+  for(const t of tiles){
+    const on=active(t), pid=S[t.k], p=pid?P(pid):null;
+    const poly=[pt(t.a,t.b),pt(t.a+1,t.b),pt(t.a+1,t.b+1),pt(t.a,t.b+1)].join(' ');
+    const cx=vx(t.a+.5,t.b+.5), cy=vy(t.a+.5,t.b+.5);
+    let fill=on?heat(t.sec):'#e4e7eb';
+    if(p&&on)fill=AL(p.al).color;
+    const isArm=!exp&&p&&armed===pid, isSel=!exp&&selTile===t.k;
+    g+=`<g class="${on?'tile':'off'}" data-k="${t.k}"><polygon points="${poly}" fill="${fill}" stroke="${isArm||isSel?'#f2b705':'#5b6670'}" stroke-width="${isArm||isSel?3.5:0.8}" opacity="${on?1:.55}"/>`;
+    if(p&&on){
+      g+=`<title>${esc(p.name)}${AL(p.al).name?'（'+esc(AL(p.al).name)+'）':''}${t.sec!=null?t.sec+'秒':''}</title>`;
+      g+=`<text x="${cx}" y="${cy+(t.sec!=null?-2:4)}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">${esc(fit(p.name,10))}</text>`;
+      if(t.sec!=null)g+=`<text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="9.5" fill="#fff" opacity=".85">${t.sec}秒</text>`;
+    }else if(t.sec!=null){
+      g+=`<text x="${cx}" y="${cy+4.5}" text-anchor="middle" font-size="12" font-weight="700" fill="${on?'#3d4852':'#9aa3ad'}">${t.sec}</text>`;
+    }
+    g+='</g>';
+  }
+  // castle
+  g+=`<polygon points="${pt(C0,C0)} ${pt(C1+1,C0)} ${pt(C1+1,C1+1)} ${pt(C0,C1+1)}" fill="#111"/>`;
+  const mx=vx(7,7), my=vy(7,7);
+  g+=`<text x="${mx}" y="${my+12}" text-anchor="middle" font-size="34" font-weight="700" fill="#fff">太陽城</text>`;
+  const lab=(t,x,y)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">${t}</text>`;
+  g+=lab('北',vx(C0,C0),vy(C0,C0)+34)+lab('南',vx(C1+1,C1+1),vy(C1+1,C1+1)-14)+lab('東',vx(C1+1,C0)-30,vy(C1+1,C0)+7)+lab('西',vx(C0,C1+1)+30,vy(C0,C1+1)+7);
+  if(exp){
+    g+=`<text x="${PAD}" y="${PAD+18}" font-size="22" font-weight="700" fill="#1d3557">KNT 王城戦 席順</text>`;
+    g+=`<text x="${PAD}" y="${PAD+44}" font-size="15" fill="#1d3557">${MODE_LABEL[st.mode]}</text>`;
+    const n=st.alliances.length;let ly=VH-PAD-18*n+6;st.alliances.forEach((a,i)=>{g+=`<rect x="${PAD}" y="${ly+i*18-11}" width="13" height="13" rx="3" fill="${a.color}"/><text x="${PAD+19}" y="${ly+i*18}" font-size="13" fill="#333">${esc(a.name)}</text>`;});
+    g+=`<text x="${VW-PAD}" y="${VH-PAD}" text-anchor="end" font-size="12" fill="#888">製作者「FURUKANA」</text>`;
+  }
+  return g;
+}
+const svg=document.getElementById('map');
+svg.setAttribute('viewBox',`0 0 ${VW} ${VH}`);
+svg.setAttribute('font-family','Hiragino Sans, Noto Sans JP, Yu Gothic, sans-serif');
+
+// ---- actions ----
+function assign(pid,k){
+  const S=seats(), cur=tileOf(pid), other=S[k];
+  if(cur===k)return;
+  if(cur)delete S[cur];
+  if(other&&other!==pid){ if(cur)S[cur]=other; }
+  S[k]=pid;
+}
+function orderedTiles(){
+  const act=tiles.filter(active);
+  const known=act.filter(t=>t.sec!=null), unk=act.filter(t=>t.sec==null);
+  const groups={};known.forEach(t=>(groups[t.sec]=groups[t.sec]||[]).push(t));
+  const out=[];
+  Object.keys(groups).map(Number).sort((x,y)=>x-y).forEach(sec=>{
+    const bk={};groups[sec].forEach(t=>(bk[t.dir]=bk[t.dir]||[]).push(t));
+    const ds=DIRS.filter(d=>bk[d]);ds.forEach(d=>bk[d].sort((x,y)=>Math.abs(x.d)-Math.abs(y.d)||x.s-y.s));
+    let left=true;while(left){left=false;for(const d of ds){if(bk[d].length){out.push(bk[d].shift());left=true;}}}
+  });
+  unk.sort((x,y)=>x.ring-y.ring||Math.abs(x.d)-Math.abs(y.d));
+  return out.concat(unk);
+}
+function autoPlace(onlyUnplaced){
+  const S=seats();
+  if(!onlyUnplaced)for(const k in S)delete S[k];
+  const order=st.players.filter(p=>!tileOf(p.id));
+  const free=orderedTiles().filter(t=>!S[t.k]);
+  order.forEach((p,i)=>{if(free[i])S[free[i].k]=p.id;});
+  armed=null;selTile=null;save();render();
+}
+function parseLine(s){
+  s=s.trim();const m=s.match(/^(.*?)[\s,、，\t]+(\S+)$/);
+  if(m){const a=st.alliances.find(x=>x.name.toLowerCase()===m[2].toLowerCase());if(a&&m[1].trim())return{name:m[1].trim(),al:a.id};}
+  return{name:s,al:bulkAl};}
+function addPlayer(name,al){const p={id:'p'+(st.nid++),name,al};st.players.push(p);return p;}
+
+// ---- render ----
+const ctx=document.getElementById('ctx'), roster=document.getElementById('roster');
+function render(){
+  svg.innerHTML=buildSvg(false);
+  document.querySelectorAll('.modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===st.mode));
+  document.getElementById('centerWrap').style.display=st.mode==='all'?'none':'';
+  document.getElementById('center').checked=st.center;
+  renderAlliances();renderRoster();renderCtx();
+}
+function renderAlliances(){
+  document.getElementById('alliances').innerHTML=st.alliances.map(a=>{const cnt=st.players.filter(p=>p.al===a.id).length;
+    return `<div class="al" data-al="${a.id}"><input value="${esc(a.name)}" data-f="alname" placeholder="同盟名"><span>${PALETTE.map(c=>`<button class="sw${c===a.color?' on':''}" style="background:${c}" data-c="${c}" title="この色にする"></button>`).join(' ')}</span><span class="muted">${cnt}人</span>${st.alliances.length>1?'<button class="b w" data-a="delal" style="padding:2px 7px">✕</button>':''}</div>`;}).join('');
+  document.getElementById('legend').innerHTML=st.alliances.map(a=>`<span><i style="background:${a.color}"></i>${esc(a.name)}</span>`).join('')+'<span>数字＝太陽城までの着弾秒数（ペットバフ無し、参考秒数）</span>';
+  if(!st.alliances.some(a=>a.id===bulkAl))bulkAl=st.alliances[0].id;
+  document.getElementById('bulkAl').innerHTML=st.alliances.map(a=>`<option value="${a.id}"${a.id===bulkAl?' selected':''}>${esc(a.name||'―')}</option>`).join('');
+}
+function seatLabel(pid){const k=tileOf(pid);if(!k)return null;const t=TM[k];return t.dir+(t.sec!=null?' '+t.sec+'秒':'');}
+function renderRoster(){
+  roster.innerHTML=st.players.map((p,i)=>{const sl=seatLabel(p.id);
+    return `<li data-id="${p.id}" class="${armed===p.id?'armed':''}"><span class="hd" draggable="true" title="ドラッグしてマップへ">⠿</span><span class="no">${i+1}</span>
+    <input value="${esc(p.name)}" data-f="name"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${AL(p.al).color};flex:none"></i><select data-f="al">${st.alliances.map(a=>`<option value="${a.id}"${a.id===p.al?' selected':''}>${esc(a.name||'―')}</option>`).join('')}</select>
+    <span class="seat ${sl?'ok':''}">${sl||'未配置'}</span>
+    <button class="mini" data-a="up" title="上へ">▲</button><button class="mini" data-a="dn" title="下へ">▼</button><button class="mini" data-a="del" title="削除">✕</button></li>`;}).join('')
+    || '<li class="muted" style="cursor:default">まだメンバーがいません。上の欄に名前を入れて「メンバー追加」を押してください。</li>';
+}
+function renderCtx(){
+  const S=seats(), placed=st.players.filter(p=>tileOf(p.id)).length, nAct=tiles.filter(active).length;
+  const head=`<div class="muted">${MODE_LABEL[st.mode]}　配置 ${placed}/${st.players.length}人・使えるタイル ${nAct}</div>`;
+  if(armed&&P(armed)){
+    const p=P(armed), sl=seatLabel(armed);
+    ctx.innerHTML=head+`<div class="big">「${esc(p.name)}」を選択中</div>置きたいタイルをタップしてください。${sl?'（今：'+sl+'）人がいるタイルを選ぶと入れ替えます。':''}
+    <div class="acts">${sl?'<button class="b" id="unseat">タイルから外す</button>':''}<button class="b" id="disarm">選択解除</button></div>`;
+    return;
+  }
+  if(selTile){
+    const t=TM[selTile], un=st.players.filter(p=>!tileOf(p.id));
+    ctx.innerHTML=head+`<div class="big">${t.dir}　${t.sec!=null?t.sec+'秒':'秒数データなし'} のタイル</div>
+    ${un.length?'<div>未配置メンバーから選ぶ：</div><div class="chips">'+un.map(p=>`<button class="chip" style="background:${AL(p.al).color}" data-pick="${p.id}">${esc(p.name)}</button>`).join('')+'</div>':''}
+    <div style="margin-top:8px">新しい人を直接入れる：</div>
+    <div class="row"><input id="qName" placeholder="名前"><select id="qAl">${st.alliances.map(a=>`<option value="${a.id}"${a.id===bulkAl?' selected':''}>${esc(a.name||'―')}</option>`).join('')}</select><button class="b p" id="qAdd">入れる</button></div>
+    <div class="acts"><button class="b" id="desel">閉じる</button></div>`;
+    return;
+  }
+  ctx.innerHTML=head+`<div class="big">操作ガイド</div>メンバーかマップ上の人をタップ → 移動先のタイルをタップで配置できます。空きタイルをタップすると名前を直接入れられます。`;
+}
+
+// ---- events ----
+svg.addEventListener('click',e=>{
+  const g=e.target.closest('[data-k]');if(!g)return;const k=g.dataset.k,t=TM[k];
+  if(!active(t))return;
+  const S=seats();
+  if(armed){assign(armed,k);armed=null;selTile=null;save();render();return;}
+  if(S[k]){armed=S[k];selTile=null;render();return;}
+  selTile=selTile===k?null:k;render();
+  const q=document.getElementById('qName');if(q&&window.innerWidth>900)q.focus();
+});
+svg.addEventListener('dragover',e=>{const g=e.target.closest('[data-k]');if(g&&active(TM[g.dataset.k]))e.preventDefault();});
+svg.addEventListener('drop',e=>{e.preventDefault();const g=e.target.closest('[data-k]');let id='';try{id=e.dataTransfer.getData('text/plain');}catch(_){}
+  if(g&&id&&P(id)&&active(TM[g.dataset.k])){assign(id,g.dataset.k);armed=null;selTile=null;save();render();}});
+roster.addEventListener('dragstart',e=>{const li=e.target.closest('li');if(li&&li.dataset.id){try{e.dataTransfer.setData('text/plain',li.dataset.id);}catch(_){}}});
+roster.addEventListener('click',e=>{
+  const li=e.target.closest('li[data-id]');if(!li)return;const id=li.dataset.id;
+  const a=e.target.dataset&&e.target.dataset.a;
+  if(a){const i=st.players.findIndex(p=>p.id===id);
+    if(a==='up'&&i>0)[st.players[i-1],st.players[i]]=[st.players[i],st.players[i-1]];
+    if(a==='dn'&&i<st.players.length-1)[st.players[i+1],st.players[i]]=[st.players[i],st.players[i+1]];
+    if(a==='del'){st.players.splice(i,1);for(const m in st.seats)for(const k in st.seats[m])if(st.seats[m][k]===id)delete st.seats[m][k];if(armed===id)armed=null;}
+    save();render();return;}
+  if(e.target.matches('input,select'))return;
+  if(selTile){assign(id,selTile);selTile=null;armed=null;save();render();return;}
+  armed=armed===id?null:id;render();
+});
+roster.addEventListener('change',e=>{
+  const li=e.target.closest('li[data-id]');if(!li)return;const p=P(li.dataset.id),f=e.target.dataset.f;
+  if(f==='name'){const v=e.target.value.trim();if(v)p.name=v;}
+  if(f==='al'){p.al=e.target.value;save();render();return;}
+  save();svg.innerHTML=buildSvg(false);
+});
+ctx.addEventListener('click',e=>{
+  const id=e.target.id;
+  if(id==='disarm'){armed=null;render();}
+  if(id==='unseat'){const k=tileOf(armed);if(k)delete seats()[k];armed=null;save();render();}
+  if(id==='desel'){selTile=null;render();}
+  if(e.target.dataset.pick){assign(e.target.dataset.pick,selTile);selTile=null;save();render();}
+  if(id==='qAdd')quickAdd();
+});
+ctx.addEventListener('keydown',e=>{if(e.target.id==='qName'&&e.key==='Enter'&&!e.isComposing)quickAdd();});
+function quickAdd(){const n=document.getElementById('qName').value.trim();if(!n||!selTile)return;
+  const p=addPlayer(n,document.getElementById('qAl').value);seats()[selTile]=p.id;selTile=null;save();render();}
+const alBox=document.getElementById('alliances');
+alBox.addEventListener('click',e=>{const row=e.target.closest('[data-al]');if(!row)return;const a=st.alliances.find(x=>x.id===row.dataset.al);
+  if(e.target.dataset.c){a.color=e.target.dataset.c;save();render();}
+  if(e.target.dataset.a==='delal'){const rest=st.alliances.filter(x=>x!==a);confirmBox(`${a.name?'同盟「'+a.name+'」':'この同盟'}を削除しますか？（所属メンバーは${rest[0].name?'「'+rest[0].name+'」':'一番上の同盟'}に移ります）`,()=>{st.alliances=rest;fixState();save();render();});}
+});
+alBox.addEventListener('change',e=>{const row=e.target.closest('[data-al]');if(!row||e.target.dataset.f!=='alname')return;st.alliances.find(x=>x.id===row.dataset.al).name=e.target.value.trim();save();render();});
+document.getElementById('addAl').addEventListener('click',()=>{const used=st.alliances.map(a=>a.color);const c=PALETTE.find(x=>!used.includes(x))||PALETTE[st.alliances.length%8];
+  st.alliances.push({id:'al'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:'',color:c});save();render();});
+document.getElementById('bulkAl').addEventListener('change',e=>{bulkAl=e.target.value;});
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{st.mode=b.dataset.mode;armed=null;selTile=null;save();render();}));
+document.getElementById('center').addEventListener('change',e=>{st.center=e.target.checked;
+  if(!st.center){const S=seats();for(const k in S)if(TM[k].d===0)delete S[k];}save();render();});
+document.getElementById('addBulk').addEventListener('click',()=>{
+  const ta=document.getElementById('bulk');ta.value.split(/\n/).map(s=>s.trim()).filter(Boolean).forEach(l=>{const r=parseLine(l);if(r.name)addPlayer(r.name,r.al);});
+  ta.value='';save();render();});
+document.getElementById('auto').addEventListener('click',()=>autoPlace(false));
+document.getElementById('autoFill').addEventListener('click',()=>autoPlace(true));
+document.getElementById('clearSeats').addEventListener('click',()=>confirmBox(`${MODE_LABEL[st.mode]} の配置をすべて外しますか？（メンバーは残ります）`,()=>{st.seats[st.mode]={};armed=null;selTile=null;save();render();}));
+document.getElementById('clearAll').addEventListener('click',()=>confirmBox('メンバーと全モードの配置をすべて削除しますか？',()=>{st.players=[];st.seats={all:{},left:{},right:{}};armed=null;selTile=null;save();render();}));
+
+// ---- modal / share ----
+const modal=document.getElementById('modal'), mbox=document.getElementById('mbox');
+function openModal(html){mbox.innerHTML=html+'<div class="acts" style="justify-content:flex-end"><button class="b" id="mClose">閉じる</button></div>';modal.hidden=false;}
+modal.addEventListener('click',e=>{if(e.target===modal||e.target.id==='mClose')modal.hidden=true;});
+function confirmBox(msg,fn){openModal(`<p>${esc(msg)}</p><div class="acts"><button class="b w" id="mOk">はい</button></div>`);document.getElementById('mOk').onclick=()=>{modal.hidden=true;fn();};}
+function seatText(){
+  const S=seats(),rows=Object.keys(S).filter(k=>active(TM[k])&&P(S[k])).map(k=>({t:TM[k],p:P(S[k])}));
+  rows.sort((x,y)=>(x.t.sec??999)-(y.t.sec??999)||DIRS.indexOf(x.t.dir)-DIRS.indexOf(y.t.dir));
+  let s=`【KNT 王城戦 席順】${MODE_LABEL[st.mode]}\n`;
+  rows.forEach(r=>{s+=`${r.t.sec!=null?r.t.sec+'秒':'―'}　${r.t.dir}　${r.p.name}${st.alliances.length>1&&AL(r.p.al).name?'［'+AL(r.p.al).name+'］':''}\n`;});
+  const un=st.players.filter(p=>!tileOf(p.id));if(un.length)s+=`未配置：${un.map(p=>p.name).join('、')}\n`;
+  return s;}
+document.getElementById('copyText').addEventListener('click',async()=>{
+  const s=seatText();
+  try{await navigator.clipboard.writeText(s);openModal('<p><b>コピーしました。</b>ゲーム内チャットやLINEに貼り付けできます。</p><textarea readonly>'+esc(s)+'</textarea>');}
+  catch(e){openModal('<p>下の文章を選択してコピーしてください。</p><textarea readonly>'+esc(s)+'</textarea>');}
+});
+let DL=null;
+const IN_CLAUDE=!!(window.claude&&window.claude.use);
+if(!IN_CLAUDE){DL={save:({filename,data})=>new Promise(res=>{const u=URL.createObjectURL(data);const a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);res({status:'saved'});})};document.getElementById('dlImg').hidden=false;}
+try{if(IN_CLAUDE)window.claude.use('downloads').then(d=>{DL=d;const b=document.getElementById('dlImg');if(b)b.hidden=!d;}).catch(()=>{});}catch(e){}
+function buildPng(){return new Promise((res,rej)=>{
+  const str=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VW} ${VH}" width="${VW}" height="${VH}" font-family="Hiragino Sans, Noto Sans JP, Yu Gothic, sans-serif"><rect width="100%" height="100%" fill="#fff"/>${buildSvg(true)}</svg>`;
+  const src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(str);
+  const img=new Image();
+  img.onload=()=>{try{const c=document.createElement('canvas');c.width=VW*2;c.height=VH*2;const x=c.getContext('2d');x.scale(2,2);x.drawImage(img,0,0);
+      const url=c.toDataURL('image/png');c.toBlob(b=>res({url,blob:b}),'image/png');}
+    catch(e){res({url:src,blob:new Blob([str],{type:'image/svg+xml'}),svg:true});}};
+  img.onerror=()=>rej();img.src=src;});}
+function fname(ext){const d=new Date(),p=n=>String(n).padStart(2,'0');
+  const m={all:'国内王城戦',left:'SVS左側',right:'SVS右側'}[st.mode];
+  return `席順_${m}_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.${ext}`;}
+async function downloadImg(msgEl){
+  if(!DL){if(msgEl)msgEl.textContent='この画面ではダウンロードできません。画像を長押し（スマホ）か右クリックで保存してください。';return;}
+  try{const r=await buildPng();await DL.save({filename:fname(r.svg?'svg':'png'),data:r.blob});if(msgEl)msgEl.textContent='ダウンロードしました。';}
+  catch(e){if(!msgEl)return;const c=e&&e.code;msgEl.textContent=c==='declined'?'ダウンロードをキャンセルしました。':c==='rate_limited'?'少し待ってからもう一度押してください。':'ダウンロードできませんでした。画像を長押し（スマホ）か右クリックで保存してください。';}
+}
+document.getElementById('makeImg').addEventListener('click',async()=>{
+  try{const r=await buildPng();
+    openModal('<p><b>席順画像</b></p>'+(DL?'<div class="acts"><button class="b p" id="mDl">この画像をダウンロード</button></div>':'')+'<p class="muted" id="mDlMsg">'+(DL?'':'スマホは長押し、パソコンは右クリックで「画像を保存」してください。')+'</p><img alt="席順画像" src="'+r.url+'">');
+    const b=document.getElementById('mDl');if(b)b.onclick=()=>downloadImg(document.getElementById('mDlMsg'));
+  }catch(e){openModal('<p>画像を作れませんでした。画面のスクリーンショットをご利用ください。</p>');}
+});
+document.getElementById('dlImg').addEventListener('click',()=>{const m=document.getElementById('dlMsg');m.textContent='';downloadImg(m);});
+document.getElementById('dataBtn').addEventListener('click',()=>{
+  openModal('<p><b>データ書き出し／読み込み</b><br><span class="muted">下の文字をコピーして保存しておくと、別の端末に貼り付けて「読み込む」で同じ配置を再現できます。</span></p><textarea id="mData">'+esc(JSON.stringify(st))+'</textarea><div class="acts"><button class="b" id="mCopy">コピー</button><button class="b p" id="mLoad">貼り付けた内容を読み込む</button></div><p class="muted" id="mMsg"></p>');
+  document.getElementById('mCopy').onclick=async()=>{const v=document.getElementById('mData').value;try{await navigator.clipboard.writeText(v);document.getElementById('mMsg').textContent='コピーしました。';}catch(e){document.getElementById('mData').select();document.getElementById('mMsg').textContent='選択した状態です。手動でコピーしてください。';}};
+  document.getElementById('mLoad').onclick=()=>{try{const o=JSON.parse(document.getElementById('mData').value);if(!o.players||!o.seats)throw 0;st=Object.assign({mode:'all',center:true,nid:1},o);fixState();bulkAl=st.alliances[0].id;armed=null;selTile=null;save();modal.hidden=true;render();}catch(e){document.getElementById('mMsg').textContent='読み込めませんでした。書き出した文字をそのまま貼り付けてください。';}};
+});
+render();
+})();
+</script>
+</body>
+</html>
