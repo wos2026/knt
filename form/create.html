@@ -189,7 +189,7 @@ textarea.tall{min-height:200px}
   var q=function(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)')); return m?decodeURIComponent(m[1]):''; };
   var EID=q('id'), EKEY=q('key'), EDIT=!!EID, TOKEN=FORM_AUTH.token();
   var BASE=location.href.replace(/[?#].*$/,'').replace(/[^/]*$/,'');
-  var gen=4, sel={};
+  var gen=5, sel={};
   var WD='日月火水木金土';
 
   function lines(id){ return $(id).value.split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean); }
@@ -251,7 +251,7 @@ textarea.tall{min-height:200px}
 
   /* --- 初期値 --- */
   setLines('join',['21:00までにログインしてスタートダッシュできる','途中参加','参加できない']);
-  applyGen(4,true);
+  applyGen(5,true);
 
   /* --- 編集モード --- */
   function fill(c){

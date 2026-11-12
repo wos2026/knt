@@ -24,9 +24,9 @@ var HERO_DB = [
   { id: 'reina',    name: 'レイナ',       type: '槍', gen: 4, gear: true,  icon: 'heroes/reina.jpg' },
   { id: 'lion',     name: 'リオン',       type: '弓', gen: 4, gear: true,  icon: 'heroes/lion.jpg' },
   // 第5世代
-  { id: 'hector',   name: 'ヘクトー',     type: '盾', gen: 5, gear: true },
-  { id: 'norah',    name: 'ノラ',         type: '槍', gen: 5, gear: true },
-  { id: 'gwen',     name: 'グエン',       type: '弓', gen: 5, gear: true },
+  { id: 'hector',   name: 'ヘクトー',     type: '盾', gen: 5, gear: true,  icon: 'heroes/hector.jpg' },
+  { id: 'norah',    name: 'ノラ',         type: '槍', gen: 5, gear: true,  icon: 'heroes/norah.jpg' },
+  { id: 'gwen',     name: 'グエン',       type: '弓', gen: 5, gear: true,  icon: 'heroes/gwen.jpg' },
   // 第6世代
   { id: 'wuming',   name: '無名',         type: '盾', gen: 6, gear: true },
   { id: 'renee',    name: 'レネ',         type: '槍', gen: 6, gear: true },
