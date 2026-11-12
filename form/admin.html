@@ -121,7 +121,7 @@ a{color:var(--accent)}
   $('toForgot').onclick=function(e){ e.preventDefault(); err(''); msg(''); $('fLogin').hidden=true; $('fForgot').hidden=false; document.querySelector('.tabs').hidden=true; };
   $('backLogin').onclick=function(e){ e.preventDefault(); tab(false); };
   $('tLogin').onclick=function(){tab(false)}; $('tReg').onclick=function(){tab(true)};
-  function showAuth(){ $('dash').hidden=true; $('authCard').hidden=false; }
+  function showAuth(){ $('dash').hidden=true; $('authCard').hidden=false; if(location.hash==='#register') tab(true); }
   function busy(b,on,label){ b.disabled=on; if(label) b.textContent=label; }
 
   if(!FORM_API){ err('保存先が未設定です（管理者の設定待ち）。'); return; }
