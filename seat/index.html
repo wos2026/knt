@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KNT 王城戦 席順ボード</title>
+<title>王城戦席順ボード</title>
 <style>
 :root{--navy:#1d3557;--blue:#457b9d;--sky:#e7f0f8;--line:#d5dde6;--txt:#1f2933;--muted:#6b7785;
 --r0:#c0392b;--r1:#1f5fa8;--r2:#2e7d32;--r3:#6d6d6d}
@@ -69,7 +69,7 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding:6px 0 18px}
 </style>
 </head>
 <body>
-<header><h1>王城戦 席順ボード</h1></header>
+<header><h1>王城戦席順ボード</h1></header>
 <div id="howto"><details open><summary>使い方（タップで開閉）</summary><ol>
 <li><b>モードを選ぶ</b>：国内王城戦はレッドゾーン全部、SVSは「左側」「右側」のどちらかを使います（使わない側はグレー）。配置はモードごとに別々に保存されます。</li>
 <li><b>同盟と色を決める</b>：「同盟とカラー」に同盟名を入れ、8色から色を選びます。「＋ 同盟を追加」で同盟を増やせます。</li>
@@ -208,7 +208,7 @@ function buildSvg(exp){
   const lab=(t,x,y)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">${t}</text>`;
   g+=lab('北',vx(C0,C0),vy(C0,C0)+34)+lab('南',vx(C1+1,C1+1),vy(C1+1,C1+1)-14)+lab('東',vx(C1+1,C0)-30,vy(C1+1,C0)+7)+lab('西',vx(C0,C1+1)+30,vy(C0,C1+1)+7);
   if(exp){
-    g+=`<text x="${PAD}" y="${PAD+18}" font-size="22" font-weight="700" fill="#1d3557">KNT 王城戦 席順</text>`;
+    g+=`<text x="${PAD}" y="${PAD+18}" font-size="22" font-weight="700" fill="#1d3557">王城戦席順</text>`;
     g+=`<text x="${PAD}" y="${PAD+44}" font-size="15" fill="#1d3557">${MODE_LABEL[st.mode]}</text>`;
     const n=st.alliances.length;let ly=VH-PAD-18*n+6;st.alliances.forEach((a,i)=>{g+=`<rect x="${PAD}" y="${ly+i*18-11}" width="13" height="13" rx="3" fill="${a.color}"/><text x="${PAD+19}" y="${ly+i*18}" font-size="13" fill="#333">${esc(a.name)}</text>`;});
     g+=`<text x="${VW-PAD}" y="${VH-PAD}" text-anchor="end" font-size="12" fill="#888">製作者「FURUKANA」</text>`;
@@ -371,7 +371,7 @@ function confirmBox(msg,fn){openModal(`<p>${esc(msg)}</p><div class="acts"><butt
 function seatText(){
   const S=seats(),rows=Object.keys(S).filter(k=>active(TM[k])&&P(S[k])).map(k=>({t:TM[k],p:P(S[k])}));
   rows.sort((x,y)=>(x.t.sec??999)-(y.t.sec??999)||DIRS.indexOf(x.t.dir)-DIRS.indexOf(y.t.dir));
-  let s=`【KNT 王城戦 席順】${MODE_LABEL[st.mode]}\n`;
+  let s=`【王城戦席順】${MODE_LABEL[st.mode]}\n`;
   rows.forEach(r=>{s+=`${r.t.sec!=null?r.t.sec+'秒':'―'}　${r.t.dir}　${r.p.name}${st.alliances.length>1&&AL(r.p.al).name?'［'+AL(r.p.al).name+'］':''}\n`;});
   const un=st.players.filter(p=>!tileOf(p.id));if(un.length)s+=`未配置：${un.map(p=>p.name).join('、')}\n`;
   return s;}
