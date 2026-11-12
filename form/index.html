@@ -55,9 +55,10 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 :root[data-theme="dark"] .lv button[aria-pressed=true]{color:#0a1626}
 .hero.miss .nm::after{content:"未選択あり";font-size:11px;color:var(--knt);margin-left:auto}
 .rowl{display:grid;grid-template-columns:4.6em 1fr;gap:6px;align-items:center}
-.rowl>span{font-size:11px;font-weight:800;color:var(--muted);line-height:1.25}
+.rowl>span,.rowl>label{font-size:11px;font-weight:800;color:var(--muted);line-height:1.25}
 .lv.st{grid-template-columns:repeat(6,1fr)}
 .lv.st button{font-size:13px}
+.rowl select.gs{width:100%;min-width:0}
 .hero.off .rowl.need-own{display:none}
 .hero.max .rowl.step{display:none}
 .howto{display:flex;flex-direction:column;gap:8px;background:var(--chip);border-radius:10px;padding:10px;font-size:12px;line-height:1.6}
@@ -273,7 +274,7 @@ function start(C){
           '<div class="rowl"><span>右上遠征<br>スキル</span><div class="lv sk"></div></div>'+
           '<div class="rowl need-own"><span>★</span><div class="lv st rs"></div></div>'+
           '<div class="rowl need-own step"><span>段</span><div class="lv st ds"></div></div>'+
-          (h.gear?'<div class="rowl need-own"><span>専用<br>装備</span><div class="lv st gs"></div></div>':'');
+          (h.gear?'<div class="rowl need-own"><label>専用<br>装備</label><select class="gs"><option value="">選択してください</option></select></div>':'');
         d.querySelector('.nm span:last-child').textContent=h.name;
         function sync(){ d.classList.toggle('off', v.s===0); d.classList.toggle('max', v.r===5);
           if(done(v,h.name)) d.classList.remove('miss'); save(); }
@@ -281,7 +282,9 @@ function start(C){
         chips(d.querySelector('.rs'),[0,1,2,3,4,5],function(n){return '★'+n;},v.r,function(n){v.r=n; if(n===5) v.d=0; sync();});
         chips(d.querySelector('.ds'),[0,1,2,3,4,5],function(n){return n+'段';},v.d,function(n){v.d=n;sync();});
         if(h.gear){ var gl=[]; for(var gi=0; gi<=(C.GEAR_MAX||10); gi++) gl.push(gi);
-          chips(d.querySelector('.gs'),gl,function(n){return n===0?'なし':'Lv'+n;},v.g,function(n){v.g=n;sync();}); }
+          var gs=d.querySelector('.gs'), gid='gear-'+h.id; gs.id=gid; gs.previousElementSibling.htmlFor=gid;
+          gl.forEach(function(n){ var o=document.createElement('option'); o.value=n; o.textContent=n===0?'なし':'Lv'+n; gs.appendChild(o); });
+          gs.value=typeof v.g==='number'?String(v.g):''; gs.onchange=function(){ v.g=gs.value===''?undefined:Number(gs.value); sync(); }; }
         d.classList.toggle('off', v.s===0); d.classList.toggle('max', v.r===5);
         box.appendChild(d);
       });
