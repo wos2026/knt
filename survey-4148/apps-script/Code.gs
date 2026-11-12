@@ -40,8 +40,12 @@ function setup() {
 
 /* ---------- 入口 ---------- */
 function doGet(e) {
-  // 締切後は集計結果を返さない（回答はスプレッドシートで確認）
-  if (CLOSE_AT && new Date() >= new Date(CLOSE_AT)) return json_({ ok: false, closed: true, error: '集計の公開は終了しました' });
+  var p = (e && e.parameter) || {};
+  // 締切後は集計画面には返さない。エクセル・PDF出力（export=1）のときだけ回答を返す
+  if (CLOSE_AT && new Date() >= new Date(CLOSE_AT)) {
+    if (p.export === '1') return json_({ ok: true, closed: true, rows: list_() });
+    return json_({ ok: false, closed: true, error: '集計の公開は終了しました' });
+  }
   var pass = prop_('VIEW_PASS');
   if (pass && String((e && e.parameter && e.parameter.pass) || '') !== pass) {
     return json_({ ok: false, needPass: true, error: pass && e && e.parameter && e.parameter.pass ? '合言葉が違います' : '合言葉が必要です' });

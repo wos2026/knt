@@ -46,6 +46,11 @@ td.h{min-width:3.6em;padding:3px}
 .cell b{display:block;font-family:var(--f-num);font-size:13px}
 .cell small{display:block;font-family:var(--f-num);font-size:10px;opacity:.85}
 .c0{background:transparent;color:var(--muted)}
+.pdfsheet th,.pdfsheet td{position:static !important;max-width:none !important;overflow:visible !important;cursor:default !important;border-radius:0 !important}
+.pdfsheet thead th{background:#1d4f8f !important;color:#fff !important;font-size:11px !important}
+.pdfsheet tbody td:first-child{text-align:left}
+.exp{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.exp .btn{flex:1 1 180px;justify-content:center;padding:12px}
 .c1{background:var(--l1)} .c2{background:var(--l2)} .c3{background:var(--l3);color:#fff} .c4{background:var(--l4);color:#fff} .c5{background:var(--l5);color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .c3,:root:not([data-theme="light"]) .c4,:root:not([data-theme="light"]) .c5{color:#0a1626}}
 :root[data-theme="dark"] .c3,:root[data-theme="dark"] .c4,:root[data-theme="dark"] .c5{color:#0a1626}
@@ -78,6 +83,9 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   <section class="card" id="closedBox" hidden>
     <h2>集計の公開は終了しました</h2>
     <div class="sub">アンケートの締切（<span id="closedAt"></span>）を過ぎたため、集計結果は表示されません。</div>
+    <div class="sub" style="margin-top:12px">回答の一覧は、ファイルで保存できます。</div>
+    <div class="exp"><button class="btn pri" id="xlsx" type="button">エクセルシートで出力</button><button class="btn pri" id="pdf" type="button">PDFで出力</button></div>
+    <div class="sub" id="expMsg" hidden></div>
   </section>
   <div class="notice" id="err" hidden></div>
 
@@ -243,17 +251,89 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     $('memos').innerHTML=m.map(function(r){return '<div><b>'+esc(r['プレイヤー名'])+'</b>'+esc(r['ひとこと'])+'</div>'}).join('');
   }
 
-  $('csv').onclick=function(){
+  function matrix(list){
     var head=['プレイヤー名','所属同盟','参加可能時間','回答日時','大溶鉱炉','総力','兵士(盾)','兵士(槍)','兵士(弓)'];
     H.forEach(function(h){head.push(h.name+' スキル',h.name+' ★'); if(h.gear) head.push(h.name+' 専用装備')}); head.push('ひとこと');
-    var q=function(s){s=s==null?'':String(s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
-    var lines=[head.map(q).join(',')].concat(rows.map(function(r){
+    return [head].concat(list.map(function(r){
       var a=[r['プレイヤー名'],r['所属同盟'],r['参加可能時間'],r['回答日時'],r['大溶鉱炉'],r['総力'],r['兵士(盾)'],r['兵士(槍)'],r['兵士(弓)']];
       H.forEach(function(h){var v=r.heroes[h.name]; a.push(!v?'':v.skill===0?'未所持':v.skill, starTxt(v)); if(h.gear) a.push(v&&typeof v.gear==='number'?v.gear:'')}); a.push(r['ひとこと']);
-      return a.map(q).join(',')}));
+      return a}));
+  }
+  $('csv').onclick=function(){
+    var q=function(s){s=s==null?'':String(s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+    var lines=matrix(rows).map(function(a){return a.map(q).join(',')});
     var blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv'}), a=document.createElement('a');
     a.href=URL.createObjectURL(blob); a.download='英雄育成アンケート.csv'; document.body.appendChild(a); a.click(); a.remove();
   };
+
+  /* ---------- 締切後のファイル出力（エクセル・PDF） ---------- */
+  var FILE=String(C.TITLE||'アンケート').replace(/[\\/:*?"<>|]/g,'')+' 回答';
+  function lib(src,test){ return test()?Promise.resolve():new Promise(function(ok,ng){var t=document.createElement('script');t.src=src;t.onload=ok;t.onerror=function(){ng(new Error('部品の読み込みに失敗しました'))};document.head.appendChild(t)}); }
+  function getAll(){
+    if(DEMO) return Promise.resolve(demo());
+    return fetch(C.API_URL+'?export=1&t='+Date.now()).then(function(r){return r.json()}).then(function(j){
+      if(!j.ok||!j.rows) throw new Error(j.error||'回答を取得できませんでした');
+      return j.rows.slice().sort(function(a,b){return pw(b['総力'])-pw(a['総力'])});
+    });
+  }
+  function expRun(btn,label,fn){
+    var m=$('expMsg'); btn.disabled=true; btn.textContent='作成中…'; m.hidden=true;
+    getAll().then(fn).then(function(n){ m.textContent=n+'人分を保存しました。'; m.hidden=false; })
+      .catch(function(e){ m.textContent='出力できませんでした：'+(e&&e.message||e); m.hidden=false; })
+      .then(function(){ btn.disabled=false; btn.textContent=label; });
+  }
+  $('xlsx').onclick=function(){ var b=this; expRun(b,'エクセルシートで出力',function(list){
+    return lib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',function(){return !!window.XLSX}).then(function(){
+      var aoa=matrix(list).map(function(r,i){ return i? r.map(function(v){ return /^\d+$/.test(String(v))?Number(v):(v==null?'':v); }) : r; });
+      var ws=XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols']=aoa[0].map(function(h,i){ return {wch: i===0?18 : i===2?22 : i===3?17 : /ひとこと/.test(h)?40 : Math.max(8, String(h).length*2) }; });
+      ws['!freeze']={xSplit:1,ySplit:1}; ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:aoa.length-1,c:aoa[0].length-1}})};
+      var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'回答');
+      XLSX.writeFile(wb,FILE+'.xlsx'); return list.length;
+    }); }); };
+  $('pdf').onclick=function(){ var b=this; expRun(b,'PDFで出力',function(list){
+    return lib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',function(){return !!window.html2canvas})
+      .then(function(){ return lib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',function(){return !!(window.jspdf&&window.jspdf.jsPDF)}); })
+      .then(function(){ return pdfMake(list); }); }); };
+  function pdfSheet(list,hs,part){
+    var BG={1:'#d6e6f7',2:'#b3d2f0',3:'#7fb2e6',4:'#3f86d1',5:'#1d4f8f'};
+    var td='border:1px solid #c9d3e0;padding:3px 4px;';
+    var w=document.createElement('div');
+    w.className='pdfsheet'; w.style.cssText='position:fixed;left:-99999px;top:0;width:1600px;background:#fff;color:#14233a;font-family:"M PLUS 1p",sans-serif;padding:24px;box-sizing:border-box';
+    w.innerHTML='<div style="font-size:22px;font-weight:800;margin-bottom:4px">'+esc(C.TITLE)+' 回答一覧'+(part?'（'+part+'）':'')+'</div>'+
+      '<div style="font-size:13px;color:#5b6b80;margin-bottom:12px">'+esc(C.DEADLINE?'締切：'+C.DEADLINE+' ／ ':'')+'回答 '+list.length+'人（総力の高い順）</div>'+
+      '<table style="border-collapse:collapse;width:100%;font-size:12px;line-height:1.3"><thead><tr style="background:#1d4f8f;color:#fff">'+
+      ['名前','参加','総力','溶鉱炉','兵士 盾/槍/弓'].map(function(h){return '<th style="'+td+'text-align:left">'+h+'</th>'}).join('')+
+      hs.map(function(h){return '<th style="'+td+'text-align:center;font-size:11px">'+esc(h.name)+'</th>'}).join('')+'</tr></thead><tbody>'+
+      list.map(function(r,i){ return '<tr style="background:'+(i%2?'#f5f8fc':'#fff')+'"><td style="'+td+'font-weight:700;white-space:nowrap">'+esc(r['プレイヤー名'])+'</td>'+
+        '<td style="'+td+'">'+esc(String(r['参加可能時間']||'').replace('から参加',''))+'</td><td style="'+td+'text-align:right;white-space:nowrap">'+esc(r['総力'])+'</td>'+
+        '<td style="'+td+'">'+esc(r['大溶鉱炉'])+'</td><td style="'+td+'white-space:nowrap">'+esc([r['兵士(盾)'],r['兵士(槍)'],r['兵士(弓)']].join('/'))+'</td>'+
+        hs.map(function(h){ var v=r.heroes[h.name];
+          if(!v) return '<td style="'+td+'text-align:center;color:#9aa7b8">—</td>';
+          if(v.skill===0) return '<td style="'+td+'text-align:center;color:#9aa7b8;font-size:10px">未所持</td>';
+          return '<td style="'+td+'text-align:center;background:'+BG[v.skill]+';color:'+(v.skill>=3?'#fff':'#14233a')+'"><b>Lv'+v.skill+'</b><br><span style="font-size:10px">'+starTxt(v)+(gearTxt(v)?' '+gearTxt(v):'')+'</span></td>'; }).join('')+'</tr>'; }).join('')+
+      '</tbody></table><div style="font-size:11px;color:#5b6b80;margin-top:8px">WOS2026　製作者「FURUKANA」</div>';
+    return w;
+  }
+  function pdfMake(list){
+    var doc=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'}), PW=297, PH=210, M=8, first=true;
+    var half=Math.ceil(H.length/2), parts=H.length>14?[[H.slice(0,half),'1/2'],[H.slice(half),'2/2']]:[[H,'']];
+    var chain=Promise.resolve();
+    parts.forEach(function(pt){ chain=chain.then(function(){
+      var el=pdfSheet(list,pt[0],pt[1]); document.body.appendChild(el);
+      return window.html2canvas(el,{scale:2,backgroundColor:'#fff'}).then(function(cv){
+        el.remove();
+        var wmm=PW-M*2, pxPerMm=cv.width/wmm, pageH=Math.floor((PH-M*2)*pxPerMm), y=0;
+        while(y<cv.height){
+          var h=Math.min(pageH,cv.height-y), c=document.createElement('canvas'); c.width=cv.width; c.height=h;
+          c.getContext('2d').drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+          if(!first) doc.addPage(); first=false;
+          doc.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',M,M,wmm,h/pxPerMm); y+=h;
+        }
+      });
+    }); });
+    return chain.then(function(){ doc.save(FILE+'.pdf'); return list.length; });
+  }
 
   function demo(){ // 表示確認用のダミー
     var names=['サンプルA','サンプルB','サンプルC','サンプルD','サンプルE','サンプルF'], seed=7;
