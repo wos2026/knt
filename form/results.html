@@ -121,7 +121,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
     </section>
   </div>
 
-  <footer id="foot">製作者「FURUKANA」</footer>
+  <footer id="foot">WOS2026　製作者「FURUKANA」</footer>
 </div>
 
 <script src="api.js"></script>
@@ -154,7 +154,7 @@ function start(C, first){
   var H=C.HEROES;
   var all=[], rows=[], fally='全同盟', ftype='全部', sortKey='総力', sortDir=-1;
   $('title').textContent=C.TITLE+' 集計'; document.title=C.TITLE+' 集計';
-  $('foot').textContent=[C.ALLIANCE, C.SERVER].filter(Boolean).join(' · ')+(C.ALLIANCE||C.SERVER?' ｜ ':'')+'製作者「FURUKANA」';
+  $('foot').textContent='WOS2026　製作者「FURUKANA」';
   $('memoSub').textContent=C.MEMO_HINT||'';
   $('toForm').href='index.html?id='+encodeURIComponent(SID);
   if(first&&first.admin){ $('toEdit').hidden=false; $('toEdit').href='create.html?id='+encodeURIComponent(SID)+(KEY?'&key='+encodeURIComponent(KEY):''); $('toAdmin').hidden=false; }

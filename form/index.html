@@ -167,7 +167,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     </div>
   </section>
 
-  <footer id="foot">製作者「FURUKANA」</footer>
+  <footer id="foot">WOS2026　製作者「FURUKANA」</footer>
 </div>
 
 <script src="api.js"></script>
@@ -195,7 +195,7 @@ function start(C){
   $('form').hidden = false;
   $('joinLab').textContent = C.JOIN_LABEL || '参加可能時間';
   if (C.MEMO_HINT) { $('memoHint').textContent = C.MEMO_HINT; $('memoHint').hidden = false; }
-  $('foot').textContent = [C.ALLIANCE, C.SERVER].filter(Boolean).join(' · ') + (C.ALLIANCE||C.SERVER?' ｜ ':'') + '製作者「FURUKANA」';
+  $('foot').textContent='WOS2026　製作者「FURUKANA」';
   var st = { alliance:'', join:'', furnace:'', troops:{盾:'',槍:'',弓:''}, heroes:{} };
 
   $('title').textContent = C.TITLE;
