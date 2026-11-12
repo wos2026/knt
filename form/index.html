@@ -66,6 +66,7 @@ select:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .howto figure{margin:0;display:flex;flex-direction:column;gap:6px}
 .howto img{display:block;width:100%;height:auto;border-radius:8px}
 .howto .note{font-weight:700}
+.pwimg{display:block;width:100%;max-width:360px;height:auto;border-radius:8px;margin-top:6px}
 .bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center}
 .bar .btn.pri{flex:1;justify-content:center;font-size:16px;padding:13px}
 .prog{font-family:var(--f-num);font-size:12px;color:var(--muted);white-space:nowrap}
@@ -116,7 +117,8 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
       <div class="f">
         <label class="lab" for="power">総力<span class="req">必須</span></label>
         <input type="text" id="power" inputmode="decimal" placeholder="例：158.2M">
-        <span class="hint">領主ファイルの ✊ の数字</span>
+        <span class="hint">領主ファイルの ✊ の数字（赤枠の部分）</span>
+        <img class="pwimg" src="howto-power.jpg" width="675" height="175" alt="領主ファイルの画面。✊ の横の総力 234.4M を赤枠で囲んだ例">
       </div>
       <div class="f">
         <span class="lab">兵士レベル<span class="req">必須</span></span>
