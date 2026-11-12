@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>幹部ページ</title>
+<meta name="description" content="ホワサバ同盟向け 英雄育成・出欠アンケートの幹部ページ（ログイン）">
+<meta property="og:title" content="ホワサバ アンケート 幹部ページ">
+<meta property="og:description" content="ログインして、同盟のアンケートを作成・集計できます。">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+.f{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.lab{font-size:14px;font-weight:800}
+.hint{font-size:12px;color:var(--muted);line-height:1.6}
+input[type=text],input[type=password]{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
+input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.tabs button{appearance:none;border:0;background:var(--panel);color:var(--ink);font:inherit;font-size:14px;font-weight:800;padding:11px;cursor:pointer}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button[aria-selected=true]{background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs button[aria-selected=true]{color:#0a1626}}
+:root[data-theme="dark"] .tabs button[aria-selected=true]{color:#0a1626}
+.btn.wide{width:100%;justify-content:center;font-size:16px;padding:12px}
+.who{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.who b{font-size:16px}
+.who .tag{font-size:12px;font-weight:800;background:var(--chip);color:var(--accent);border-radius:999px;padding:3px 10px}
+.who .sp{margin-left:auto}
+.sv{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sv h3{margin:0;font-size:15px;font-weight:800;line-height:1.4}
+.sv .meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted)}
+.sv .st{font-weight:800;border-radius:6px;padding:0 6px}
+.sv .st.open{background:var(--ok-bg);color:var(--ok)}
+.sv .st.closed{background:var(--chip);color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:8px}
+.empty{color:var(--muted);font-size:13px;text-align:center;padding:20px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>幹部ページ</h1>
+    <div class="sub">同盟の英雄育成・出欠アンケートを作成・集計できます。同じサーバー・同じ同盟の幹部どうしで、アンケートを共有できます。</div>
+  </header>
+
+  <div class="notice" id="err" hidden></div>
+  <div class="notice ok" id="msg" hidden></div>
+
+  <section class="card" id="authCard" hidden>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tLogin" aria-selected="true">ログイン</button>
+      <button type="button" role="tab" id="tReg" aria-selected="false">はじめての方（新規登録）</button>
+    </div>
+    <form id="fLogin" novalidate>
+      <div class="f"><label class="lab" for="lId">ログインID</label><input type="text" id="lId" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+      <div class="f"><label class="lab" for="lPw">パスワード</label><input type="password" id="lPw" autocomplete="current-password"></div>
+      <button class="btn pri wide" type="submit" id="bLogin">ログイン</button>
+    </form>
+    <form id="fReg" novalidate hidden>
+      <div class="f"><label class="lab" for="rPass">登録用の合言葉</label><input type="password" id="rPass" autocomplete="off"><span class="hint">管理者から聞いた合言葉を入れてください。</span></div>
+      <div class="row2">
+        <div class="f"><label class="lab" for="rServer">サーバー番号</label><input type="text" id="rServer" inputmode="numeric" placeholder="例：4148"></div>
+        <div class="f"><label class="lab" for="rAlly">同盟名</label><input type="text" id="rAlly" placeholder="例：KNT"></div>
+      </div>
+      <span class="hint" style="display:block;margin:-6px 0 14px">サーバー番号と同盟名が同じ幹部どうしで、アンケートが共有されます。同盟名は3文字の略称（例：KNT）で揃えてください。</span>
+      <div class="f"><label class="lab" for="rId">ログインID</label><input type="text" id="rId" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="半角英数字 3〜20文字"></div>
+      <div class="f"><label class="lab" for="rPw">パスワード</label><input type="password" id="rPw" autocomplete="new-password" placeholder="6文字以上"></div>
+      <div class="f"><label class="lab" for="rPw2">パスワード（確認）</label><input type="password" id="rPw2" autocomplete="new-password"></div>
+      <button class="btn pri wide" type="submit" id="bReg">登録してログイン</button>
+    </form>
+  </section>
+
+  <div id="dash" hidden>
+    <section class="card">
+      <div class="who"><b id="uId"></b><span class="tag" id="uGroup"></span><button class="btn sm sp" type="button" id="bOut">ログアウト</button></div>
+    </section>
+    <a class="btn pri wide" href="create.html" style="margin-top:14px">＋ 新しいアンケートを作る</a>
+    <section style="margin-top:16px">
+      <h2>同盟のアンケート <small id="cnt"></small></h2>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+
+  <footer>ホワサバ アンケート 幹部ページ ｜ 製作者「FURUKANA」</footer>
+</div>
+
+<script src="api.js"></script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var BASE=location.href.replace(/[?#].*$/,'').replace(/[^/]*$/,'');
+  function err(m){ $('err').textContent=m; $('err').hidden=!m; }
+  function msg(m){ $('msg').textContent=m; $('msg').hidden=!m; }
+  function tab(reg){ $('tLogin').setAttribute('aria-selected',!reg); $('tReg').setAttribute('aria-selected',reg); $('fLogin').hidden=reg; $('fReg').hidden=!reg; err(''); }
+  $('tLogin').onclick=function(){tab(false)}; $('tReg').onclick=function(){tab(true)};
+  function showAuth(){ $('dash').hidden=true; $('authCard').hidden=false; }
+  function busy(b,on,label){ b.disabled=on; if(label) b.textContent=label; }
+
+  if(!FORM_API){ err('保存先が未設定です（管理者の設定待ち）。'); return; }
+
+  $('fLogin').addEventListener('submit',function(ev){
+    ev.preventDefault(); err('');
+    var id=$('lId').value.trim(), pw=$('lPw').value;
+    if(!id||!pw) return err('ログインIDとパスワードを入力してください');
+    var b=$('bLogin'); busy(b,true,'ログイン中…');
+    FORM_AUTH.post({action:'login',loginId:id,password:pw}).then(function(j){
+      if(!j.ok) throw new Error(j.error); FORM_AUTH.set(j.token); $('lPw').value=''; loadDash();
+    }).catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'ログイン'); });
+  });
+  $('fReg').addEventListener('submit',function(ev){
+    ev.preventDefault(); err('');
+    var d={action:'register',pass:$('rPass').value,server:$('rServer').value.trim(),alliance:$('rAlly').value.trim(),loginId:$('rId').value.trim(),password:$('rPw').value};
+    var miss=[]; if(!d.pass) miss.push('登録用の合言葉'); if(!d.server) miss.push('サーバー番号'); if(!d.alliance) miss.push('同盟名'); if(!d.loginId) miss.push('ログインID'); if(!d.password) miss.push('パスワード');
+    if(miss.length) return err('未入力：'+miss.join('、'));
+    if(!/^[A-Za-z0-9_.-]{3,20}$/.test(d.loginId)) return err('ログインIDは半角英数字（3〜20文字）で入力してください');
+    if(d.password.length<6) return err('パスワードは6文字以上にしてください');
+    if(d.password!==$('rPw2').value) return err('パスワード（確認）が一致しません');
+    var b=$('bReg'); busy(b,true,'登録中…');
+    FORM_AUTH.post(d).then(function(j){
+      if(!j.ok) throw new Error(j.error); FORM_AUTH.set(j.token); ['rPass','rPw','rPw2'].forEach(function(i){$(i).value=''});
+      msg('登録しました。ログインIDとパスワードは忘れないようにメモしてください。'); loadDash();
+    }).catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'登録してログイン'); });
+  });
+  $('bOut').onclick=function(){ var t=FORM_AUTH.token(); FORM_AUTH.set(''); msg(''); showAuth(); if(t) FORM_AUTH.post({action:'logout',token:t}).catch(function(){}); };
+
+  function copy(btn,text){
+    var ok=function(){ var o=btn.textContent; btn.textContent='コピーしました'; setTimeout(function(){btn.textContent=o},1500); };
+    if(navigator.clipboard) navigator.clipboard.writeText(text).then(ok,function(){ prompt('コピーしてください',text); }); else prompt('コピーしてください',text);
+  }
+  function loadDash(){
+    var t=FORM_AUTH.token(); if(!t) return showAuth();
+    $('list').innerHTML='<div class="empty">読み込み中…</div>'; $('authCard').hidden=true; $('dash').hidden=false;
+    FORM_AUTH.post({action:'mine',token:t}).then(function(j){
+      if(j.needLogin){ FORM_AUTH.set(''); showAuth(); err('ログインの有効期限が切れました。もう一度ログインしてください。'); return; }
+      if(!j.ok) throw new Error(j.error);
+      $('uId').textContent=j.user.id+' さん'; $('uGroup').textContent=j.user.server+' · '+j.user.alliance;
+      $('cnt').textContent=j.surveys.length+'件';
+      var box=$('list'); box.innerHTML='';
+      if(!j.surveys.length){ box.innerHTML='<div class="empty">まだアンケートがありません。「新しいアンケートを作る」から作成してください。</div>'; return; }
+      j.surveys.forEach(function(s){
+        var d=document.createElement('div'); d.className='sv';
+        d.innerHTML='<h3></h3><div class="meta"><span class="st '+(s.closed?'closed':'open')+'">'+(s.closed?'受付終了':'受付中')+'</span><span class="dl"></span><span>回答 '+s.answers+'人</span><span class="ow"></span></div>'+
+          '<div class="tools"><button class="btn sm" type="button">回答リンクをコピー</button><a class="btn sm">集計</a><a class="btn sm">設定変更</a></div>';
+        d.querySelector('h3').textContent=s.title;
+        d.querySelector('.dl').textContent=s.deadline?'締切：'+s.deadline:'締切なし';
+        d.querySelector('.ow').textContent='作成：'+(s.owner||'—')+'（'+s.created+'）';
+        var bs=d.querySelectorAll('.tools > *');
+        bs[0].onclick=function(){ copy(bs[0], BASE+'index.html?id='+s.id); };
+        bs[1].href='results.html?id='+encodeURIComponent(s.id);
+        bs[2].href='create.html?id='+encodeURIComponent(s.id);
+        box.appendChild(d);
+      });
+    }).catch(function(e){ $('list').innerHTML=''; err(FORM_AUTH.netMsg(e,'読み込みに失敗しました。再読み込みしてください。')); });
+  }
+  loadDash();
+})();
+</script>
+</body>
+</html>

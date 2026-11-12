@@ -81,7 +81,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   <div class="demo" id="demoNote" hidden>表示確認用のサンプルデータです（実際の回答ではありません）</div>
   <section class="card" id="closedBox" hidden>
     <h2>集計の公開は終了しました</h2>
-    <div class="sub">アンケートの締切を過ぎたため、公開用の集計は表示されません。幹部の方は管理用リンクから見られます。</div>
+    <div class="sub">アンケートの締切を過ぎたため、公開用の集計は表示されません。幹部の方は<a href="admin.html">幹部ページ</a>からログインして見られます。</div>
   </section>
   <div class="notice" id="err" hidden></div>
 
@@ -96,6 +96,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
       <button class="btn" id="csv" type="button">CSVを保存</button>
       <a class="btn" id="toForm" href="./">回答ページへ</a>
       <a class="btn" id="toEdit" href="create.html" hidden>設定を変更</a>
+      <a class="btn" id="toAdmin" href="admin.html" hidden>幹部ページへ</a>
     </div>
 
     <section style="margin-top:16px">
@@ -130,7 +131,12 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   var $=function(i){return document.getElementById(i)};
   var q=function(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)')); return m?decodeURIComponent(m[1]):''; };
   var SID=q('id'), KEY=q('key'), DEMO=/[?&]demo=1/.test(location.search);
-  function fetchRes(){ return fetch(FORM_API+'?action=results&id='+encodeURIComponent(SID)+(KEY?'&key='+encodeURIComponent(KEY):'')+'&t='+Date.now()).then(function(r){return r.json()}); }
+  var TOKEN=FORM_AUTH.token();
+  function fetchRes(){
+    if(!KEY && TOKEN) return FORM_AUTH.post({action:'results',id:SID,token:TOKEN}).then(function(j){
+      if(j.needLogin){ FORM_AUTH.set(''); TOKEN=''; return fetchRes(); } return j; });
+    return fetch(FORM_API+'?action=results&id='+encodeURIComponent(SID)+(KEY?'&key='+encodeURIComponent(KEY):'')+'&t='+Date.now()).then(function(r){return r.json()});
+  }
   function toC(c){ return { TITLE:c.title, DEADLINE:c.deadline, CLOSE_AT:c.closeAt, MEMBERS:c.members||[], ALLIANCES:[c.alliance||'-'],
     JOIN:c.join, JOIN_LABEL:c.joinLabel||'参加', FURNACE:c.furnace, TROOP:c.troop, HEROES:heroesFromIds(c.heroes), MEMO_HINT:c.memoHint, SERVER:c.server, ALLIANCE:c.alliance }; }
   function fail(m){ $('meta').textContent=''; $('err').textContent=m; $('err').hidden=false; }
@@ -139,6 +145,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
   if(!SID) return fail('集計のリンクが正しくありません。');
   fetchRes().then(function(j){
     if(j.closed){ $('meta').textContent=''; $('closedBox').hidden=false; return; }
+    if(j.needLogin){ $('meta').textContent=''; $('err').innerHTML=''; $('err').appendChild(document.createTextNode('集計を見るには、幹部ページからログインしてください。 ')); var a=document.createElement('a'); a.href='admin.html'; a.textContent='幹部ページへ'; $('err').appendChild(a); $('err').hidden=false; return; }
     if(!j.ok) throw new Error(j.error||'読み込みに失敗しました');
     start(toC(j.config), j);
   }).catch(function(e){ fail((e&&e.message&&!/fetch|network|load failed/i.test(e.message))?e.message:'読み込みに失敗しました。再読み込みしてください。'); });
@@ -150,7 +157,7 @@ function start(C, first){
   $('foot').textContent=[C.ALLIANCE, C.SERVER].filter(Boolean).join(' · ')+(C.ALLIANCE||C.SERVER?' ｜ ':'')+'製作者「FURUKANA」';
   $('memoSub').textContent=C.MEMO_HINT||'';
   $('toForm').href='index.html?id='+encodeURIComponent(SID);
-  if(first&&first.admin){ $('toEdit').hidden=false; $('toEdit').href='create.html?id='+encodeURIComponent(SID)+'&key='+encodeURIComponent(KEY); }
+  if(first&&first.admin){ $('toEdit').hidden=false; $('toEdit').href='create.html?id='+encodeURIComponent(SID)+(KEY?'&key='+encodeURIComponent(KEY):''); $('toAdmin').hidden=false; }
 
   function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
   function pw(s){ // 総力 "158.2M" → 数値

@@ -5,16 +5,24 @@
  * ひとつのスプレッドシートで、複数のアンケート（同盟・サーバー別）をまとめて保存します。
  *  シート「アンケート」… 作成されたアンケートの設定（1行 = 1アンケート）
  *  シート「回答」      … 全アンケートの回答（1行 = 1人分、アンケートIDで区別）
+ *  シート「幹部」      … 幹部のログインID（パスワードは暗号化して保存）
+ *
+ * 幹部は合言葉を使って自分でID・パスワードを登録し、ログインして使います。
+ * 同じサーバー・同じ同盟の幹部どうしは、アンケートを共有できます。
+ * パスワードを忘れた幹部は、シート「幹部」からその行を削除すると登録し直せます。
  *
  * スクリプト プロパティ（プロジェクトの設定 → スクリプト プロパティ）：
- *   CREATE_PASS … アンケート作成用の合言葉（幹部に共有）。未設定だと誰も作成できません
+ *   CREATE_PASS … 幹部登録用の合言葉。未設定だと誰も登録できません
  *
  * デプロイ：ウェブアプリ / 次のユーザーとして実行：自分 / アクセスできるユーザー：全員
  */
 
 var SH_SURVEYS = 'アンケート';
 var SH_ANSWERS = '回答';
-var HEAD_SURVEYS = ['ID', '管理キー', '作成日時', '更新日時', 'タイトル', 'サーバー', '同盟', '締切', '設定(JSON)'];
+var SH_USERS = '幹部';
+var HEAD_SURVEYS = ['ID', '管理キー', '作成日時', '更新日時', 'タイトル', 'サーバー', '同盟', '締切', '設定(JSON)', 'グループ', '作成者'];
+var HEAD_USERS = ['ログインID', 'パスワード(暗号化)', 'ソルト', 'サーバー', '同盟', 'グループ', '登録日時', '最終ログイン'];
+var SESSION_SEC = 21600; // ログインの有効時間（6時間。使うたびに延長）
 var HEAD_ANSWERS = ['アンケートID', '名前キー', '回答日時', 'プレイヤー名', '回答(JSON)'];
 var MAX_MEMBERS = 300, MAX_OPTIONS = 20, MAX_HEROES = 60;
 
@@ -23,8 +31,8 @@ function doGet(e) {
   var p = (e && e.parameter) || {};
   try {
     if (p.action === 'config') return json_(getConfig_(p.id));
-    if (p.action === 'results') return json_(getResults_(p.id, p.key));
-    if (p.action === 'admin') return json_(getAdmin_(p.id, p.key));
+    if (p.action === 'results') return json_(getResults_(p.id, p.key, null));
+    if (p.action === 'admin') return json_(getAdmin_(p.id, p.key, null));
     return json_({ ok: true, service: 'wos-survey' });
   } catch (err) {
     return json_({ ok: false, error: String(err.message || err) });
@@ -34,10 +42,23 @@ function doGet(e) {
 function doPost(e) {
   var req;
   try { req = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: '不正なリクエスト' }); }
+  try {
+    switch (req.action) { // 読み取りだけの操作（ロック不要）
+      case 'login': return json_(login_(req));
+      case 'me': return json_(me_(req));
+      case 'mine': return json_(mine_(req));
+      case 'results': return json_(getResults_(req.id, req.key, req.token));
+      case 'admin': return json_(getAdmin_(req.id, req.key, req.token));
+      case 'logout': CacheService.getScriptCache().remove('tok_' + String(req.token || '')); return json_({ ok: true });
+    }
+  } catch (err) {
+    return json_({ ok: false, error: '処理に失敗しました：' + (err.message || err) });
+  }
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(20000);
     switch (req.action) {
+      case 'register': return json_(register_(req));
       case 'create': return json_(create_(req));
       case 'update': return json_(update_(req));
       case 'submit': return json_(submit_(req));
@@ -50,23 +71,119 @@ function doPost(e) {
   }
 }
 
+/* ---------- 幹部アカウント ---------- */
+function register_(req) {
+  var pass = prop_('CREATE_PASS');
+  if (!pass) return { ok: false, error: '登録用の合言葉が未設定です（管理者に連絡）' };
+  if (String(req.pass || '') !== pass) return { ok: false, error: '登録用の合言葉が違います' };
+  var id = String(req.loginId || '').trim(), pw = String(req.password || '');
+  var server = String(req.server || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 10);
+  var alliance = String(req.alliance || '').replace(/[\u0000-\u001f]/g, '').trim().slice(0, 20);
+  if (!/^[A-Za-z0-9_.-]{3,20}$/.test(id)) return { ok: false, error: 'ログインIDは半角英数字（3〜20文字）で入力してください' };
+  if (pw.length < 6 || pw.length > 64) return { ok: false, error: 'パスワードは6文字以上にしてください' };
+  if (!server) return { ok: false, error: 'サーバー番号を入力してください' };
+  if (!alliance) return { ok: false, error: '同盟名を入力してください' };
+  if (findUser_(id)) return { ok: false, error: 'このログインIDはすでに使われています' };
+  var salt = newId_(16), group = groupKey_(server, alliance), now = new Date();
+  sheet_(SH_USERS, HEAD_USERS).appendRow([id, hash_(pw, salt), salt, server, alliance, group, now, now]);
+  return { ok: true, token: newSession_({ id: id, server: server, alliance: alliance, group: group }), user: { id: id, server: server, alliance: alliance } };
+}
+
+function login_(req) {
+  var id = String(req.loginId || '').trim(), pw = String(req.password || '');
+  var cache = CacheService.getScriptCache(), fk = 'fail_' + id.toLowerCase();
+  var fails = Number(cache.get(fk) || 0);
+  if (fails >= 8) return { ok: false, error: 'ログインの失敗が続いたため、10分ほど待ってからお試しください' };
+  var u = findUser_(id);
+  if (!u || hash_(pw, u.salt) !== u.hash) {
+    cache.put(fk, String(fails + 1), 600);
+    return { ok: false, error: 'ログインIDかパスワードが違います' };
+  }
+  cache.remove(fk);
+  try { u.sheet.getRange(u.row, 8).setValue(new Date()); } catch (x) {}
+  return { ok: true, token: newSession_({ id: u.id, server: u.server, alliance: u.alliance, group: u.group }), user: { id: u.id, server: u.server, alliance: u.alliance } };
+}
+
+function me_(req) {
+  var s = session_(req.token);
+  if (!s) return { ok: false, needLogin: true, error: 'ログインしてください' };
+  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance } };
+}
+
+function mine_(req) {
+  var s = session_(req.token);
+  if (!s) return { ok: false, needLogin: true, error: 'ログインしてください' };
+  var sh = sheet_(SH_SURVEYS, HEAD_SURVEYS), last = sh.getLastRow(), list = [];
+  if (last > 1) {
+    var vals = sh.getRange(2, 1, last - 1, HEAD_SURVEYS.length).getValues();
+    var ans = sheet_(SH_ANSWERS, HEAD_ANSWERS), alast = ans.getLastRow(), counts = {};
+    if (alast > 1) ans.getRange(2, 1, alast - 1, 1).getValues().forEach(function (r) { counts[r[0]] = (counts[r[0]] || 0) + 1; });
+    vals.forEach(function (v) {
+      if (String(v[9]) !== s.group) return;
+      var cfg = {}; try { cfg = JSON.parse(v[8]); } catch (x) {}
+      list.push({ id: v[0], title: v[4], deadline: cfg.deadline || '', closeAt: cfg.closeAt || '', closed: closed_(cfg),
+        created: Utilities.formatDate(new Date(v[2]), 'Asia/Tokyo', 'yyyy/MM/dd'), owner: v[10] || '', answers: counts[v[0]] || 0 });
+    });
+  }
+  list.reverse();
+  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance }, surveys: list };
+}
+
+function findUser_(id) {
+  id = String(id || '').trim();
+  if (!id) return null;
+  var sh = sheet_(SH_USERS, HEAD_USERS);
+  var hit = sh.getRange('A:A').createTextFinder(id).matchEntireCell(true).matchCase(false).findNext();
+  if (!hit || hit.getRow() === 1) return null;
+  var v = sh.getRange(hit.getRow(), 1, 1, HEAD_USERS.length).getValues()[0];
+  return { sheet: sh, row: hit.getRow(), id: String(v[0]), hash: String(v[1]), salt: String(v[2]), server: String(v[3]), alliance: String(v[4]), group: String(v[5]) };
+}
+function newSession_(u) {
+  var t = newId_(32);
+  CacheService.getScriptCache().put('tok_' + t, JSON.stringify(u), SESSION_SEC);
+  return t;
+}
+function session_(token) {
+  token = String(token || '');
+  if (!/^[A-Za-z0-9]{20,40}$/.test(token)) return null;
+  var c = CacheService.getScriptCache(), v = c.get('tok_' + token);
+  if (!v) return null;
+  c.put('tok_' + token, v, SESSION_SEC);
+  return JSON.parse(v);
+}
+function hash_(pw, salt) {
+  var h = salt + '|' + pw;
+  for (var i = 0; i < 300; i++) h = Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, h + '|' + salt));
+  return h;
+}
+function groupKey_(server, alliance) { return norm_(server) + '|' + norm_(alliance); }
+function canManage_(s, key, token) {
+  if (key && String(key) === s.key) return { ok: true };
+  var u = session_(token);
+  if (u && s.group && u.group === s.group) return { ok: true, user: u };
+  return null;
+}
+
 /* ---------- アンケートの作成・変更 ---------- */
 function create_(req) {
-  var pass = prop_('CREATE_PASS');
-  if (!pass) return { ok: false, error: '作成用の合言葉が未設定です（管理者に連絡）' };
-  if (String(req.pass || '') !== pass) return { ok: false, error: '作成用の合言葉が違います' };
+  var u = session_(req.token);
+  if (!u) return { ok: false, needLogin: true, error: 'ログインしてください' };
+  req.config = req.config || {};
+  req.config.server = u.server; req.config.alliance = u.alliance; // アンケートは幹部の同盟に属する
   var cfg = cleanConfig_(req.config);
   if (cfg.error) return { ok: false, error: cfg.error };
   var sh = sheet_(SH_SURVEYS, HEAD_SURVEYS);
   var id = newId_(8), key = newId_(20), now = new Date(), tries = 0;
   while (findSurvey_(id) && tries++ < 5) id = newId_(8);
-  sh.appendRow([id, key, now, now, cfg.title, cfg.server, cfg.alliance, cfg.closeAt, JSON.stringify(cfg)]);
+  sh.appendRow([id, key, now, now, cfg.title, cfg.server, cfg.alliance, cfg.closeAt, JSON.stringify(cfg), u.group, u.id]);
   return { ok: true, id: id, key: key };
 }
 
 function update_(req) {
   var s = findSurvey_(req.id);
-  if (!s || String(req.key || '') !== s.key) return { ok: false, error: 'アンケートが見つからないか、管理キーが違います' };
+  var auth = s && canManage_(s, req.key, req.token);
+  if (!auth) return { ok: false, error: 'アンケートが見つからないか、変更する権限がありません' };
+  if (auth.user) { req.config = req.config || {}; req.config.server = s.config.server; req.config.alliance = s.config.alliance; }
   var cfg = cleanConfig_(req.config);
   if (cfg.error) return { ok: false, error: cfg.error };
   s.sheet.getRange(s.row, 4, 1, 6).setValues([[new Date(), cfg.title, cfg.server, cfg.alliance, cfg.closeAt, JSON.stringify(cfg)]]);
@@ -118,18 +235,20 @@ function getConfig_(id) {
   return res;
 }
 
-function getAdmin_(id, key) {
+function getAdmin_(id, key, token) {
   var s = findSurvey_(id);
-  if (!s || String(key || '') !== s.key) return { ok: false, error: 'アンケートが見つからないか、管理キーが違います' };
+  if (!s || !canManage_(s, key, token)) return { ok: false, needLogin: !key && !session_(token), error: 'アンケートが見つからないか、見る権限がありません' };
   return { ok: true, id: s.id, config: s.config };
 }
 
-function getResults_(id, key) {
+function getResults_(id, key, token) {
   var s = findSurvey_(id);
   if (!s) return { ok: false, error: 'アンケートが見つかりません' };
-  var admin = key && String(key) === s.key;
+  var admin = !!canManage_(s, key, token);
   if (!admin) {
-    if (!s.config.publicResults) return { ok: false, needKey: true, error: '集計を見るには管理用のリンクが必要です' };
+    if (!s.config.publicResults) return token && session_(token)
+      ? { ok: false, forbidden: true, error: 'このアンケートを見る権限がありません（別のサーバー・同盟のアンケートです）' }
+      : { ok: false, needLogin: true, error: '集計を見るには幹部ページからログインしてください' };
     if (closed_(s.config)) return { ok: false, closed: true, error: '集計の公開は終了しました' };
   }
   var sh = sheet_(SH_ANSWERS, HEAD_ANSWERS), rows = [];
@@ -194,7 +313,7 @@ function findSurvey_(id) {
   if (!hit) return null;
   var v = sh.getRange(hit.getRow(), 1, 1, HEAD_SURVEYS.length).getValues()[0];
   var cfg = {}; try { cfg = JSON.parse(v[8]); } catch (x) {}
-  return { sheet: sh, row: hit.getRow(), id: v[0], key: String(v[1]), config: cfg };
+  return { sheet: sh, row: hit.getRow(), id: v[0], key: String(v[1]), config: cfg, group: String(v[9] || '') };
 }
 function closed_(cfg) { return !!cfg.closeAt && new Date() >= new Date(cfg.closeAt); }
 function sheet_(name, head) {
@@ -202,13 +321,14 @@ function sheet_(name, head) {
   var sh = ss.getSheetByName(name);
   if (!sh) {
     var first = ss.getSheets()[0];
-    sh = (ss.getSheets().length === 1 && first.getLastRow() === 0 && first.getName() !== SH_SURVEYS && first.getName() !== SH_ANSWERS)
+    sh = (ss.getSheets().length === 1 && first.getLastRow() === 0 && first.getName() !== SH_SURVEYS && first.getName() !== SH_ANSWERS && first.getName() !== SH_USERS)
       ? first.setName(name) : ss.insertSheet(name);
   }
   if (sh.getLastRow() === 0) { sh.appendRow(head); sh.setFrozenRows(1); }
+  else if (sh.getLastColumn() < head.length) sh.getRange(1, 1, 1, head.length).setValues([head]);
   return sh;
 }
-function setup() { sheet_(SH_SURVEYS, HEAD_SURVEYS); sheet_(SH_ANSWERS, HEAD_ANSWERS); }
+function setup() { sheet_(SH_SURVEYS, HEAD_SURVEYS); sheet_(SH_ANSWERS, HEAD_ANSWERS); sheet_(SH_USERS, HEAD_USERS); }
 function newId_(n) {
   var c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789', s = '';
   var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Math.random() + Date.now());

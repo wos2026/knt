@@ -20,6 +20,7 @@
 .hint{font-size:12px;color:var(--muted);line-height:1.6}
 input[type=text],input[type=password],input[type=date],select,textarea{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--ice);border-color:var(--accent)}
+input[readonly]{background:var(--chip);color:var(--muted)}
 textarea{min-height:110px;resize:vertical;line-height:1.55}
 textarea.tall{min-height:200px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -61,31 +62,24 @@ textarea.tall{min-height:200px}
 <div class="wrap">
   <header>
     <h1 id="h1">アンケート作成</h1>
-    <div class="sub">サーバーの世代を選ぶと、その世代までの英雄が自動で入ります。作成すると、メンバーに配る回答用リンクと、幹部用の集計リンクが発行されます。</div>
+    <div class="sub">サーバーの世代を選ぶと、その世代までの英雄が自動で入ります。作成すると、メンバーに配る回答用リンクが発行されます。集計は幹部ページから見られます。</div>
+    <div class="tools" style="margin-top:8px"><a class="btn sm" href="admin.html">← 幹部ページへ</a></div>
     <span class="mode" id="modeTag" hidden>設定の変更中</span>
   </header>
 
   <div class="notice" id="topErr" hidden></div>
 
   <form id="form" novalidate>
-    <section class="card" id="passCard">
-      <div class="f">
-        <label class="lab" for="pass">作成用の合言葉<span class="req">必須</span></label>
-        <input type="password" id="pass" autocomplete="off" placeholder="管理者から聞いた合言葉">
-        <span class="hint">合言葉を知っている人だけがアンケートを作れます。</span>
-      </div>
-    </section>
-
     <section class="card">
       <h2>基本情報</h2>
       <div class="row2">
         <div class="f">
-          <label class="lab" for="server">サーバー番号<span class="opt">任意</span></label>
-          <input type="text" id="server" inputmode="numeric" placeholder="例：4148">
+          <label class="lab" for="server">サーバー番号</label>
+          <input type="text" id="server" readonly>
         </div>
         <div class="f">
-          <label class="lab" for="alliance">同盟名<span class="opt">任意</span></label>
-          <input type="text" id="alliance" placeholder="例：KNT">
+          <label class="lab" for="alliance">同盟名</label>
+          <input type="text" id="alliance" readonly>
         </div>
       </div>
       <div class="f">
@@ -166,7 +160,7 @@ textarea.tall{min-height:200px}
       </div>
       <div class="f">
         <label class="chk"><input type="checkbox" id="publicResults"> <span>メンバーも集計を見られるようにする</span></label>
-        <span class="hint">オンにすると、締切までは回答用リンクを知っている人なら誰でも集計を見られます。締切後は幹部用リンクだけで見られます。</span>
+        <span class="hint">オンにすると、締切までは集計ページのリンクを知っている人なら誰でも集計を見られます。締切後は幹部（ログイン）だけが見られます。</span>
       </div>
     </section>
 
@@ -181,18 +175,7 @@ textarea.tall{min-height:200px}
       <code id="uForm"></code>
       <div class="tools"><button class="btn sm" type="button" data-copy="uForm">コピー</button><a class="btn sm" id="aForm" target="_blank" rel="noopener">開く</a></div>
     </div>
-    <div class="link secret">
-      <b>幹部用リンク（集計・設定変更）※メンバーには配らないでください</b>
-      <code id="uAdmin"></code>
-      <div class="tools"><button class="btn sm" type="button" data-copy="uAdmin">コピー</button><a class="btn sm" id="aAdmin" target="_blank" rel="noopener">集計を開く</a></div>
-      <span class="hint">このリンクをなくすと集計を見られなくなります。必ずメモやLINEのKeepなどに保存してください。</span>
-    </div>
-    <div class="tools"><a class="btn" id="aEdit">設定を変更する</a><a class="btn" href="create.html">新しく作る</a></div>
-  </section>
-
-  <section class="card" id="mineCard" hidden>
-    <h2>この端末で作ったアンケート</h2>
-    <div class="mine" id="mine"></div>
+    <div class="tools"><a class="btn" id="aRes">集計を開く</a><a class="btn" id="aEdit">設定を変更する</a><a class="btn pri" href="admin.html">幹部ページへ</a></div>
   </section>
 
   <footer>ホワサバ アンケート作成 ｜ 製作者「FURUKANA」</footer>
@@ -204,9 +187,9 @@ textarea.tall{min-height:200px}
 (function(){
   var $=function(i){return document.getElementById(i)};
   var q=function(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)')); return m?decodeURIComponent(m[1]):''; };
-  var EID=q('id'), EKEY=q('key'), EDIT=!!(EID&&EKEY);
-  var BASE=location.href.replace(/[^/]*$/,'');
-  var MINE='wos-form-mine', gen=4, sel={};
+  var EID=q('id'), EKEY=q('key'), EDIT=!!EID, TOKEN=FORM_AUTH.token();
+  var BASE=location.href.replace(/[?#].*$/,'').replace(/[^/]*$/,'');
+  var gen=4, sel={};
   var WD='日月火水木金土';
 
   function lines(id){ return $(id).value.split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean); }
@@ -270,17 +253,6 @@ textarea.tall{min-height:200px}
   setLines('join',['21:00までにログインしてスタートダッシュできる','途中参加','参加できない']);
   applyGen(4,true);
 
-  /* --- この端末で作ったアンケート --- */
-  function mineList(){ try{ return JSON.parse(localStorage.getItem(MINE)||'[]'); }catch(e){ return []; } }
-  function saveMine(it){ try{ var a=mineList().filter(function(x){return x.id!==it.id}); a.unshift(it); localStorage.setItem(MINE, JSON.stringify(a.slice(0,30))); }catch(e){} }
-  function renderMine(){
-    var a=mineList(); $('mineCard').hidden=!a.length || EDIT;
-    $('mine').innerHTML='';
-    a.forEach(function(it){ var x=document.createElement('a'); x.href='results.html?id='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(it.key);
-      x.innerHTML='<b></b><span></span>'; x.firstChild.textContent=it.title; x.lastChild.textContent=(it.server?it.server+' ':'')+(it.deadline||''); $('mine').appendChild(x); });
-  }
-  renderMine();
-
   /* --- 編集モード --- */
   function fill(c){
     $('title').value=c.title||''; $('server').value=c.server||''; $('alliance').value=c.alliance||''; $('lead').value=c.lead||'';
@@ -290,15 +262,23 @@ textarea.tall{min-height:200px}
     setLines('furnace',c.furnace); setLines('troop',c.troop); fillClose(c.closeAt);
   }
   function topErr(m){ $('topErr').textContent=m; $('topErr').hidden=false; }
+  function toLogin(){ location.href='admin.html'; }
   if(!FORM_API){ topErr('保存先が未設定です（管理者の設定待ち）。'); }
+  if(!TOKEN && !EKEY){ toLogin(); return; }
+  $('form').hidden=true;
   if(EDIT){
-    $('h1').textContent='アンケートの設定変更'; $('modeTag').hidden=false; $('passCard').hidden=true; $('send').textContent='変更を保存する';
-    $('form').hidden=true;
-    fetch(FORM_API+'?action=admin&id='+encodeURIComponent(EID)+'&key='+encodeURIComponent(EKEY)+'&t='+Date.now()).then(function(r){return r.json()}).then(function(j){
+    $('h1').textContent='アンケートの設定変更'; $('modeTag').hidden=false; $('send').textContent='変更を保存する';
+    (EKEY ? fetch(FORM_API+'?action=admin&id='+encodeURIComponent(EID)+'&key='+encodeURIComponent(EKEY)+'&t='+Date.now()).then(function(r){return r.json()})
+          : FORM_AUTH.post({action:'admin',id:EID,token:TOKEN})).then(function(j){
+      if(j.needLogin && !EKEY){ FORM_AUTH.set(''); return toLogin(); }
       if(!j.ok) throw new Error(j.error); fill(j.config); $('form').hidden=false;
-    }).catch(function(e){ topErr((e&&e.message)||'読み込みに失敗しました'); });
+    }).catch(function(e){ topErr(FORM_AUTH.netMsg(e,'読み込みに失敗しました')); });
   } else {
-    try{ $('pass').value=sessionStorage.getItem('wos-form-pass')||''; }catch(e){}
+    FORM_AUTH.post({action:'me',token:TOKEN}).then(function(j){
+      if(j.needLogin){ FORM_AUTH.set(''); return toLogin(); }
+      if(!j.ok) throw new Error(j.error);
+      $('server').value=j.user.server; $('alliance').value=j.user.alliance; $('form').hidden=false;
+    }).catch(function(e){ topErr(FORM_AUTH.netMsg(e,'読み込みに失敗しました')); });
   }
 
   /* --- 送信 --- */
@@ -312,7 +292,6 @@ textarea.tall{min-height:200px}
   $('form').addEventListener('submit', function(ev){
     ev.preventDefault();
     var err=$('err'); err.hidden=true; var c=config(), miss=[];
-    if(!EDIT && !$('pass').value) miss.push('作成用の合言葉');
     if(!c.title) miss.push('タイトル');
     if(!c.heroes.length) miss.push('対象の英雄');
     if(!c.join.length) miss.push('参加可能時間の選択肢');
@@ -320,26 +299,25 @@ textarea.tall{min-height:200px}
     if(($('cDate').value&&!ct.value)||(!$('cDate').value&&ct.value)) miss.push('締切の日付と時刻（両方）');
     if(miss.length){ err.textContent='未入力：'+miss.join('、'); err.hidden=false; return; }
     if(c.closeAt && new Date(c.closeAt)<=new Date() && !confirmPast()) return;
-    var body = EDIT ? {action:'update', id:EID, key:EKEY, config:c} : {action:'create', pass:$('pass').value, config:c};
+    var body = EDIT ? {action:'update', id:EID, key:EKEY||undefined, token:EKEY?undefined:TOKEN, config:c} : {action:'create', token:TOKEN, config:c};
     var btn=$('send'); btn.disabled=true; btn.textContent='保存中…';
     fetch(FORM_API,{method:'POST',body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(j){
+      if(j.needLogin){ FORM_AUTH.set(''); throw new Error('ログインの有効期限が切れました。幹部ページからもう一度ログインしてください。'); }
       if(!j.ok) throw new Error(j.error||'保存に失敗しました');
-      if(!EDIT){ try{ sessionStorage.setItem('wos-form-pass',$('pass').value); }catch(e){} }
-      var id=EDIT?EID:j.id, key=EDIT?EKEY:j.key;
-      saveMine({id:id,key:key,title:c.title,server:c.server,deadline:c.deadline});
-      showOut(id,key,EDIT);
-    }).catch(function(e){ var m=(e&&e.message)||''; if(/fetch|network|load failed/i.test(m)||!m) m='保存できませんでした。電波の良いところでもう一度お試しください。'; err.textContent=m; err.hidden=false; })
+      showOut(EDIT?EID:j.id, EDIT);
+    }).catch(function(e){ err.textContent=FORM_AUTH.netMsg(e,'保存できませんでした。電波の良いところでもう一度お試しください。'); err.hidden=false; })
       .then(function(){ btn.disabled=false; btn.textContent=EDIT?'変更を保存する':'アンケートを作成する'; });
   });
   var pastOk=false;
   function confirmPast(){ if(pastOk) return true; pastOk=true; $('err').textContent='締切が過去の日時になっています。このまま保存すると回答を受け付けません。よければもう一度ボタンを押してください。'; $('err').hidden=false; return false; }
 
-  function showOut(id,key,edited){
-    var uf=BASE+'index.html?id='+id, ua=BASE+'results.html?id='+id+'&key='+key;
-    $('uForm').textContent=uf; $('aForm').href=uf; $('uAdmin').textContent=ua; $('aAdmin').href=ua;
-    $('aEdit').href='create.html?id='+id+'&key='+key;
+  function showOut(id,edited){
+    var uf=BASE+'index.html?id='+id;
+    $('uForm').textContent=uf; $('aForm').href=uf;
+    $('aRes').href='results.html?id='+id+(EKEY?'&key='+encodeURIComponent(EKEY):'');
+    $('aEdit').href='create.html?id='+id+(EKEY?'&key='+encodeURIComponent(EKEY):'');
     $('outTitle').textContent=edited?'設定を保存しました':'アンケートを作成しました';
-    $('form').hidden=true; $('mineCard').hidden=true; $('out').hidden=false; window.scrollTo({top:0,behavior:'smooth'});
+    $('form').hidden=true; $('out').hidden=false; window.scrollTo({top:0,behavior:'smooth'});
   }
   [].forEach.call(document.querySelectorAll('[data-copy]'),function(b){ b.onclick=function(){
     var t=$(b.dataset.copy).textContent;
