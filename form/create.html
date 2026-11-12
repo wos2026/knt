@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>アンケート作成</title>
+<meta name="description" content="ホワサバ同盟向け 英雄育成・出欠アンケートの作成ページ（幹部用）">
+<meta property="og:title" content="ホワサバ アンケート作成（幹部用）">
+<meta property="og:description" content="サーバーの世代を選ぶだけで、英雄育成・出欠アンケートを作成できます。">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=M+PLUS+1p:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+.f{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.f:last-child{margin-bottom:0}
+.lab{font-size:14px;font-weight:800}
+.req{color:var(--knt);font-size:11px;font-weight:800;margin-left:6px}
+.opt{color:var(--muted);font-size:11px;font-weight:700;margin-left:6px}
+.hint{font-size:12px;color:var(--muted);line-height:1.6}
+input[type=text],input[type=password],input[type=date],select,textarea{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ice);border-color:var(--accent)}
+textarea{min-height:110px;resize:vertical;line-height:1.55}
+textarea.tall{min-height:200px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.row2{grid-template-columns:1fr}}
+.gens{display:flex;flex-wrap:wrap;gap:6px}
+.gens button{appearance:none;font:inherit;font-size:14px;font-weight:800;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer}
+.gens button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gens button[aria-pressed=true]{color:#0a1626}}
+:root[data-theme="dark"] .gens button[aria-pressed=true]{color:#0a1626}
+.hg{font-size:12px;font-weight:800;color:var(--muted);margin:12px 0 6px;letter-spacing:.06em}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.hchk{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:700;min-width:0}
+.hchk .hn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hchk .face{border-width:2px}
+.hchk .face.盾{border-color:var(--t-shield)} .hchk .face.槍{border-color:var(--t-spear)} .hchk .face.弓{border-color:var(--t-bow)}
+.hchk input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.hchk.off{opacity:.45}
+.face{width:30px;height:30px;border-radius:7px;object-fit:cover;flex:none;border:1px solid var(--line)}
+.face.ini{display:inline-flex;align-items:center;justify-content:center;background:var(--chip);color:var(--accent);font-size:13px;font-weight:800}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:14px;font-weight:700;cursor:pointer}
+.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:none}
+.cnt{font-family:var(--f-num);font-size:12px;color:var(--muted)}
+.bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+.bar .btn.pri{width:100%;justify-content:center;font-size:16px;padding:13px}
+.out{display:flex;flex-direction:column;gap:12px}
+.link{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.link b{font-size:13px}
+.link code{font-family:var(--f-num);font-size:12px;word-break:break-all;color:var(--accent)}
+.link .tools{gap:6px}
+.link.secret{border-color:var(--knt)}
+.link.secret b{color:var(--knt)}
+.mine{display:flex;flex-direction:column;gap:6px}
+.mine a{display:flex;justify-content:space-between;gap:8px;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--ink);text-decoration:none}
+.mine a span{color:var(--muted);font-size:11px;white-space:nowrap}
+.mode{display:inline-block;margin-top:8px;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;background:var(--knt-bg);color:var(--knt)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="h1">アンケート作成</h1>
+    <div class="sub">サーバーの世代を選ぶと、その世代までの英雄が自動で入ります。作成すると、メンバーに配る回答用リンクと、幹部用の集計リンクが発行されます。</div>
+    <span class="mode" id="modeTag" hidden>設定の変更中</span>
+  </header>
+
+  <div class="notice" id="topErr" hidden></div>
+
+  <form id="form" novalidate>
+    <section class="card" id="passCard">
+      <div class="f">
+        <label class="lab" for="pass">作成用の合言葉<span class="req">必須</span></label>
+        <input type="password" id="pass" autocomplete="off" placeholder="管理者から聞いた合言葉">
+        <span class="hint">合言葉を知っている人だけがアンケートを作れます。</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>基本情報</h2>
+      <div class="row2">
+        <div class="f">
+          <label class="lab" for="server">サーバー番号<span class="opt">任意</span></label>
+          <input type="text" id="server" inputmode="numeric" placeholder="例：4148">
+        </div>
+        <div class="f">
+          <label class="lab" for="alliance">同盟名<span class="opt">任意</span></label>
+          <input type="text" id="alliance" placeholder="例：KNT">
+        </div>
+      </div>
+      <div class="f">
+        <label class="lab" for="title">タイトル<span class="req">必須</span></label>
+        <input type="text" id="title" maxlength="80" placeholder="例：11月15日（日）兵器工場 出欠、育成アンケート">
+      </div>
+      <div class="f">
+        <label class="lab" for="lead">説明文<span class="opt">任意</span></label>
+        <input type="text" id="lead" maxlength="200" placeholder="空欄なら標準の説明文が入ります">
+      </div>
+      <div class="f">
+        <span class="lab">回答締切<span class="opt">任意</span></span>
+        <div class="row2">
+          <input type="date" id="cDate" aria-label="締切の日付">
+          <select id="cTime" aria-label="締切の時刻"></select>
+        </div>
+        <span class="hint" id="cLabel">締切を過ぎると、回答の受付が自動で止まります。</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>サーバーの世代</h2>
+      <div class="gens" id="gens"></div>
+      <span class="hint" style="display:block;margin-top:8px">世代を変えると、英雄・大溶鉱炉・兵士レベルの選択肢がその世代の初期値に戻ります。</span>
+    </section>
+
+    <section class="card">
+      <h2>対象の英雄 <small id="hCount"></small></h2>
+      <div class="tools" style="margin-bottom:4px">
+        <button class="btn sm" type="button" id="hAll">すべて選ぶ</button>
+        <button class="btn sm" type="button" id="hNone">すべて外す</button>
+      </div>
+      <span class="hint">不要な英雄はチェックを外してください。アイコンの枠の色は兵種（青＝盾、赤＝槍、緑＝弓）です。専用装備のある英雄は、専用装備Lvも聞きます。</span>
+      <div id="heroBox"></div>
+    </section>
+
+    <section class="card">
+      <h2>参加可能時間</h2>
+      <div class="f">
+        <label class="lab" for="joinLabel">質問の名前</label>
+        <input type="text" id="joinLabel" maxlength="40" value="参加可能時間">
+      </div>
+      <div class="f">
+        <label class="lab" for="join">選択肢 <span class="opt">1行に1つ</span></label>
+        <textarea id="join"></textarea>
+        <span class="hint">「不参加」「参加できない」を含む選択肢は、集計でピンク色になり、参加予定の人数から外れます。</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>大溶鉱炉・兵士レベル</h2>
+      <div class="row2">
+        <div class="f">
+          <label class="lab" for="furnace">大溶鉱炉 <span class="opt">1行に1つ</span></label>
+          <textarea id="furnace"></textarea>
+        </div>
+        <div class="f">
+          <label class="lab" for="troop">兵士（盾・槍・弓 共通）<span class="opt">1行に1つ</span></label>
+          <textarea id="troop"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>メンバー名リスト <small>任意</small></h2>
+      <div class="f">
+        <label class="lab" for="members">名前 <span class="opt">1行に1人</span> <span class="cnt" id="mCount"></span></label>
+        <textarea id="members" class="tall" placeholder="例：&#10;戦闘狂アリス&#10;きざみうどん食べてた&#10;…"></textarea>
+        <span class="hint">入れておくと、回答ページの名前がプルダウンになり（リストにない人は手入力できます）、集計ページに未回答者が表示されます。</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>その他</h2>
+      <div class="f">
+        <label class="lab" for="memoHint">ひとこと欄の説明<span class="opt">任意</span></label>
+        <input type="text" id="memoHint" maxlength="80" placeholder="例：今後の同盟運営について、ご希望などあれば">
+      </div>
+      <div class="f">
+        <label class="chk"><input type="checkbox" id="publicResults"> <span>メンバーも集計を見られるようにする</span></label>
+        <span class="hint">オンにすると、締切までは回答用リンクを知っている人なら誰でも集計を見られます。締切後は幹部用リンクだけで見られます。</span>
+      </div>
+    </section>
+
+    <div class="notice" id="err" hidden></div>
+    <div class="bar"><button class="btn pri" type="submit" id="send">アンケートを作成する</button></div>
+  </form>
+
+  <section class="card out" id="out" hidden>
+    <h2 id="outTitle">アンケートを作成しました</h2>
+    <div class="link">
+      <b>回答用リンク（メンバーに配る）</b>
+      <code id="uForm"></code>
+      <div class="tools"><button class="btn sm" type="button" data-copy="uForm">コピー</button><a class="btn sm" id="aForm" target="_blank" rel="noopener">開く</a></div>
+    </div>
+    <div class="link secret">
+      <b>幹部用リンク（集計・設定変更）※メンバーには配らないでください</b>
+      <code id="uAdmin"></code>
+      <div class="tools"><button class="btn sm" type="button" data-copy="uAdmin">コピー</button><a class="btn sm" id="aAdmin" target="_blank" rel="noopener">集計を開く</a></div>
+      <span class="hint">このリンクをなくすと集計を見られなくなります。必ずメモやLINEのKeepなどに保存してください。</span>
+    </div>
+    <div class="tools"><a class="btn" id="aEdit">設定を変更する</a><a class="btn" href="create.html">新しく作る</a></div>
+  </section>
+
+  <section class="card" id="mineCard" hidden>
+    <h2>この端末で作ったアンケート</h2>
+    <div class="mine" id="mine"></div>
+  </section>
+
+  <footer>ホワサバ アンケート作成 ｜ 製作者「FURUKANA」</footer>
+</div>
+
+<script src="api.js"></script>
+<script src="heroes.js"></script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var q=function(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)')); return m?decodeURIComponent(m[1]):''; };
+  var EID=q('id'), EKEY=q('key'), EDIT=!!(EID&&EKEY);
+  var BASE=location.href.replace(/[^/]*$/,'');
+  var MINE='wos-form-mine', gen=4, sel={};
+  var WD='日月火水木金土';
+
+  function lines(id){ return $(id).value.split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean); }
+  function setLines(id,arr){ $(id).value=(arr||[]).join('\n'); }
+
+  /* --- 締切 --- */
+  var ct=$('cTime'); ct.innerHTML='<option value="">時刻なし（締切なし）</option>';
+  for(var h=0; h<=24; h++){ ['00','30'].forEach(function(m){ if(h===24&&m==='30') return; var v=(h<10?'0':'')+h+':'+m; var o=document.createElement('option'); o.value=o.textContent=v; ct.appendChild(o); }); }
+  function closeInfo(){
+    var d=$('cDate').value, t=ct.value; if(!d||!t) return {closeAt:'',deadline:''};
+    var p=d.split('-').map(Number), hm=t.split(':').map(Number);
+    var base=new Date(Date.UTC(p[0],p[1]-1,p[2],hm[0]-9,hm[1])); // JST
+    var wd=WD.charAt(new Date(Date.UTC(p[0],p[1]-1,p[2])).getUTCDay());
+    return { closeAt: base.toISOString().replace('.000Z','Z'), deadline: p[1]+'月'+p[2]+'日（'+wd+'）'+t+'まで' };
+  }
+  function showClose(){ var c=closeInfo(); $('cLabel').textContent = c.deadline ? '表示：締切：'+c.deadline+'（日本時間）' : '締切を過ぎると、回答の受付が自動で止まります。'; }
+  $('cDate').onchange=showClose; ct.onchange=showClose;
+  function fillClose(iso){
+    if(!iso) return; var t=new Date(iso); if(isNaN(t)) return;
+    var j=new Date(t.getTime()+9*3600e3), hh=j.getUTCHours(), mm=j.getUTCMinutes();
+    if(hh===0&&mm===0){ j=new Date(j.getTime()-86400e3); hh=24; }
+    $('cDate').value=j.getUTCFullYear()+'-'+String(j.getUTCMonth()+1).padStart(2,'0')+'-'+String(j.getUTCDate()).padStart(2,'0');
+    ct.value=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'); showClose();
+  }
+
+  /* --- 世代と英雄 --- */
+  function face(h){ return h.icon?'<img class="face '+h.type+'" src="'+h.icon+'" width="30" height="30" alt="" title="'+h.type+'">':'<span class="face ini '+h.type+'" aria-hidden="true">'+h.name.charAt(0)+'</span>'; }
+  function renderGens(){
+    var g=$('gens'); g.innerHTML='';
+    GEN_LIST.forEach(function(n){ var b=document.createElement('button'); b.type='button'; b.textContent='第'+n+'世代'; b.setAttribute('aria-pressed',n===gen);
+      b.onclick=function(){ applyGen(n,true); }; g.appendChild(b); });
+  }
+  function renderHeroes(){
+    var box=$('heroBox'); box.innerHTML='';
+    var list=HERO_DB.filter(function(h){return h.gen<=gen}).sort(function(a,b){return (b.gen||0)-(a.gen||0)});
+    var groups=[]; list.forEach(function(h){ var g=heroGroup(h); if(groups.indexOf(g)<0) groups.push(g); });
+    groups.forEach(function(gname){
+      var t=document.createElement('div'); t.className='hg'; t.textContent=gname; box.appendChild(t);
+      var grid=document.createElement('div'); grid.className='hgrid'; box.appendChild(grid);
+      list.filter(function(h){return heroGroup(h)===gname}).forEach(function(h){
+        var l=document.createElement('label'); l.className='hchk'+(sel[h.id]?'':' off');
+        l.innerHTML='<input type="checkbox">'+face(h)+'<span class="hn"></span>'; l.title=h.name+'（'+h.type+'）';
+        l.lastChild.textContent=h.name; var c=l.querySelector('input'); c.checked=!!sel[h.id];
+        c.onchange=function(){ sel[h.id]=c.checked; l.classList.toggle('off',!c.checked); count(); };
+        grid.appendChild(l);
+      });
+    });
+    count();
+  }
+  function count(){ var n=HERO_DB.filter(function(h){return h.gen<=gen&&sel[h.id]}).length; $('hCount').textContent=n+'人'; }
+  function applyGen(n, reset){
+    gen=n; renderGens();
+    if(reset){ var d=genDefaults(n); sel={}; d.heroes.forEach(function(id){sel[id]=1}); setLines('furnace',d.furnace); setLines('troop',d.troop); }
+    renderHeroes();
+  }
+  $('hAll').onclick=function(){ HERO_DB.forEach(function(h){ if(h.gen<=gen) sel[h.id]=1; }); renderHeroes(); };
+  $('hNone').onclick=function(){ sel={}; renderHeroes(); };
+  $('members').oninput=function(){ var n=lines('members').length; $('mCount').textContent=n?n+'人':''; };
+
+  /* --- 初期値 --- */
+  setLines('join',['21:00までにログインしてスタートダッシュできる','途中参加','参加できない']);
+  applyGen(4,true);
+
+  /* --- この端末で作ったアンケート --- */
+  function mineList(){ try{ return JSON.parse(localStorage.getItem(MINE)||'[]'); }catch(e){ return []; } }
+  function saveMine(it){ try{ var a=mineList().filter(function(x){return x.id!==it.id}); a.unshift(it); localStorage.setItem(MINE, JSON.stringify(a.slice(0,30))); }catch(e){} }
+  function renderMine(){
+    var a=mineList(); $('mineCard').hidden=!a.length || EDIT;
+    $('mine').innerHTML='';
+    a.forEach(function(it){ var x=document.createElement('a'); x.href='results.html?id='+encodeURIComponent(it.id)+'&key='+encodeURIComponent(it.key);
+      x.innerHTML='<b></b><span></span>'; x.firstChild.textContent=it.title; x.lastChild.textContent=(it.server?it.server+' ':'')+(it.deadline||''); $('mine').appendChild(x); });
+  }
+  renderMine();
+
+  /* --- 編集モード --- */
+  function fill(c){
+    $('title').value=c.title||''; $('server').value=c.server||''; $('alliance').value=c.alliance||''; $('lead').value=c.lead||'';
+    $('joinLabel').value=c.joinLabel||'参加可能時間'; setLines('join',c.join); setLines('members',c.members); $('members').oninput();
+    $('memoHint').value=c.memoHint||''; $('publicResults').checked=!!c.publicResults;
+    gen=c.gen||4; renderGens(); sel={}; (c.heroes||[]).forEach(function(id){sel[id]=1}); renderHeroes();
+    setLines('furnace',c.furnace); setLines('troop',c.troop); fillClose(c.closeAt);
+  }
+  function topErr(m){ $('topErr').textContent=m; $('topErr').hidden=false; }
+  if(!FORM_API){ topErr('保存先が未設定です（管理者の設定待ち）。'); }
+  if(EDIT){
+    $('h1').textContent='アンケートの設定変更'; $('modeTag').hidden=false; $('passCard').hidden=true; $('send').textContent='変更を保存する';
+    $('form').hidden=true;
+    fetch(FORM_API+'?action=admin&id='+encodeURIComponent(EID)+'&key='+encodeURIComponent(EKEY)+'&t='+Date.now()).then(function(r){return r.json()}).then(function(j){
+      if(!j.ok) throw new Error(j.error); fill(j.config); $('form').hidden=false;
+    }).catch(function(e){ topErr((e&&e.message)||'読み込みに失敗しました'); });
+  } else {
+    try{ $('pass').value=sessionStorage.getItem('wos-form-pass')||''; }catch(e){}
+  }
+
+  /* --- 送信 --- */
+  function config(){
+    var c=closeInfo();
+    return { title:$('title').value.trim(), server:$('server').value.trim(), alliance:$('alliance').value.trim(), lead:$('lead').value.trim(),
+      gen:gen, closeAt:c.closeAt, deadline:c.deadline, joinLabel:$('joinLabel').value.trim()||'参加可能時間', join:lines('join'),
+      furnace:lines('furnace'), troop:lines('troop'), members:lines('members'), memoHint:$('memoHint').value.trim(), publicResults:$('publicResults').checked,
+      heroes:HERO_DB.filter(function(h){return h.gen<=gen&&sel[h.id]}).sort(function(a,b){return (b.gen||0)-(a.gen||0)}).map(function(h){return h.id}) };
+  }
+  $('form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var err=$('err'); err.hidden=true; var c=config(), miss=[];
+    if(!EDIT && !$('pass').value) miss.push('作成用の合言葉');
+    if(!c.title) miss.push('タイトル');
+    if(!c.heroes.length) miss.push('対象の英雄');
+    if(!c.join.length) miss.push('参加可能時間の選択肢');
+    if(!c.furnace.length||!c.troop.length) miss.push('大溶鉱炉・兵士レベルの選択肢');
+    if(($('cDate').value&&!ct.value)||(!$('cDate').value&&ct.value)) miss.push('締切の日付と時刻（両方）');
+    if(miss.length){ err.textContent='未入力：'+miss.join('、'); err.hidden=false; return; }
+    if(c.closeAt && new Date(c.closeAt)<=new Date() && !confirmPast()) return;
+    var body = EDIT ? {action:'update', id:EID, key:EKEY, config:c} : {action:'create', pass:$('pass').value, config:c};
+    var btn=$('send'); btn.disabled=true; btn.textContent='保存中…';
+    fetch(FORM_API,{method:'POST',body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(j){
+      if(!j.ok) throw new Error(j.error||'保存に失敗しました');
+      if(!EDIT){ try{ sessionStorage.setItem('wos-form-pass',$('pass').value); }catch(e){} }
+      var id=EDIT?EID:j.id, key=EDIT?EKEY:j.key;
+      saveMine({id:id,key:key,title:c.title,server:c.server,deadline:c.deadline});
+      showOut(id,key,EDIT);
+    }).catch(function(e){ var m=(e&&e.message)||''; if(/fetch|network|load failed/i.test(m)||!m) m='保存できませんでした。電波の良いところでもう一度お試しください。'; err.textContent=m; err.hidden=false; })
+      .then(function(){ btn.disabled=false; btn.textContent=EDIT?'変更を保存する':'アンケートを作成する'; });
+  });
+  var pastOk=false;
+  function confirmPast(){ if(pastOk) return true; pastOk=true; $('err').textContent='締切が過去の日時になっています。このまま保存すると回答を受け付けません。よければもう一度ボタンを押してください。'; $('err').hidden=false; return false; }
+
+  function showOut(id,key,edited){
+    var uf=BASE+'index.html?id='+id, ua=BASE+'results.html?id='+id+'&key='+key;
+    $('uForm').textContent=uf; $('aForm').href=uf; $('uAdmin').textContent=ua; $('aAdmin').href=ua;
+    $('aEdit').href='create.html?id='+id+'&key='+key;
+    $('outTitle').textContent=edited?'設定を保存しました':'アンケートを作成しました';
+    $('form').hidden=true; $('mineCard').hidden=true; $('out').hidden=false; window.scrollTo({top:0,behavior:'smooth'});
+  }
+  [].forEach.call(document.querySelectorAll('[data-copy]'),function(b){ b.onclick=function(){
+    var t=$(b.dataset.copy).textContent;
+    var ok=function(){ var o=b.textContent; b.textContent='コピーしました'; setTimeout(function(){b.textContent=o},1500); };
+    if(navigator.clipboard) navigator.clipboard.writeText(t).then(ok,function(){ prompt('コピーしてください',t); }); else prompt('コピーしてください',t);
+  }; });
+})();
+</script>
+</body>
+</html>
