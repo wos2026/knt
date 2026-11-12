@@ -7,12 +7,9 @@
  *  シート「回答」      … 全アンケートの回答（1行 = 1人分、アンケートIDで区別）
  *  シート「幹部」      … 幹部のログインID（パスワードは暗号化して保存）
  *
- * 幹部は合言葉を使って自分でID・パスワードを登録し、ログインして使います。
+ * 幹部は自分でID・パスワード・メールアドレスを登録し、ログインして使います。
  * 同じサーバー・同じ同盟の幹部どうしは、アンケートを共有できます。
- * パスワードを忘れた幹部は、シート「幹部」からその行を削除すると登録し直せます。
- *
- * スクリプト プロパティ（プロジェクトの設定 → スクリプト プロパティ）：
- *   CREATE_PASS … 幹部登録用の合言葉。未設定だと誰も登録できません
+ * ID・パスワードを忘れたときは、登録したメールアドレスに再設定用のメールが届きます。
  *
  * デプロイ：ウェブアプリ / 次のユーザーとして実行：自分 / アクセスできるユーザー：全員
  */
@@ -21,7 +18,9 @@ var SH_SURVEYS = 'アンケート';
 var SH_ANSWERS = '回答';
 var SH_USERS = '幹部';
 var HEAD_SURVEYS = ['ID', '管理キー', '作成日時', '更新日時', 'タイトル', 'サーバー', '同盟', '締切', '設定(JSON)', 'グループ', '作成者'];
-var HEAD_USERS = ['ログインID', 'パスワード(暗号化)', 'ソルト', 'サーバー', '同盟', 'グループ', '登録日時', '最終ログイン'];
+var HEAD_USERS = ['ログインID', 'パスワード(暗号化)', 'ソルト', 'サーバー', '同盟', 'グループ', '登録日時', '最終ログイン', 'メールアドレス'];
+var SITE_URL = 'https://wos2026.github.io/knt/form/'; // 再設定メールに載せるページの場所
+var RESET_SEC = 1800; // 再設定リンクの有効時間（30分）
 var SESSION_SEC = 21600; // ログインの有効時間（6時間。使うたびに延長）
 var HEAD_ANSWERS = ['アンケートID', '名前キー', '回答日時', 'プレイヤー名', '回答(JSON)'];
 var MAX_MEMBERS = 300, MAX_OPTIONS = 20, MAX_HEROES = 60;
@@ -59,6 +58,9 @@ function doPost(e) {
     lock.waitLock(20000);
     switch (req.action) {
       case 'register': return json_(register_(req));
+      case 'setEmail': return json_(setEmail_(req));
+      case 'forgot': return json_(forgot_(req));
+      case 'reset': return json_(reset_(req));
       case 'create': return json_(create_(req));
       case 'update': return json_(update_(req));
       case 'submit': return json_(submit_(req));
@@ -73,20 +75,18 @@ function doPost(e) {
 
 /* ---------- 幹部アカウント ---------- */
 function register_(req) {
-  var pass = prop_('CREATE_PASS');
-  if (!pass) return { ok: false, error: '登録用の合言葉が未設定です（管理者に連絡）' };
-  if (String(req.pass || '') !== pass) return { ok: false, error: '登録用の合言葉が違います' };
-  var id = String(req.loginId || '').trim(), pw = String(req.password || '');
+  var id = String(req.loginId || '').trim(), pw = String(req.password || ''), mail = cleanMail_(req.email);
   var server = String(req.server || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 10);
   var alliance = String(req.alliance || '').replace(/[\u0000-\u001f]/g, '').trim().slice(0, 20);
   if (!/^[A-Za-z0-9_.-]{3,20}$/.test(id)) return { ok: false, error: 'ログインIDは半角英数字（3〜20文字）で入力してください' };
   if (pw.length < 6 || pw.length > 64) return { ok: false, error: 'パスワードは6文字以上にしてください' };
   if (!server) return { ok: false, error: 'サーバー番号を入力してください' };
   if (!alliance) return { ok: false, error: '同盟名を入力してください' };
+  if (!mail) return { ok: false, error: 'メールアドレスを正しく入力してください' };
   if (findUser_(id)) return { ok: false, error: 'このログインIDはすでに使われています' };
   var salt = newId_(16), group = groupKey_(server, alliance), now = new Date();
-  sheet_(SH_USERS, HEAD_USERS).appendRow([id, hash_(pw, salt), salt, server, alliance, group, now, now]);
-  return { ok: true, token: newSession_({ id: id, server: server, alliance: alliance, group: group }), user: { id: id, server: server, alliance: alliance } };
+  sheet_(SH_USERS, HEAD_USERS).appendRow([id, hash_(pw, salt), salt, server, alliance, group, now, now, mail]);
+  return { ok: true, token: newSession_({ id: id, server: server, alliance: alliance, group: group }), user: { id: id, server: server, alliance: alliance, email: mail } };
 }
 
 function login_(req) {
@@ -107,7 +107,71 @@ function login_(req) {
 function me_(req) {
   var s = session_(req.token);
   if (!s) return { ok: false, needLogin: true, error: 'ログインしてください' };
-  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance } };
+  var u = findUser_(s.id);
+  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance, email: u ? u.email : '' } };
+}
+
+/* メールアドレスの登録・変更（ログイン中） */
+function setEmail_(req) {
+  var s = session_(req.token);
+  if (!s) return { ok: false, needLogin: true, error: 'ログインしてください' };
+  var mail = cleanMail_(req.email);
+  if (!mail) return { ok: false, error: 'メールアドレスを正しく入力してください' };
+  var u = findUser_(s.id);
+  if (!u) return { ok: false, error: 'アカウントが見つかりません' };
+  u.sheet.getRange(u.row, 9).setValue(mail);
+  return { ok: true, email: mail };
+}
+
+/* ID・パスワードを忘れたとき：登録メールにIDと再設定リンクを送る */
+function forgot_(req) {
+  var mail = cleanMail_(req.email);
+  var done = { ok: true, message: '登録されているメールアドレスなら、ログインIDと再設定用のリンクを送りました。届かない場合は迷惑メールフォルダも確認してください。' };
+  if (!mail) return { ok: false, error: 'メールアドレスを正しく入力してください' };
+  var cache = CacheService.getScriptCache(), rk = 'fgt_' + mail;
+  var n = Number(cache.get(rk) || 0);
+  if (n >= 3) return done; // 同じアドレスへの連続送信を防ぐ（1時間に3回まで）
+  cache.put(rk, String(n + 1), 3600);
+  var sh = sheet_(SH_USERS, HEAD_USERS), last = sh.getLastRow();
+  if (last < 2) return done;
+  var users = sh.getRange(2, 1, last - 1, HEAD_USERS.length).getValues()
+    .filter(function (v) { return String(v[8]).toLowerCase() === mail; });
+  if (!users.length) return done;
+  var lines = users.map(function (v) {
+    var t = newId_(32);
+    cache.put('rst_' + t, String(v[0]), RESET_SEC);
+    return '■ ログインID：' + v[0] + '（' + v[3] + ' · ' + v[4] + '）\n' +
+      '　パスワードの再設定：' + SITE_URL + 'admin.html?reset=' + t;
+  });
+  MailApp.sendEmail({
+    to: mail,
+    subject: '【ホワサバ アンケート】ログインIDとパスワード再設定のご案内',
+    body: 'ホワサバ アンケート 幹部ページの、ログインIDとパスワード再設定のご案内です。\n\n' + lines.join('\n\n') +
+      '\n\n再設定のリンクは30分間有効です。パスワードを変えない場合は、このメールは無視してください。\n' +
+      '心当たりがない場合も、このメールは削除してください。\n\n幹部ページ：' + SITE_URL + 'admin.html',
+    name: 'ホワサバ アンケート'
+  });
+  return done;
+}
+
+/* 再設定リンクから新しいパスワードを設定 */
+function reset_(req) {
+  var t = String(req.resetToken || '');
+  if (!/^[A-Za-z0-9]{20,40}$/.test(t)) return { ok: false, error: '再設定のリンクが正しくありません' };
+  var cache = CacheService.getScriptCache(), id = cache.get('rst_' + t);
+  if (!id) return { ok: false, error: '再設定のリンクの有効期限が切れています。もう一度「ID・パスワードを忘れた方」からやり直してください' };
+  var pw = String(req.password || '');
+  if (pw.length < 6 || pw.length > 64) return { ok: false, error: 'パスワードは6文字以上にしてください' };
+  var u = findUser_(id);
+  if (!u) return { ok: false, error: 'アカウントが見つかりません' };
+  var salt = newId_(16);
+  u.sheet.getRange(u.row, 2, 1, 2).setValues([[hash_(pw, salt), salt]]);
+  cache.remove('rst_' + t); cache.remove('fail_' + u.id.toLowerCase());
+  return { ok: true, token: newSession_({ id: u.id, server: u.server, alliance: u.alliance, group: u.group }), user: { id: u.id, server: u.server, alliance: u.alliance } };
+}
+function cleanMail_(m) {
+  m = String(m || '').trim().toLowerCase().slice(0, 120);
+  return /^[^\s@<>",;]+@[^\s@<>",;]+\.[a-z0-9-]{2,}$/.test(m) ? m : '';
 }
 
 function mine_(req) {
@@ -126,7 +190,8 @@ function mine_(req) {
     });
   }
   list.reverse();
-  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance }, surveys: list };
+  var me = findUser_(s.id);
+  return { ok: true, user: { id: s.id, server: s.server, alliance: s.alliance, email: me ? me.email : '' }, surveys: list };
 }
 
 function findUser_(id) {
@@ -136,7 +201,7 @@ function findUser_(id) {
   var hit = sh.getRange('A:A').createTextFinder(id).matchEntireCell(true).matchCase(false).findNext();
   if (!hit || hit.getRow() === 1) return null;
   var v = sh.getRange(hit.getRow(), 1, 1, HEAD_USERS.length).getValues()[0];
-  return { sheet: sh, row: hit.getRow(), id: String(v[0]), hash: String(v[1]), salt: String(v[2]), server: String(v[3]), alliance: String(v[4]), group: String(v[5]) };
+  return { sheet: sh, row: hit.getRow(), id: String(v[0]), hash: String(v[1]), salt: String(v[2]), server: String(v[3]), alliance: String(v[4]), group: String(v[5]), email: String(v[8] || '') };
 }
 function newSession_(u) {
   var t = newId_(32);

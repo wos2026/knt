@@ -37,6 +37,9 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .sv .st.closed{background:var(--chip);color:var(--muted)}
 .list{display:flex;flex-direction:column;gap:8px}
 .empty{color:var(--muted);font-size:13px;text-align:center;padding:20px 0}
+.mailrow{margin-top:8px;font-size:12px;color:var(--muted)}
+input[type=email]{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
+a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -58,17 +61,31 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
       <div class="f"><label class="lab" for="lId">ログインID</label><input type="text" id="lId" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
       <div class="f"><label class="lab" for="lPw">パスワード</label><input type="password" id="lPw" autocomplete="current-password"></div>
       <button class="btn pri wide" type="submit" id="bLogin">ログイン</button>
+      <p style="text-align:center;margin:14px 0 0"><a href="#" id="toForgot">ID・パスワードを忘れた方</a></p>
+    </form>
+    <form id="fForgot" novalidate hidden>
+      <h2>ID・パスワードを忘れた方</h2>
+      <div class="f"><label class="lab" for="fMail">登録したメールアドレス</label><input type="email" id="fMail" autocomplete="email" inputmode="email"></div>
+      <span class="hint" style="display:block;margin:-6px 0 14px">ログインIDと、パスワードを再設定するリンクをメールで送ります。</span>
+      <button class="btn pri wide" type="submit" id="bForgot">メールを送る</button>
+      <p style="text-align:center;margin:14px 0 0"><a href="#" id="backLogin">← ログインに戻る</a></p>
+    </form>
+    <form id="fReset" novalidate hidden>
+      <h2>パスワードの再設定</h2>
+      <div class="f"><label class="lab" for="nPw">新しいパスワード</label><input type="password" id="nPw" autocomplete="new-password" placeholder="6文字以上"></div>
+      <div class="f"><label class="lab" for="nPw2">新しいパスワード（確認）</label><input type="password" id="nPw2" autocomplete="new-password"></div>
+      <button class="btn pri wide" type="submit" id="bReset">パスワードを変更してログイン</button>
     </form>
     <form id="fReg" novalidate hidden>
-      <div class="f"><label class="lab" for="rPass">登録用の合言葉</label><input type="password" id="rPass" autocomplete="off"><span class="hint">管理者から聞いた合言葉を入れてください。</span></div>
       <div class="row2">
-        <div class="f"><label class="lab" for="rServer">サーバー番号</label><input type="text" id="rServer" inputmode="numeric" placeholder="例：4148"></div>
-        <div class="f"><label class="lab" for="rAlly">同盟名</label><input type="text" id="rAlly" placeholder="例：KNT"></div>
+        <div class="f"><label class="lab" for="rServer">サーバー番号</label><input type="text" id="rServer" inputmode="numeric" placeholder="例：4000"></div>
+        <div class="f"><label class="lab" for="rAlly">同盟名</label><input type="text" id="rAlly" placeholder="例：123"></div>
       </div>
-      <span class="hint" style="display:block;margin:-6px 0 14px">サーバー番号と同盟名が同じ幹部どうしで、アンケートが共有されます。同盟名は3文字の略称（例：KNT）で揃えてください。</span>
+      <span class="hint" style="display:block;margin:-6px 0 14px">サーバー番号と同盟名が同じ幹部どうしで、アンケートが共有されます。同盟名は3文字の略称（例：123）で揃えてください。</span>
       <div class="f"><label class="lab" for="rId">ログインID</label><input type="text" id="rId" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="半角英数字 3〜20文字"></div>
       <div class="f"><label class="lab" for="rPw">パスワード</label><input type="password" id="rPw" autocomplete="new-password" placeholder="6文字以上"></div>
       <div class="f"><label class="lab" for="rPw2">パスワード（確認）</label><input type="password" id="rPw2" autocomplete="new-password"></div>
+      <div class="f"><label class="lab" for="rMail">メールアドレス</label><input type="email" id="rMail" autocomplete="email" inputmode="email" placeholder="例：name@example.com"><span class="hint">ID・パスワードを忘れたときに、再設定のメールが届きます。メンバーや他の幹部には表示されません。</span></div>
       <button class="btn pri wide" type="submit" id="bReg">登録してログイン</button>
     </form>
   </section>
@@ -76,6 +93,12 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
   <div id="dash" hidden>
     <section class="card">
       <div class="who"><b id="uId"></b><span class="tag" id="uGroup"></span><button class="btn sm sp" type="button" id="bOut">ログアウト</button></div>
+      <div class="mailrow"><span id="uMail"></span> <a href="#" id="toMail">変更</a></div>
+      <form id="fMailSet" novalidate hidden style="margin-top:10px">
+        <div class="notice" id="mailNeed" hidden style="margin-bottom:10px">ID・パスワードを忘れたときのために、メールアドレスを登録してください。</div>
+        <div class="f"><label class="lab" for="sMail">メールアドレス</label><input type="email" id="sMail" autocomplete="email" inputmode="email"></div>
+        <button class="btn pri" type="submit" id="bMail">保存</button>
+      </form>
     </section>
     <a class="btn pri wide" href="create.html" style="margin-top:14px">＋ 新しいアンケートを作る</a>
     <section style="margin-top:16px">
@@ -94,7 +117,9 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
   var BASE=location.href.replace(/[?#].*$/,'').replace(/[^/]*$/,'');
   function err(m){ $('err').textContent=m; $('err').hidden=!m; }
   function msg(m){ $('msg').textContent=m; $('msg').hidden=!m; }
-  function tab(reg){ $('tLogin').setAttribute('aria-selected',!reg); $('tReg').setAttribute('aria-selected',reg); $('fLogin').hidden=reg; $('fReg').hidden=!reg; err(''); }
+  function tab(reg){ $('tLogin').setAttribute('aria-selected',!reg); $('tReg').setAttribute('aria-selected',reg); $('fLogin').hidden=reg; $('fReg').hidden=!reg; $('fForgot').hidden=true; $('fReset').hidden=true; document.querySelector('.tabs').hidden=false; err(''); }
+  $('toForgot').onclick=function(e){ e.preventDefault(); err(''); msg(''); $('fLogin').hidden=true; $('fForgot').hidden=false; document.querySelector('.tabs').hidden=true; };
+  $('backLogin').onclick=function(e){ e.preventDefault(); tab(false); };
   $('tLogin').onclick=function(){tab(false)}; $('tReg').onclick=function(){tab(true)};
   function showAuth(){ $('dash').hidden=true; $('authCard').hidden=false; }
   function busy(b,on,label){ b.disabled=on; if(label) b.textContent=label; }
@@ -112,19 +137,50 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
   });
   $('fReg').addEventListener('submit',function(ev){
     ev.preventDefault(); err('');
-    var d={action:'register',pass:$('rPass').value,server:$('rServer').value.trim(),alliance:$('rAlly').value.trim(),loginId:$('rId').value.trim(),password:$('rPw').value};
-    var miss=[]; if(!d.pass) miss.push('登録用の合言葉'); if(!d.server) miss.push('サーバー番号'); if(!d.alliance) miss.push('同盟名'); if(!d.loginId) miss.push('ログインID'); if(!d.password) miss.push('パスワード');
+    var d={action:'register',server:$('rServer').value.trim(),alliance:$('rAlly').value.trim(),loginId:$('rId').value.trim(),password:$('rPw').value,email:$('rMail').value.trim()};
+    var miss=[]; if(!d.server) miss.push('サーバー番号'); if(!d.alliance) miss.push('同盟名'); if(!d.loginId) miss.push('ログインID'); if(!d.password) miss.push('パスワード'); if(!d.email) miss.push('メールアドレス');
     if(miss.length) return err('未入力：'+miss.join('、'));
     if(!/^[A-Za-z0-9_.-]{3,20}$/.test(d.loginId)) return err('ログインIDは半角英数字（3〜20文字）で入力してください');
     if(d.password.length<6) return err('パスワードは6文字以上にしてください');
     if(d.password!==$('rPw2').value) return err('パスワード（確認）が一致しません');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) return err('メールアドレスを正しく入力してください');
     var b=$('bReg'); busy(b,true,'登録中…');
     FORM_AUTH.post(d).then(function(j){
-      if(!j.ok) throw new Error(j.error); FORM_AUTH.set(j.token); ['rPass','rPw','rPw2'].forEach(function(i){$(i).value=''});
+      if(!j.ok) throw new Error(j.error); FORM_AUTH.set(j.token); ['rPw','rPw2'].forEach(function(i){$(i).value=''});
       msg('登録しました。ログインIDとパスワードは忘れないようにメモしてください。'); loadDash();
     }).catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'登録してログイン'); });
   });
-  $('bOut').onclick=function(){ var t=FORM_AUTH.token(); FORM_AUTH.set(''); msg(''); showAuth(); if(t) FORM_AUTH.post({action:'logout',token:t}).catch(function(){}); };
+  $('fForgot').addEventListener('submit',function(ev){
+    ev.preventDefault(); err(''); msg('');
+    var m=$('fMail').value.trim(); if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) return err('メールアドレスを正しく入力してください');
+    var b=$('bForgot'); busy(b,true,'送信中…');
+    FORM_AUTH.post({action:'forgot',email:m}).then(function(j){ if(!j.ok) throw new Error(j.error); msg(j.message); })
+      .catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'メールを送る'); });
+  });
+  var RESET=(location.search.match(/[?&]reset=([A-Za-z0-9]{20,40})/)||[])[1];
+  $('fReset').addEventListener('submit',function(ev){
+    ev.preventDefault(); err('');
+    var pw=$('nPw').value; if(pw.length<6) return err('パスワードは6文字以上にしてください'); if(pw!==$('nPw2').value) return err('パスワード（確認）が一致しません');
+    var b=$('bReset'); busy(b,true,'変更中…');
+    FORM_AUTH.post({action:'reset',resetToken:RESET,password:pw}).then(function(j){
+      if(!j.ok) throw new Error(j.error); FORM_AUTH.set(j.token); RESET=''; history.replaceState(null,'',location.pathname);
+      msg('パスワードを変更しました。ログインIDは「'+j.user.id+'」です。'); loadDash();
+    }).catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'パスワードを変更してログイン'); });
+  });
+  function mailUi(email){
+    $('uMail').textContent = email ? 'メール：'+email : 'メール：未登録';
+    $('toMail').textContent = email ? '変更' : '登録する';
+    $('mailNeed').hidden = !!email; $('fMailSet').hidden = !!email; $('sMail').value = email||'';
+  }
+  $('toMail').onclick=function(e){ e.preventDefault(); $('fMailSet').hidden=!$('fMailSet').hidden; };
+  $('fMailSet').addEventListener('submit',function(ev){
+    ev.preventDefault(); err(''); var m=$('sMail').value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) return err('メールアドレスを正しく入力してください');
+    var b=$('bMail'); busy(b,true,'保存中…');
+    FORM_AUTH.post({action:'setEmail',token:FORM_AUTH.token(),email:m}).then(function(j){ if(!j.ok) throw new Error(j.error); mailUi(j.email); msg('メールアドレスを保存しました。'); })
+      .catch(function(e){ err(FORM_AUTH.netMsg(e)); }).then(function(){ busy(b,false,'保存'); });
+  });
+  $('bOut').onclick=function(){ var t=FORM_AUTH.token(); FORM_AUTH.set(''); msg(''); showAuth(); tab(false); if(t) FORM_AUTH.post({action:'logout',token:t}).catch(function(){}); };
 
   function copy(btn,text){
     var ok=function(){ var o=btn.textContent; btn.textContent='コピーしました'; setTimeout(function(){btn.textContent=o},1500); };
@@ -136,7 +192,7 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
     FORM_AUTH.post({action:'mine',token:t}).then(function(j){
       if(j.needLogin){ FORM_AUTH.set(''); showAuth(); err('ログインの有効期限が切れました。もう一度ログインしてください。'); return; }
       if(!j.ok) throw new Error(j.error);
-      $('uId').textContent=j.user.id+' さん'; $('uGroup').textContent=j.user.server+' · '+j.user.alliance;
+      $('uId').textContent=j.user.id+' さん'; $('uGroup').textContent=j.user.server+' · '+j.user.alliance; mailUi(j.user.email||'');
       $('cnt').textContent=j.surveys.length+'件';
       var box=$('list'); box.innerHTML='';
       if(!j.surveys.length){ box.innerHTML='<div class="empty">まだアンケートがありません。「新しいアンケートを作る」から作成してください。</div>'; return; }
@@ -155,7 +211,8 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
       });
     }).catch(function(e){ $('list').innerHTML=''; err(FORM_AUTH.netMsg(e,'読み込みに失敗しました。再読み込みしてください。')); });
   }
-  loadDash();
+  if(RESET){ $('dash').hidden=true; $('authCard').hidden=false; document.querySelector('.tabs').hidden=true; $('fLogin').hidden=true; $('fReset').hidden=false; }
+  else loadDash();
 })();
 </script>
 </body>
