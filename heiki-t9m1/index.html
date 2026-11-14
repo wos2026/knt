@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=1280">
 <title>T9M 軍団1 兵器工場 作戦シート</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap">
@@ -93,6 +93,7 @@ body{margin:0;background:#3A3F4B;font-family:'Noto Sans JP',sans-serif}
 .p3 .pt td{padding:4px 6px;border-bottom:1px solid #E6E5E1;text-align:right}
 .p3 .pt td:first-child{text-align:left;font-weight:700}
 .p3 .nt{margin:0;font-size:13.5px;line-height:1.5}
+@media screen and (max-width:1620px){.wrap{zoom:0.79}}
 @page{size:A3 landscape;margin:0}
 @media print{body{background:#FFFFFF}.sheet{margin:0;box-shadow:none;page-break-after:always}.wrap{transform:none!important;height:auto!important}}
 </style>
@@ -294,9 +295,5 @@ body{margin:0;background:#3A3F4B;font-family:'Noto Sans JP',sans-serif}
 </div>
 </div>
 </div>
-<script>
-function fit(){var w=Math.min(1,(window.innerWidth-16)/1587);var el=document.getElementById('wrap');el.style.transform=w<1?'scale('+w+')':'';el.style.width=w<1?'1587px':'';el.style.height=w<1?(el.scrollHeight*w)+'px':'';}
-window.addEventListener('resize',fit);fit();
-</script>
 </body>
 </html>
