@@ -59,6 +59,26 @@ body{margin:0;background:#3A3F4B;font-family:'Noto Sans JP',sans-serif}
 .p2 .sc{border-radius:10px;padding:7px 10px;display:flex;flex-direction:column;gap:3px}
 .p2 .sc .sl{align-self:flex-start;color:#FFFFFF;font-size:15px;font-weight:900;padding:2px 12px;border-radius:999px}
 .p2 .sc p{margin:0;font-size:14.5px;line-height:1.5}
+.p3 .rw{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px;background:#FFFFFF;border-radius:12px;padding:4px 6px;align-items:stretch}
+.p3 .tm{border-radius:8px;color:#FFFFFF;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;padding:4px;text-align:center}
+.p3 .tm b{font-size:21px;font-weight:900;line-height:1.1}
+.p3 .tm span{font-size:12.5px;font-weight:700;line-height:1.25}
+.p3 .lns{display:flex;flex-direction:column;gap:3px;justify-content:center}
+.p3 .ln{display:grid;grid-template-columns:400px minmax(0,1fr);gap:10px;align-items:center}
+.p3 .who{display:flex;flex-wrap:wrap;gap:4px}
+.p3 .what{font-size:14.5px;line-height:1.4}
+.p3 .ck{display:inline-flex;align-items:center;gap:4px;background:#EEF0F4;border-radius:999px;padding:1px 8px 1px 1px;font-size:12.5px;line-height:1.2}
+.p3 .ck img{width:22px;height:22px;border-radius:50%;object-fit:cover;display:block}
+.p3 .ck.ld{background:#FFC400}
+.p3 .all{display:inline-block;background:#1B2233;color:#FFFFFF;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:900}
+.p3 .box{background:#FFFFFF;border-radius:16px;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.p3 .box h2{margin:0;font-size:20px;font-weight:900}
+.p3 .box ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.55}
+.p3 .pt{border-collapse:collapse;font-size:14px;width:100%}
+.p3 .pt th{background:#1B2233;color:#FFFFFF;padding:4px 6px;font-weight:700}
+.p3 .pt td{padding:4px 6px;border-bottom:1px solid #E6E5E1;text-align:right}
+.p3 .pt td:first-child{text-align:left;font-weight:700}
+.p3 .nt{margin:0;font-size:13.5px;line-height:1.5}
 @page{size:A3 landscape;margin:0}
 @media print{body{background:#FFFFFF}.sheet{margin:0;box-shadow:none;page-break-after:always}.wrap{transform:none!important;height:auto!important}}
 </style>
@@ -213,7 +233,7 @@ body{margin:0;background:#3A3F4B;font-family:'Noto Sans JP',sans-serif}
 <div style="background: #FFFFFF; border-radius: 14px; padding: 10px 16px; display: flex; gap: 12px; align-items: center"><span style="font-size: 28px; font-weight: 900; color: #C0392B">01</span><p style="margin: 0; font-size: 15px; line-height: 1.5"><strong>試験場2つを取って守り切る</strong><br>初回6000＋毎分1200が勝敗のすべて</p></div>
 <div style="background: #FFFFFF; border-radius: 14px; padding: 10px 16px; display: flex; gap: 12px; align-items: center"><span style="font-size: 28px; font-weight: 900; color: #17707F">02</span><p style="margin: 0; font-size: 15px; line-height: 1.5"><strong>28人で全施設に駐屯を置く</strong><br>四隅に採集専門。敵の強い人は2〜3連で倒す</p></div>
 <div style="background: #FFFFFF; border-radius: 14px; padding: 10px 16px; display: flex; gap: 12px; align-items: center"><span style="font-size: 28px; font-weight: 900; color: #5240A8">03</span><p style="margin: 0; font-size: 15px; line-height: 1.5"><strong>王室は終盤に一気に落とす</strong><br>それまで手を出さない</p></div>
-<div style="background: #FAF0D6; border-radius: 14px; padding: 10px 16px; display: flex; flex-direction: column; justify-content: center; gap: 2px"><p style="margin: 0; font-size: 14px; line-height: 1.5">このマップは<strong>自陣＝左側のSafe zone</strong>で作成。<br><strong style="color: #C0392B; font-size: 15px">Safe zoneが左右逆になる場合は、配置位置（担当施設・玉拾いゾーン）を左右反転させること。</strong></p><span style="font-size: 12px; color: #5A6070; text-align: right">1 / 2</span></div>
+<div style="background: #FAF0D6; border-radius: 14px; padding: 10px 16px; display: flex; flex-direction: column; justify-content: center; gap: 2px"><p style="margin: 0; font-size: 14px; line-height: 1.5">このマップは<strong>自陣＝左側のSafe zone</strong>で作成。<br><strong style="color: #C0392B; font-size: 15px">Safe zoneが左右逆になる場合は、配置位置（担当施設・玉拾いゾーン）を左右反転させること。</strong></p><span style="font-size: 12px; color: #5A6070; text-align: right">1 / 3</span></div>
 </div>
 
 </div>
@@ -319,9 +339,53 @@ body{margin:0;background:#3A3F4B;font-family:'Noto Sans JP',sans-serif}
 
 <footer style="padding: 2px 48px 10px; display: flex; justify-content: space-between; align-items: center">
 <span style="font-size: 18px; font-weight: 900; color: #1B2233">みんなで協力して、楽しく勝とう！</span>
-<span style="font-size: 13px; color: #5A6070">製作者「FURUKANA」　2 / 2</span>
+<span style="font-size: 13px; color: #5A6070">製作者「FURUKANA」　2 / 3</span>
 </footer>
 
+</div>
+</div>
+<div class="sheet p3">
+<div style="width: 1587px; height: 1123px; box-sizing: border-box; background: #F6F5F1; font-family: 'Noto Sans JP', sans-serif; color: #1E2230; display: flex; flex-direction: column; overflow: hidden">
+<header style="background: #1B2233; color: #FFFFFF; padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; gap: 32px">
+<div style="display: flex; align-items: baseline; gap: 20px; flex-wrap: nowrap">
+<span style="font-size: 20px; font-weight: 900; letter-spacing: 0.15em; color: #F2C14E; white-space: nowrap">KNT 軍団1</span>
+<h1 style="margin: 0; font-size: 36px; font-weight: 900; line-height: 1.1; white-space: nowrap">兵器工場 作戦シート</h1>
+<span style="font-size: 22px; font-weight: 700; color: #C9CFDC; white-space: nowrap">③ タイムアタック（何分に誰がどこへ）</span>
+</div>
+<span style="font-size: 14px; font-weight: 900; background: #C0392B; color: #FFFFFF; padding: 3px 10px; border-radius: 999px; white-space: nowrap">総指揮：戦闘狂アリス</span>
+</header>
+<div style="padding: 10px 48px 0">
+<div style="position: relative; height: 50px; border-radius: 8px; overflow: visible"><div style="position: absolute; left: 0.0%; width: 33.33333333333333%; top: 0; height: 30px; background: #C0392B; color: #FFFFFF; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center">第1フェーズ</div><div style="position: absolute; left: 33.33333333333333%; width: 41.66666666666667%; top: 0; height: 30px; background: #17707F; color: #FFFFFF; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center">第2フェーズ</div><div style="position: absolute; left: 75.0%; width: 25.0%; top: 0; height: 30px; background: #3A2C80; color: #FFFFFF; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center">王室</div><span style="position: absolute; left: 0.0%; top: 32px; transform: translateX(0); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">0分</span><span style="position: absolute; left: 8.333333333333332%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">5分</span><span style="position: absolute; left: 16.666666666666664%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">10分</span><span style="position: absolute; left: 25.0%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">15分</span><span style="position: absolute; left: 33.33333333333333%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">20分</span><span style="position: absolute; left: 41.66666666666667%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">25分</span><span style="position: absolute; left: 50.0%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">30分</span><span style="position: absolute; left: 58.333333333333336%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">35分</span><span style="position: absolute; left: 66.66666666666666%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">40分</span><span style="position: absolute; left: 75.0%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">45分</span><span style="position: absolute; left: 83.33333333333334%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">50分</span><span style="position: absolute; left: 91.66666666666666%; top: 32px; transform: translateX(-50%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">55分</span><span style="position: absolute; left: 100.0%; top: 32px; transform: translateX(-100%); font-size: 12px; white-space: nowrap; font-weight: 700; color: #3E4454">60分</span></div>
+</div>
+<div style="flex-grow: 1; min-height: 0; padding: 4px 48px 0; display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px; min-height: 0">
+<div class="rw"><div class="tm" style="background: #1B2233"><b>開戦前</b><span>準備</span></div><div class="lns"><div class="ln"><div class="who"><span class="all">全員</span></div><div class="what">出欠確認・集結時間を<strong>1分</strong>に設定・装備確認。ダイヤバフはアリス・peace・さとりーみっく・ちょいちょいへ</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #C0392B"><b>0:00</b><span>開幕ダッシュ（第1フェーズ）</span></div><div class="lns"><div class="ln"><div class="who"><span class="ck ld"><img src="images/alice.png" alt=""><b>アリス</b></span></div><div class="what"><strong>第2試験場へ1分集結</strong>（全員の⑤が乗る）</div></div><div class="ln"><div class="who"><span class="ck ld"><img src="images/satori.png" alt=""><b>さとりーみっく</b></span></div><div class="what"><strong>第1試験場へ1分集結</strong></div></div><div class="ln"><div class="who"><span class="ck ld"><img src="images/kinoko.png" alt=""><b>ホームメイドきのこ</b></span></div><div class="what">スチームボイラー確保 → <strong>以後の支配時間が半分（約1分）</strong></div></div><div class="ln"><div class="who"><span class="ck ld"><img src="images/concorde.png" alt=""><b>コンコルド</b></span><span class="ck ld"><img src="images/kenshi.png" alt=""><b>KENSHI</b></span><span class="ck ld"><img src="images/umarun.png" alt=""><b>うまるん</b></span><span class="ck ld"><img src="images/kurichar.png" alt=""><b>くりちゃー</b></span><span class="ck ld"><img src="images/katanoji.png" alt=""><b>かたのじ</b></span></div><div class="what">各修理工場・中継所へ単騎か1分集結で確保</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/ricky.png" alt=""><b>Ricky</b></span><span class="ck"><img src="images/mugi.png" alt=""><b>Mugi</b></span><span class="ck"><img src="images/marie.png" alt=""><b>Marie</b></span><span class="ck"><img src="images/newmatchan.png" alt=""><b>ニューまっちゃん</b></span></div><div class="what">四隅で<strong>採集開始</strong>（連撃待機）</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/thomas.png" alt=""><b>トーマス</b></span><span class="ck"><img src="images/nonnon.png" alt=""><b>のんのん</b></span><span class="ck"><img src="images/maani.png" alt=""><b>まぁにぃ</b></span><span class="ck"><img src="images/agentk.png" alt=""><b>特殊諜報員K</b></span><span class="ck"><img src="images/shiro.png" alt=""><b>Shiro</b></span><span class="ck"><img src="images/nyorisuke.png" alt=""><b>にょり助おじさん</b></span></div><div class="what">担当ゾーンで待機（集結に乗らない）</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #C0392B"><b>0:02〜0:04</b><span>初回ボーナス確認</span></div><div class="lns"><div class="ln"><div class="who"><span class="ck ld"><img src="images/peace.png" alt=""><b>peace</b></span></div><div class="what">主力が奪った第2試験場の駐屯を<strong>引き継ぐ</strong>。主力は帰還</div></div><div class="ln"><div class="who"><span class="all">全員</span></div><div class="what">行軍②③を試験場2つへ増援。<strong>色が変わったら初回獲得</strong>（試験場6,000・修理3,000・ボイラー/中継所1,200）</div></div><div class="ln"><div class="who"><span class="all">総指揮</span></div><div class="what">全施設の色を確認し、取れていない施設を指示</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #17707F"><b>0:05〜0:18</b><span>守りの時間</span></div><div class="lns"><div class="ln"><div class="who"><span class="all">全員</span></div><div class="what">試験場2つを守る。敵寄りの修理工場（2・4）は強敵なら譲ってOK（初回は取得済み）</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/alice.png" alt=""><b>アリス</b></span></div><div class="what">相手が集結を出したら都市攻撃、着弾前に戻る</div></div><div class="ln"><div class="who"><span class="all">四隅の採集専門・玉拾い班</span></div><div class="what">敵の強い人が来たら近くで2〜3連。奪還で散った玉を拾って即帰還</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #5240A8"><b>0:18</b><span>第2フェーズ準備</span></div><div class="lns"><div class="ln"><div class="who"><span class="ck"><img src="images/choichoi.png" alt=""><b>ちょいちょい</b></span><span class="ck"><img src="images/alice.png" alt=""><b>アリス</b></span></div><div class="what">開放1〜2分前に<strong>1分集結を出せる位置</strong>へ。行軍時間を逆算して出す</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #5240A8"><b>0:20</b><span>第2フェーズ開放</span></div><div class="lns"><div class="ln"><div class="who"><span class="ck ld"><img src="images/choichoi.png" alt=""><b>ちょいちょい</b></span></div><div class="what"><strong>兵器倉庫へ集結</strong>（初回1,200＋与ダメ15%↑被ダメ15%↓）。そのまま守る</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/alice.png" alt=""><b>アリス</b></span></div><div class="what"><strong>王室へ1分集結で初回9,000</strong>を取りに行く。色が変わったら帰還して試験場へ</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/katanoji.png" alt=""><b>かたのじ</b></span></div><div class="what">傭兵野営地の<strong>初回1,200だけ</strong>取り、試験場の増援へ戻る</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #17707F"><b>0:25〜0:45</b><span>中盤の守り</span></div><div class="lns"><div class="ln"><div class="who"><span class="all">全員</span></div><div class="what">試験場2つを守る。武器工房が出たら近くの手の空いた人が確認</div></div><div class="ln"><div class="who"><span class="ck"><img src="images/alice.png" alt=""><b>アリス</b></span><span class="ck"><img src="images/peace.png" alt=""><b>peace</b></span></div><div class="what">負けている時は敵の試験場へ同時着弾</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #3A2C80"><b>0:45</b><span>王室本番（同格：残り15分）</span></div><div class="lns"><div class="ln"><div class="who"><span class="ck ld"><img src="images/alice.png" alt=""><b>アリス</b></span><span class="ck ld"><img src="images/peace.png" alt=""><b>peace</b></span></div><div class="what"><strong>王室へ集結</strong>。全員の⑤が乗る。取ったら最後まで守る</div></div></div></div>
+<div class="rw"><div class="tm" style="background: #1B2233"><b>0:55〜1:00</b><span>ラスト5分</span></div><div class="lns"><div class="ln"><div class="who"><span class="all">全員</span></div><div class="what"><strong>無理な攻撃はしない</strong>。駐屯を守り、玉は拾ったら即帰還。1:00で終了</div></div></div></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div class="box"><h2>初回ボーナス</h2>
+<table class="pt"><tr><th>施設</th><th>初回</th><th>毎分</th></tr>
+<tr><td>王室兵器工場</td><td>9,000</td><td>1,800</td></tr><tr><td>武器試験場</td><td>6,000</td><td>1,200</td></tr><tr><td>武器修理工場</td><td>3,000</td><td>600</td></tr><tr><td>ボイラー・中継所<br>倉庫・野営地</td><td>1,200</td><td>240</td></tr></table>
+<p class="nt">初回は<strong>最初に完全支配した同盟だけ</strong>。施設の色が変わったら獲得。</p></div>
+<div class="box" style="background: #1B2233; color: #FFFFFF"><h2 style="color: #F2C14E">タイムアタックの約束</h2><ul>
+<li>支配は<strong>約2分</strong>、ボイラーを持てば<strong>約1分</strong>。色が変わるまで離れない</li>
+<li>時刻は目安。<strong>第2フェーズ開放はゲーム内表示が優先</strong>（15〜20分）</li>
+<li>合図は<strong>戦闘狂アリス</strong>が出す</li>
+<li>戻るのは行軍だけ。<strong>戦場離脱は12分戻れない</strong></li>
+</ul></div>
+</div>
+</div>
+<footer style="padding: 6px 48px 10px; display: flex; justify-content: space-between; align-items: center">
+<span style="font-size: 18px; font-weight: 900; color: #1B2233">みんなで協力して、楽しく勝とう！</span>
+<span style="font-size: 13px; color: #5A6070">製作者「FURUKANA」　3 / 3</span>
+</footer>
 </div>
 </div>
 </div>
