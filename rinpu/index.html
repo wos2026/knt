@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=1280">
 <title>凛風攻城戦 駐屯配置シート｜KNT きのこ帝国</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
@@ -11,7 +11,8 @@ body{margin:0;background:#0f2147;font-family:'Noto Sans JP',sans-serif}
 .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;color:#dcebfa;font-size:14px}
 .bar a{background:#ffd75e;color:#14295c;font-weight:900;text-decoration:none;padding:10px 16px;border-radius:8px;min-height:24px}
 .bar a:hover{background:#ffe9a6}
-#wrap{overflow:hidden}
+#wrap{}
+@media screen and (max-width:1999px){#sheet{zoom:0.64}}
 #sheet{width:2000px;transform-origin:0 0}
 </style>
 </head>
@@ -89,9 +90,5 @@ body{margin:0;background:#0f2147;font-family:'Noto Sans JP',sans-serif}
 <footer style="background: #14295c; color: #a9c8f0; padding: 9px 32px; display: flex; justify-content: space-between; font-size: 13px"><span>外周（4・5・6）が最前線。城主のハート数は5つ。城主と強い部隊がいる拠点ほど落ちにくくなります</span><span>WOS2026　製作者「FURUKANA」</span></footer>
 </div>
 </div></div>
-<script>
-function fit(){var w=document.documentElement.clientWidth,s=Math.min(1,w/2000),el=document.getElementById('sheet');el.style.transform='scale('+s+')';document.getElementById('wrap').style.height=(1414*s)+'px';}
-window.addEventListener('resize',fit);fit();
-</script>
 </body>
 </html>
