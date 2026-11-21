@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=1640"><title>KNT 国内王城戦 戦略シート 11/21</title>
+<style>
+@page{size:420mm 297mm;margin:0}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans CJK JP","Noto Sans JP",sans-serif;color:#1c2a44}
+.page{width:420mm;height:297mm;padding:12mm 14mm 10mm;page-break-after:always;position:relative;overflow:hidden}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:3px solid #1f3a68;padding-bottom:2.5mm;margin-bottom:4mm}
+.hd h1{margin:0;font-size:26pt;color:#1f3a68;letter-spacing:.04em}
+.hd h1 span{font-size:13pt;color:#4a7cc4;margin-left:4mm}
+.hd .meta{text-align:right;font-size:10pt;color:#5a6b86}
+.ft{position:absolute;bottom:5mm;left:14mm;right:14mm;font-size:8.5pt;color:#8a97ab;display:flex;justify-content:space-between}
+.grid{display:grid;gap:5mm}
+.card{border:1.5px solid #c9d6ea;border-radius:3mm;padding:3mm 4.5mm;background:#fff}
+.card h2{margin:0 0 2mm;font-size:12pt;color:#fff;background:#1f3a68;display:inline-block;padding:1mm 4mm;border-radius:1.5mm}
+.card h3{margin:2mm 0 1mm;font-size:11pt;color:#1f3a68}
+.goal{background:#eaf2fc;border-color:#9cc0ea}
+.kv{display:grid;grid-template-columns:26mm 1fr;row-gap:2.2mm;font-size:11.5pt;line-height:1.5}
+.kv dt{font-weight:700;color:#4a7cc4}
+.kv dd{margin:0}
+.big{font-size:15pt;font-weight:700;color:#1f3a68}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:20mm 1fr;padding:2.2mm 0;border-bottom:1px dashed #c9d6ea;font-size:11pt;line-height:1.4}
+.tl b{color:#1f3a68;font-size:13pt}
+.tl em{font-style:normal;font-weight:700}
+.tl small{display:block;color:#5a6b86;font-size:9.5pt}
+.flow{display:flex;flex-direction:column;gap:2.2mm;font-size:11pt}
+.step{border-radius:2mm;padding:2.6mm 4mm;background:#eaf2fc;border-left:5px solid #4a7cc4}
+.step.main{background:#1f3a68;color:#fff;border-left-color:#9cc0ea}
+.step b{font-size:12pt}
+.step small{display:block;font-size:9.5pt;opacity:.85;margin-top:.5mm}
+.arrow{text-align:center;color:#4a7cc4;font-size:11pt;line-height:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:2mm}
+.step.ng{background:#fdf0e3;border-left-color:#e69138}
+ul.r{margin:0;padding-left:5mm;font-size:10.5pt;line-height:1.7}
+ul.r li b{color:#1f3a68}
+.warn{color:#c0392b;font-weight:700}
+table.roles{width:100%;border-collapse:collapse;font-size:10.5pt}
+table.roles td{border-bottom:1px solid #e1e8f3;padding:1.8mm 2mm}
+table.roles td:last-child{font-weight:700;color:#1f3a68;width:30mm}
+table.roles td.tbd{color:#b0b9c8;font-weight:400}
+/* page2 */
+.map{width:100%;height:auto}
+.map .ct{fill:#fff;font-size:18px;font-weight:700;text-anchor:middle}
+.map .cs{font-size:18px;text-anchor:middle}
+.map .dir{font-size:16px;font-weight:700;fill:#1f3a68;text-anchor:middle}
+.map .pn{font-size:12px;font-weight:700;text-anchor:middle}
+.map .ln{font-size:12.5px;font-weight:700;fill:#1f3a68}
+.map .oth{font-size:13px;fill:#8a97ab;text-anchor:middle}
+table.pt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9.5pt}
+table.pt th{background:#1f3a68;color:#fff;padding:1.5mm 1mm;font-weight:700;border:1px solid #fff}
+table.pt th.red{background:#c0392b}
+table.pt th.gray{background:#8d949e}
+table.pt th.sub{font-size:8.5pt;background:#4a7cc4}
+table.pt td{border:1px solid #d5deeb;padding:1mm 1.2mm;height:11.5mm;vertical-align:middle;text-align:center}
+table.pt td b{display:block;font-size:10.5pt;line-height:1.2;word-break:break-all}
+table.pt td small{display:block;font-size:8pt;color:#6b7a93}
+table.pt td.pos{font-weight:700;font-size:12pt;color:#1f3a68;background:#eaf2fc}
+table.pt td.sec{font-size:9pt;color:#5a6b86}
+table.pt td.lead{background:#1f3a68!important;color:#fff}
+table.pt td.lead small{color:#c9d6ea}table.pt td.lead b,table.pt td.lead2 b{color:#fff!important}
+table.pt td.lead2{background:#e69138!important;color:#fff}
+table.pt td.lead2 small{color:#fff3e3}
+table.pt tr.corner td{background:#f1f3f6;color:#9aa4b3;height:7mm;font-size:9pt}
+table.pt td.corner{background:#f1f3f6;color:#9aa4b3}
+table.pt td.empty{color:#c9d2df}
+td.g0{background:#d6e6fa}
+td.g1{background:#f4f8fd}
+td.g2{background:#fff}
+td.g2 b{color:#8a97ab}
+.legend{display:flex;gap:5mm;font-size:9.5pt;margin-top:2.5mm;flex-wrap:wrap;align-items:center}
+.legend i{display:inline-block;width:5mm;height:3.6mm;border:1px solid #c9d6ea;vertical-align:-.5mm;margin-right:1mm}
+.note{font-size:9.5pt;color:#5a6b86;line-height:1.5;margin-top:2mm}
+/* page3 */
+table.mt{width:100%;border-collapse:collapse;font-size:9pt}
+table.mt th{background:#1f3a68;color:#fff;padding:1.4mm 1mm;font-weight:700}
+table.mt td{border-bottom:1px solid #e1e8f3;padding:1.1mm 1.2mm;text-align:center;white-space:nowrap}
+table.mt td.nm{text-align:left;font-weight:700;max-width:40mm;overflow:hidden;text-overflow:ellipsis}
+table.mt td.r{text-align:right}
+table.mt td.role{text-align:left;font-size:8.5pt}
+.st{display:inline-block;border-radius:1mm;padding:.3mm 1.6mm;font-size:8pt;font-weight:700}
+.st.g0{background:#1f3a68;color:#fff}.st.g1{background:#9cc0ea;color:#1f3a68}.st.g2{background:#e6e9ee;color:#7a8597}
+td.h5{background:#1f3a68;color:#fff;font-weight:700}
+td.h4{background:#4a7cc4;color:#fff}
+td.h3,td.h2{background:#9cc0ea}
+td.h1,td.h0{background:#dce8f7}
+td.hx{color:#b0b9c8}
+.rL{background:#1f3a68;color:#fff;border-radius:1mm;padding:0 1.2mm;font-weight:700}
+.rF{background:#c0392b;color:#fff;border-radius:1mm;padding:0 1.2mm;font-weight:700}
+.rG{background:#8d949e;color:#fff;border-radius:1mm;padding:0 1.2mm;font-weight:700}
+.m5{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:5mm;align-items:start}
+table.mx{width:100%;border-collapse:collapse;font-size:10.5pt}
+table.mx th{background:#4a7cc4;color:#fff;padding:1.3mm 2mm;font-weight:700;text-align:left}
+table.mx th.k{background:#1f3a68;width:12mm;text-align:center}
+table.mx th.k.r{background:#c0392b}
+table.mx td{border-bottom:1px solid #e1e8f3;padding:1.3mm 2mm}
+table.mx td.n{text-align:center;font-weight:700;color:#4a7cc4}
+table.mx td.nm{font-weight:700;color:#1f3a68;white-space:nowrap}
+table.mx td.sub{color:#5a6b86}
+table.mx td.rt{text-align:center;background:#eaf2fc;border-left:2px solid #fff}
+table.mx td.rt b{font-size:16pt;color:#1f3a68;display:block}
+table.mx td.rt small{font-size:8.5pt;color:#5a6b86}
+.m5n{font-size:9.8pt;line-height:1.6;background:#f4f8fd;border-radius:2mm;padding:2mm 3mm}
+.m5n b{color:#1f3a68}
+table.hx{width:100%;border-collapse:collapse;font-size:11pt}
+table.hx th{background:#1f3a68;color:#fff;padding:2mm;border:1px solid #fff;font-weight:700}
+table.hx th.sbh{background:#4a7cc4}
+table.hx th.skh{background:#9cc0ea;color:#1f3a68}
+table.hx td{border:1px solid #d5deeb;padding:1.8mm 1.5mm;text-align:center}
+table.hx td.kb{background:#1f3a68;color:#fff;font-weight:700}
+table.hx td.kb.mid{background:#9cc0ea;color:#1f3a68}
+table.hx td.kb.sub{background:#4a7cc4}
+table.hx td.nm{font-weight:700;color:#1f3a68;font-size:13pt;text-align:left}
+table.hx td.nm small{display:block;font-size:8.5pt;color:#4a7cc4;font-weight:400}
+table.hx td.sb{background:#f4f8fd;color:#3d5579}
+table.hx td.rt{white-space:nowrap;font-weight:700;font-size:12.5pt;color:#1f3a68;background:#eaf2fc}
+table.hx td.sk{background:#fbfdff;color:#3d5579;font-size:11pt}
+.pg{display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:4mm}
+.pb{background:#f4f8fd;border-radius:2mm;overflow:hidden}
+.ph{background:#1f3a68;color:#fff;font-weight:700;font-size:14pt;padding:2.5mm 4mm;display:flex;justify-content:space-between;align-items:center}
+.bdg{background:#9cc0ea;color:#1f3a68;font-size:9pt;border-radius:3mm;padding:.5mm 3mm}
+.sl{display:flex;justify-content:space-between;padding:2.4mm 4mm;border-top:1px solid #dfe7f2;font-size:12.5pt}
+.ss{color:#c0392b;font-weight:700}
+.tg{font-size:8pt;background:#4a7cc4;color:#fff;border-radius:1mm;padding:.2mm 1.5mm;margin-left:2mm;vertical-align:1px}
+table.ml{width:100%;border-collapse:separate;border-spacing:0 .7mm;font-size:10.5pt}
+table.ml th{color:#c0392b;text-align:left;font-size:10pt;padding:0 2mm}
+table.ml td{background:#f4f8fd;padding:1.1mm 2mm}
+table.ml tr.grp td{background:none;color:#c0392b;font-weight:700;font-size:10pt;padding-top:1.2mm}
+td.mn{font-weight:700}td.mn.red{color:#c0392b}
+td.ng,td.un{color:#9aa4b3}
+td.st2{font-size:9.5pt;color:#5a6b86}
+.fc{display:inline-block;border-radius:1.5mm;padding:.3mm 2mm;font-size:9pt;font-weight:700;color:#fff;background:#1f3a68}
+.fc4{background:#5d6f8c}.fc3{background:#9aa4b3}
+.oi{background:#f4f8fd;border-radius:1.5mm;padding:2.4mm 4mm;margin-bottom:1.6mm;font-size:12.5pt}
+.oi.hi{background:#fbe9e7;color:#c0392b}
+.onote{color:#c0392b;font-weight:700;margin-top:2mm}
+.sl.lead{background:#dbe7f7;font-weight:700}.tg.ld{background:#1f3a68}
+.tg.dai{background:#e69138}.pn2{font-size:9.5pt;color:#c0392b;padding:1.8mm 4mm;border-top:1px solid #dfe7f2}
+.bn{font-size:10.5pt;font-weight:400;margin-left:3mm;color:#c9d6ea;margin-right:auto}
+.hr{display:inline-block;width:25mm;font-size:9.5pt;color:#c0392b;font-weight:700}
+.free{grid-column:1/-1;font-size:10.5pt;background:#fbe9e7;border-radius:2mm;padding:2mm 4mm;color:#1c2a44}
+.free b{color:#c0392b}
+.psec{background:#c0392b;color:#fff;font-size:10pt;border-radius:1.5mm;padding:.3mm 2.2mm;margin-left:3mm}
+.seat{font-size:10pt;color:#c0392b;font-weight:700;white-space:nowrap}.seat.out{color:#9aa4b3}
+.hr{width:21mm!important}
+.iso{width:100%;height:auto;display:block;background:#fff}
+.iso .in{font-size:10.5px;font-weight:700;text-anchor:middle}.iso .it{font-size:8.5px;text-anchor:middle}
+.iso .il{font-size:12px;font-weight:700;fill:#fff;text-anchor:middle}
+.iso .ic{font-size:15px;font-weight:700;fill:#fff;text-anchor:middle}.iso .ic2{font-size:9px;fill:#5a6b86;text-anchor:middle}
+.iso .ic3{font-size:12px;font-weight:700;fill:#fff;text-anchor:middle}
+.tg.unk{background:#9aa4b3}.warn2{color:#c0392b!important;font-weight:700}
+.iso2{width:100%;height:auto;display:block}
+.iso2 .sn2{font-size:13px;font-weight:700;text-anchor:middle}.iso2 .nm2{font-size:15px;font-weight:700;text-anchor:middle}.iso2 .tm2{font-size:10px;text-anchor:middle}
+.iso2 .ic{font-size:26px;font-weight:700;fill:#fff;text-anchor:middle}.iso2 .ic3{font-size:18px;font-weight:700;fill:#fff;text-anchor:middle}
+table.lt{width:100%;border-collapse:collapse;font-size:12pt}
+table.lt th{background:#eaf2fc;color:#1f3a68;padding:1.6mm 2mm;font-size:10pt;text-align:left}
+table.lt td{border-bottom:1px solid #e1e8f3;padding:2mm 2mm}
+table.lt tr.gtop td{border-top:2px solid #1f3a68}
+td.k2{font-weight:700;color:#c0392b;width:18mm}
+td.sn3{font-weight:700;color:#fff;background:#1f3a68;text-align:center;width:11mm;border-bottom:1px solid #fff}
+td.sn3.d{background:#4a7cc4}td.sn3.r{background:#f6c6dc;color:#c0392b}
+td.sn3:empty{background:none}
+td.n3{font-weight:700;color:#1f3a68}
+td.v3{font-size:10pt;color:#1c2a44}td.v3.ng{color:#9aa4b3}
+td.t3{color:#c0392b;font-weight:700}
+.step.dash{background:#c0392b;border-left-color:#ffd36b;padding:3mm 4mm}
+.step.dash b{font-size:13pt}
+.dashmsg{display:block;font-size:20pt;font-weight:900;color:#ffd36b;letter-spacing:.04em;margin:1mm 0 .5mm}
+table.hx td.rtm{font-size:17pt;vertical-align:middle}
+table.hx td.sk2{background:#fff;padding:1.4mm 1mm}
+table.hx td.sk2 b{display:block;font-size:10.5pt;color:#1f3a68}
+table.hx td.sk2 small{display:block;font-size:8pt;color:#c0392b}
+table.hx td.sk2.tc{background:#f4f8fd}table.hx td.sk2.tc small{color:#4a7cc4}
+table.hx td.sk2.two2 b{font-size:10.5pt}table.hx td.sk2.two2 .sub2{display:block;font-size:10.5pt;font-weight:700;color:#1f3a68;margin-top:.6mm}
+.ct2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1mm 2mm;font-size:9.8pt}.ct2 span{background:#f4f8fd;border-radius:1mm;padding:1mm 2mm}.ct2 b{color:#c0392b}
+.kvb{font-size:13pt;row-gap:3mm;grid-template-columns:27mm 1fr;line-height:1.5}
+.kvb dt{font-size:12pt;padding-top:.6mm}
+.kvb .big{font-size:18pt;white-space:nowrap}
+.kvb b{color:#1f3a68}
+.kvb .hl{font-size:17pt;color:#c0392b;background:#fdecea;padding:.3mm 2mm;border-radius:1mm}
+.kvb .hl2{font-size:15pt;color:#c0392b}
+@media screen{body{background:#dfe5ee;padding:10mm 0}.page{background:#fff;margin:0 auto 10mm;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.dl{display:block;width:420mm;margin:0 auto 6mm;text-align:right;font-size:14pt}.dl a{background:#1f3a68;color:#fff;padding:2mm 6mm;border-radius:2mm;text-decoration:none}}
+@media print{.dl{display:none}}
+</style></head><body><div class="dl"><a href="KNT_oujou_1121.pdf" download>PDFをダウンロード</a></div>
+
+<!-- PAGE 1 -->
+<section class="page">
+ <div class="hd"><h1>KNT 国内王城戦 戦略シート<span>2026.11.21（土）21:00〜26:00</span></h1>
+  <div class="meta">4148サーバー｜作戦リーダー：ホームメイドきのこ（ユニバーサルきのこ）<br>参加予定 21時から 12名／途中参加 20名</div></div>
+ <div class="grid" style="grid-template-columns:1.3fr 1fr 0.85fr;height:250mm">
+  <div class="grid" style="grid-template-rows:auto 1fr">
+   <div class="card goal"><h2>方針</h2>
+    <dl class="kv kvb">
+     <dt>目標</dt><dd><span class="big">同盟全体で協力し、楽しくポイ活！</span><br>負担を集中させすぎず、みんなで考え協力する<br><span style="color:#4a7cc4">( 厂˙ω˙ )厂うぇーい</span></dd>
+     <dt>今回の方針</dt><dd><b class="warn hl">今回は占領同盟にならない</b><br>執政官は別の同盟にやってもらうのが目的</dd>
+     <dt>ポイ活</dt><dd><b>最初の1時間で王城ポイ活</b>を終わらせる<br>その後は<b>砲台ポイ活</b></dd>
+     <dt>スタート</dt><dd>21時スタートは<b>駐屯メイン</b>のつもりで<br><b class="hl2">全員王城へダッシュ！</b></dd>
+     <dt>アクション</dt><dd>① スタートダッシュ<br>② アリス駐屯＋全員で差し込み<br>③ 割られたら集結2連<br>④ 砲台集結</dd>
+    </dl></div>
+   <div class="card"><h2>当日の流れ</h2>
+    <ul class="tl">
+     <li><b>20:00</b><div><em>移転可能時間</em><small>王城への移転解禁。席が決まっている人は即移転OK</small></div></li>
+     <li><b>20:30</b><div><em>指定位置以外も移転可</em><small>途中参加の人はピンクエリア外のフリーゾーンの空き場所へ</small></div></li>
+     <li><b>21:00</b><div><em>王城戦開始・全員スタートダッシュ</em><small>アリス駐屯・全員で差し込み（王城ポイ活）</small></div></li>
+     <li><b>22:00</b><div><em>王城から抜いて砲台へ</em><small>砲台集結・砲台ポイ活に切り替え</small></div></li>
+     <li><b>2:00</b><div><em>王城戦終了</em><small>今回は占領同盟にならない（執政官は別同盟へ）</small></div></li>
+    </ul></div>
+  </div>
+  <div class="card"><h2>基本戦略</h2>
+   <div class="two" style="margin-bottom:2mm;font-size:10pt"><div class="step"><b>集結主</b><small>ペットバフ スタートからON</small></div><div class="step"><b>乗り手</b><small>ペットバフ スタートからON</small></div></div>
+   <div class="flow">
+    <div class="step main dash"><b>① 開幕スタートダッシュ（21:00）</b><span class="dashmsg">全員加速で王城目指す！</span><small>21時スタートは駐屯メインのつもりで全員王城へ</small></div>
+    <div class="arrow">▼</div>
+    <div class="step main"><b>② アリス駐屯（比率 640）</b><small>敵同盟が集結してきたら、<b>敵集結から王城まで行軍何秒か</b>を初回に確認</small></div>
+    <div class="arrow">▼ 敵の集結が掛かったら</div>
+    <div class="step"><b>③ 全員で差し込み！</b><small>それぞれ王城までの<b>自分の行軍秒数</b>を確認しておく<br>カウント秒数を聞きながら差し込み（VCを聞けない人はチャット・チャレンジ）</small></div>
+    <div class="arrow">▼ 駐屯を集結で割られたら</div>
+    <div class="step main"><b>④ 集結2連で奪取</b><small>集結主：<b>アリス</b>＋<b>きのこ親分</b>（コンコルド・peace到着後は交代）、<b>うまるん</b><br>予備集結主：<b>まこ珍</b>　→ 奪取後はアリス駐屯に戻して③へ</small></div>
+    <div class="arrow">▼ 開始1時間後（22:00〜）</div>
+    <div class="step ng"><b>⑤ 王城から抜いて砲台集結・砲台ポイ活</b><small>最初の1時間で王城ポイ活を終わらせておく</small></div>
+   </div>
+   <h3 style="margin-top:2mm">集結主の着弾時間</h3><div class="ct2"><span>17 アリス <b>36秒</b></span><span>16 うまるん <b>39秒</b></span><span>15 きのこ <b>43秒</b></span><span>29 まこ珍 <b>45秒</b></span><span>30 コンコルド <b>47秒</b></span><span>31 peace <b>52秒</b></span></div>
+  </div>
+  <div class="grid" style="grid-template-rows:auto auto">
+   <div class="card"><h2>王城ルール（Ver.07.04）</h2>
+    <ul class="r">
+     <li><b>バフ</b>：ペットバフのみ〇</li>
+     <li><b>城・砲台の偵察</b>：あり</li>
+     <li><b>都市攻撃</b>：1回目は厳重注意／2回目以降は退場を促し、返答がなければ報復可</li>
+     <li><b>違反対応</b>：ダイヤ・アイテムバフ、デバフの使用者は<span class="warn">単騎攻撃のみ（駐屯禁止）</span></li>
+     <li><b>移転</b>：指定場所以外への移転は<b>20:30以降</b>。21:00以降、指定場所の空きはフリーゾーン</li>
+     <li><b>KNT内</b>：ダイヤ・アイテムバフは集結主・乗り手とも基本×</li>
+    </ul></div>
+   <div class="card"><h2>役割分担</h2>
+    <table class="roles">
+     <tr><td>リーダー（とりまとめ）</td><td>きのこ</td></tr>
+     <tr><td>駐屯差し込みカウント・集結時間指定</td><td>きのこ</td></tr>
+     <tr><td>英雄管理（駐屯・集結乗り確認）</td><td>きのこ</td></tr>
+     <tr><td>集結時間などチャット書き起こし</td><td>mochiko</td></tr>
+     <tr><td>集結主の到着時間・ペットバフマーク</td><td>きのこ</td></tr>
+     <tr><td>戦況分析</td><td>きのこ</td></tr>
+    </table>
+    <h3>集結主が急用・不在のとき</h3>
+    <ul class="r"><li>予備集結主のまこ珍さんが代わりに集結を立てる（コンコルド・peace到着後はその2人も）</li><li>乗り手は立っている他の集結に乗る</li></ul>
+   </div>
+  </div>
+ </div>
+
+ <div class="ft"><span>WOS2026　製作者「FURUKANA」</span><span>1 / 3　方針・流れ・基本戦略</span></div>
+</section>
+
+
+
+
+<section class="page">
+ <div class="hd"><h1>役割分担 ―― 席順・集結主・乗り手<span>11/21 国内王城戦</span></h1>
+  <div class="meta">最終出欠：21時から12名（VC可7・VC不可5）／途中参加20名<br>席番号は南側ピンクエリア（15〜17・29〜37）</div></div>
+ <div class="grid" style="grid-template-columns:1.25fr 1fr;height:250mm">
+  <div class="card"><h2>席順（南側）</h2><svg viewBox="0 0 600 420" class="iso2"><polygon points="250,15 564,204 600,182 600,0 250,0" fill="#1c2a44"/><text x="500" y="70" class="ic">太陽城</text><text x="566" y="186" class="ic3">南</text><polygon points="330,63 408,110 330,157 252,110" fill="#1f3a68" stroke="#fff" stroke-width="2"/><text x="330" y="93" class="sn2" fill="#ffd36b">17</text><text x="330" y="113" class="nm2" fill="#fff">アリス</text><text x="330" y="128" class="tm2" fill="#fff">集結/駐屯</text><polygon points="408,110 486,157 408,204 330,157" fill="#1f3a68" stroke="#fff" stroke-width="2"/><text x="408" y="140" class="sn2" fill="#ffd36b">16</text><text x="408" y="160" class="nm2" fill="#fff">うまるん</text><text x="408" y="175" class="tm2" fill="#fff">集結/駐屯</text><polygon points="486,157 564,204 486,251 408,204" fill="#1f3a68" stroke="#fff" stroke-width="2"/><text x="486" y="187" class="sn2" fill="#ffd36b">15</text><text x="486" y="207" class="nm2" fill="#fff">きのこ</text><text x="486" y="222" class="tm2" fill="#fff">集結</text><polygon points="252,110 330,157 252,204 174,157" fill="#1f3a68" stroke="#fff" stroke-width="2"/><text x="252" y="140" class="sn2" fill="#ffd36b">29</text><text x="252" y="160" class="nm2" fill="#fff">まこ珍</text><text x="252" y="175" class="tm2" fill="#fff">集結</text><polygon points="330,157 408,204 330,251 252,204" fill="#4a7cc4" stroke="#fff" stroke-width="2"/><text x="330" y="187" class="sn2" fill="#ffd36b">30</text><text x="330" y="207" class="nm2" fill="#fff">コンコルド</text><text x="330" y="222" class="tm2" fill="#fff">遅れて参加</text><polygon points="408,204 486,251 408,298 330,251" fill="#4a7cc4" stroke="#fff" stroke-width="2"/><text x="408" y="234" class="sn2" fill="#ffd36b">31</text><text x="408" y="254" class="nm2" fill="#fff">peace</text><text x="408" y="269" class="tm2" fill="#fff">遅れて参加</text><polygon points="174,157 252,204 174,251 96,204" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="174" y="187" class="sn2" fill="#c0392b">32</text><text x="174" y="207" class="nm2" fill="#1c2a44">KENSHI</text><text x="174" y="222" class="tm2" fill="#1c2a44">乗り手</text><polygon points="252,204 330,251 252,298 174,251" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="252" y="234" class="sn2" fill="#c0392b">33</text><text x="252" y="254" class="nm2" fill="#1c2a44">ありゅん</text><text x="252" y="269" class="tm2" fill="#1c2a44">乗り手</text><polygon points="330,251 408,298 330,345 252,298" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="330" y="281" class="sn2" fill="#c0392b">34</text><text x="330" y="301" class="nm2" fill="#1c2a44">くりちゃー</text><text x="330" y="316" class="tm2" fill="#1c2a44">乗り手</text><polygon points="96,204 174,251 96,298 18,251" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="96" y="234" class="sn2" fill="#c0392b">35</text><text x="96" y="254" class="nm2" fill="#1c2a44">mochiko</text><text x="96" y="269" class="tm2" fill="#1c2a44">乗り手</text><polygon points="174,251 252,298 174,345 96,298" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="174" y="281" class="sn2" fill="#c0392b">36</text><text x="174" y="301" class="nm2" fill="#1c2a44">Ricky</text><text x="174" y="316" class="tm2" fill="#1c2a44">乗り手</text><polygon points="252,298 330,345 252,392 174,345" fill="#f6c6dc" stroke="#fff" stroke-width="2"/><text x="252" y="328" class="sn2" fill="#c0392b">37</text><text x="252" y="348" class="nm2" fill="#1c2a44">Mugi</text><text x="252" y="363" class="tm2" fill="#1c2a44">乗り手</text></svg>
+   <div class="legend" style="margin-top:2mm"><span><i style="background:#1f3a68"></i>21:00〜 集結主</span><span><i style="background:#4a7cc4"></i>遅れて参加（席は確保）</span><span><i style="background:#f6c6dc"></i>乗り手</span></div>
+   <div class="note">・17・16・15が城に接する前列。29〜31が2列目、32〜34が3列目、35〜37が4列目<br>・30（コンコルド）・31（peace）は到着まで空けておく<br>・途中参加の人は20:30以降、ピンクエリアの外の近くの空きへ移転</div>
+  </div>
+  <div class="grid" style="grid-template-rows:auto auto 1fr;gap:5mm">
+   <div class="card"><h2>集結主・駐屯主</h2>
+    <table class="lt"><tr><th></th><th>席</th><th>21:00〜</th><th>VC</th><th>席</th><th>遅れて参加</th><th>VC</th></tr><tr class="gtop"><td class="k2">集結主</td><td class="sn3">17</td><td class="n3">アリス</td><td class="v3 ">VC可</td><td class="sn3 d">30</td><td class="n3">コンコルド</td><td class="v3 ng">VC不可</td></tr><tr><td class="k2"></td><td class="sn3">16</td><td class="n3">うまるん</td><td class="v3 ">VC可</td><td class="sn3 d">31</td><td class="n3">peace</td><td class="v3 ng">VC不可</td></tr><tr><td class="k2"></td><td class="sn3">15</td><td class="n3">きのこ</td><td class="v3 ">VC可</td><td class="sn3 d"></td><td class="n3"></td><td class="v3 ng"></td></tr><tr><td class="k2"></td><td class="sn3">29</td><td class="n3">まこ珍</td><td class="v3 ">VC可</td><td class="sn3 d"></td><td class="n3"></td><td class="v3 ng"></td></tr><tr class="gtop"><td class="k2">駐屯主</td><td class="sn3">17</td><td class="n3">アリス</td><td class="v3 ">VC可</td><td class="sn3 d">30</td><td class="n3">コンコルド</td><td class="v3 ng">VC不可</td></tr><tr><td class="k2"></td><td class="sn3">16</td><td class="n3">うまるん</td><td class="v3 ">VC可</td><td class="sn3 d"></td><td class="n3"></td><td class="v3 ng"></td></tr></table></div>
+   <div class="card"><h2 style="background:#c0392b">乗り手（21:00〜）</h2>
+    <table class="lt"><tr><th>席</th><th>名前</th><th>VC</th></tr><tr><td class="sn3 r">32</td><td class="n3">KENSHI</td><td class="v3 ">VC可</td></tr><tr><td class="sn3 r">33</td><td class="n3">ありゅん</td><td class="v3 ng">VC不可</td></tr><tr><td class="sn3 r">34</td><td class="n3">くりちゃー</td><td class="v3 ng">VC不可</td></tr><tr><td class="sn3 r">35</td><td class="n3">mochiko</td><td class="v3 ">VC可</td></tr><tr><td class="sn3 r">36</td><td class="n3">Ricky</td><td class="v3 ">VC可</td></tr><tr><td class="sn3 r">37</td><td class="n3">Mugi</td><td class="v3 ng">VC不可</td></tr></table>
+    <div class="note">途中参加：ちょいちょい・こまえもん・かじゅ ほか（来た人から空いている集結に乗る）</div></div>
+   <div class="card"><h2>乗り手英雄の担当順</h2><div class="two" style="gap:3mm"><div class="oi ">① ボーガン</div><div class="oi ">② ジェシー</div><div class="oi ">③ ソユン</div><div class="oi hi">④ パトリック</div><div class="oi hi">⑤ リンセツ</div><div class="onote">以降、上記の中から</div></div></div>
+  </div>
+ </div>
+ <div class="ft"><span>WOS2026　製作者「FURUKANA」</span><span>2 / 3　席順・集結主・乗り手</span></div>
+</section>
+<!-- PAGE HERO -->
+<section class="page">
+ <div class="hd"><h1>集結英雄・駐屯英雄と乗せ英雄<span>11/21 国内王城戦</span></h1>
+  <div class="meta">英雄表記：★5専10＝★5・専用武器Lv10／4の4＝★4-4<br>育成は11/15アンケート（peaceさんは9/26時点）より／「遅れ」＝遅れて参加</div></div>
+<div class="card" style="margin-bottom:4mm"><h2>① 集結英雄と乗せ英雄</h2>
+  <table class="hx">
+   <tr><th rowspan="2" style="width:16mm"></th><th rowspan="2" style="width:34mm">集結主</th><th colspan="3">主力3英雄</th><th rowspan="2" style="width:28mm">盾／槍／弓</th><th colspan="4" class="skh">スキル乗せ4英雄（固定乗り手）</th></tr>
+   <tr><th>盾</th><th>槍</th><th>弓</th><th class="skh">ソユン</th><th class="skh">ソユン</th><th class="skh">ジェシー</th><th class="skh">ジェシー</th></tr>
+   <tr><td class="kb ">21:00</td><td class="nm">戦闘狂アリス<small>席 17</small></td><td>ジェロニモ(5専10)</td><td>レイナ(5専10)</td><td>グレッグ(5専10)</td><td class="rt rtm" rowspan="6">50／5／45</td><td class="sk2 "><b>KENSHI</b><small>★5</small></td><td class="sk2 "><b>ありゅん</b><small>★4-4</small></td><td class="sk2 "><b>くりちゃー</b><small>★5</small></td><td class="sk2 "><b>mochiko</b><small>★5</small></td></tr><tr><td class="kb ">21:00</td><td class="nm">うまるん<small>席 16</small></td><td>ローガン(4専4)</td><td>ミア(5専9)</td><td>アロンゾ(4の3専5)</td><td class="sk2 "><b>Ricky</b><small>★4-1</small></td><td class="sk2 "><b>Mugi</b><small>★4-1</small></td><td class="sk2 tc"><b>ちょいちょい</b><small>★5・途中</small></td><td class="sk2 tc"><b>いっちゃん29</b><small>★5・途中</small></td></tr><tr><td class="kb ">21:00</td><td class="nm">きのこ<small>席 15</small></td><td>ローガン(4)</td><td>ミア(5専10)</td><td>アロンゾ(5専2)</td><td class="sk2 tc"><b>かじゅ</b><small>★5・途中</small></td><td class="sk2 tc"><b>こまえもん</b><small>★4-3・途中</small></td><td class="sk2 tc"><b>はっぷっぷ</b><small>★5・途中</small></td><td class="sk2 tc"><b>ニューまっちゃん</b><small>★5・途中</small></td></tr><tr><td class="kb ">21:00</td><td class="nm">まこ珍<small>席 29</small></td><td>ローガン(5専10)</td><td>ミア(3の5専2)</td><td>アロンゾ(5専4)</td><td class="sk2 tc"><b>のんのん</b><small>★4-1・途中</small></td><td class="sk2 tc"><b>トーマス</b><small>★4-1・途中</small></td><td class="sk2 tc"><b>ネオン</b><small>★5・途中</small></td><td class="sk2 tc"><b>アビス</b><small>★5・途中</small></td></tr><tr><td class="kb mid">遅れ</td><td class="nm">コンコルド<small>席 30</small></td><td>アクモス(5専8)</td><td>ミア(5専9)</td><td>アロンゾ(4の2専4)</td><td class="sk2 tc"><b>BATKEI けい</b><small>★4-0・途中</small></td><td class="sk2 tc"><b>にょり〜ん</b><small>★4-0・途中</small></td><td class="sk2 tc"><b>Shiro</b><small>★5・途中</small></td><td class="sk2 tc"><b>萌やしっ娘</b><small>★5・途中</small></td></tr><tr><td class="kb mid">遅れ</td><td class="nm">peace<small>席 31</small></td><td>ジェロニモ(4専8)</td><td>ミア(5専9)</td><td>アロンゾ(5専8)</td><td class="sk2 tc"><b>かかお</b><small>未確認・途中</small></td><td class="sk2 tc"><b>makoton</b><small>未確認・途中</small></td><td class="sk2 tc"><b>アッサム</b><small>未確認・途中</small></td><td class="sk2 tc"><b>バニラ</b><small>未確認・途中</small></td></tr>
+  </table>
+  <div class="note">※ 固定乗り手は遠征スキル（ソユン・ジェシーの★）の高い人から、アリス→うまるん→きのこ→まこ珍→コンコルド→peaceの順に割り当て。「途中」は来てから乗る。駐屯を割られたら集結2連（アリス＋きのこ／コンコルド・peace到着後は交代、うまるん）、まこ珍は予備。王城から抜いた後は砲台集結。各集結主の着弾時間（36〜52秒）の差を共有し、空集結のタイミングを合わせる</div>
+ </div>
+ <div class="card"><h2>② 駐屯英雄と乗せ英雄</h2>
+  <table class="hx">
+   <tr><th rowspan="2" style="width:16mm"></th><th rowspan="2" style="width:34mm">駐屯主</th><th colspan="3">主力3英雄</th><th rowspan="2" style="width:28mm">盾／槍／弓</th><th colspan="4" class="skh">スキル乗せ4英雄（固定の差し込み・駐屯補充）</th></tr>
+   <tr><th>盾</th><th>槍</th><th>弓</th><th class="skh">フレンダー</th><th class="skh">フレンダー</th><th class="skh">ジェシー</th><th class="skh">パトリック</th></tr>
+   <tr><td class="kb ">21:00</td><td class="nm">戦闘狂アリス<small>席 17</small></td><td>アクモス(5専10)</td><td>レイナ(5専10)</td><td>グレッグ(5専10)</td><td class="rt rtm" rowspan="3">60／40／0</td><td class="sk2 two2"><b>ありゅん</b><span class="sub2">まこ珍</span></td><td class="sk2 two2"><b>KENSHI</b><span class="sub2">mochiko</span></td><td class="sk2 two2"><b>くりちゃー</b><span class="sub2">きのこ</span></td><td class="sk2 two2"><b>Mugi</b><span class="sub2">Ricky</span></td></tr><tr><td class="kb ">21:00</td><td class="nm">うまるん<small>席 16</small></td><td>ローガン(4専4)</td><td>ミア(5専9)</td><td>リオン(4の4専4)</td><td class="sk2 two2"><b>ありゅん</b><span class="sub2">Ricky</span></td><td class="sk2 two2"><b>まこ珍</b><span class="sub2">KENSHI</span></td><td class="sk2 two2"><b>くりちゃー</b><span class="sub2">きのこ</span></td><td class="sk2 two2"><b>Mugi</b><span class="sub2">mochiko</span></td></tr><tr><td class="kb mid">遅れ</td><td class="nm">コンコルド<small>席 30</small></td><td>アクモス(5専8)</td><td>ミア(5専9)</td><td>リオン(4の3専6)</td><td class="sk2 two2"><b>ありゅん</b><span class="sub2">mochiko</span></td><td class="sk2 two2"><b>まこ珍</b><span class="sub2">KENSHI</span></td><td class="sk2 two2"><b>うまるん</b><span class="sub2">くりちゃー</span></td><td class="sk2 two2"><b>きのこ</b><span class="sub2">Mugi</span></td></tr>
+  </table>
+  <div class="note">※ 駐屯は集結主が乗ってもOKなので、21:00から参加の人だけで組んでいる。各枠2名のどちらかが入る。フレンダーは★の高い人（ありゅん・まこ珍・KENSHI）を優先。アリスさんは駐屯主に専念。<br>※ アリスさんが駐屯中はうまるんさん（コンコルドさん到着後は2人）が差し込み補充。抜かれたら①の集結で奪取 → アリスさんが駐屯英雄に組み替えて再駐屯</div>
+ </div>
+ <div class="ft"><span>WOS2026　製作者「FURUKANA」</span><span>3 / 3　集結・駐屯英雄</span></div>
+</section>
+</body></html>
