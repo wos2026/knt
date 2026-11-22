@@ -104,6 +104,9 @@ var SURVEY = {
 
   // type：盾 / 槍 / 弓   rarity：見出し（この順に表示）   icon：顔アイコン画像   gear：専用装備あり
   HEROES: [
+    { name: 'ヘクトー', type: '盾', rarity: '第5世代', icon: 'heroes/hector.jpg', gear: true },
+    { name: 'ノラ', type: '槍', rarity: '第5世代', icon: 'heroes/norah.jpg', gear: true },
+    { name: 'グエン', type: '弓', rarity: '第5世代', icon: 'heroes/gwen.jpg', gear: true },
     { name: 'アクモス', type: '盾', rarity: '第4世代', icon: 'heroes/akmos.jpg', gear: true },
     { name: 'レイナ', type: '槍', rarity: '第4世代', icon: 'heroes/reina.jpg', gear: true },
     { name: 'リオン', type: '弓', rarity: '第4世代', icon: 'heroes/lion.jpg', gear: true },
