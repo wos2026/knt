@@ -7,7 +7,7 @@ var SURVEY = {
   // Apps Script を「ウェブアプリ」でデプロイした URL（https://script.google.com/macros/s/…/exec）
   API_URL: 'https://script.google.com/macros/s/AKfycbyYCPzv5DC1KHd_CTsFs2xQKGdzpvwROCp-1yC_duJz_S9HgJ5m_IVDQGv-5t1zUBLt7A/exec',
 
-  TITLE: '11月15日（日）兵器工場 出欠、育成アンケート',
+  TITLE: '11月29日【日】兵器工場出欠アンケート',
   // 空欄なら表示しません。例：'11月14日 14:00'
   DEADLINE: '11月25日（水）24:00まで',
   // この日時を過ぎると回答ページが受付終了になります（日本時間）。空欄なら止めません
