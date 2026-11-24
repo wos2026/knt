@@ -29,6 +29,9 @@ input:focus{outline:2px solid var(--ice);border-color:var(--accent)}
 .who b{font-size:16px}
 .who .tag{font-size:12px;font-weight:800;background:var(--chip);color:var(--accent);border-radius:999px;padding:3px 10px}
 .who .sp{margin-left:auto}
+.sv .url{font-size:12px;display:flex;gap:6px;align-items:baseline;min-width:0}
+.sv .url span{color:var(--muted);font-weight:700;flex:none}
+.sv .url a{color:var(--accent);word-break:break-all}
 .sv{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .sv h3{margin:0;font-size:15px;font-weight:800;line-height:1.4}
 .sv .meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted)}
@@ -199,14 +202,17 @@ a{color:var(--accent)}
       j.surveys.forEach(function(s){
         var d=document.createElement('div'); d.className='sv';
         d.innerHTML='<h3></h3><div class="meta"><span class="st '+(s.closed?'closed':'open')+'">'+(s.closed?'受付終了':'受付中')+'</span><span class="dl"></span><span>回答 '+s.answers+'人</span><span class="ow"></span></div>'+
-          '<div class="tools"><button class="btn sm" type="button">回答リンクをコピー</button><a class="btn sm">集計</a><a class="btn sm">設定変更</a></div>';
+          '<div class="url"><span>回答ページ</span><a target="_blank" rel="noopener"></a></div>'+
+          '<div class="tools"><a class="btn sm pri" target="_blank" rel="noopener">回答ページを開く</a><button class="btn sm" type="button">回答リンクをコピー</button><a class="btn sm">集計</a><a class="btn sm">設定変更</a></div>';
         d.querySelector('h3').textContent=s.title;
         d.querySelector('.dl').textContent=s.deadline?'締切：'+s.deadline:'締切なし';
         d.querySelector('.ow').textContent='作成：'+(s.owner||'—')+'（'+s.created+'）';
+        var url=BASE+'index.html?id='+encodeURIComponent(s.id), ua=d.querySelector('.url a'); ua.href=url; ua.textContent=url;
         var bs=d.querySelectorAll('.tools > *');
-        bs[0].onclick=function(){ copy(bs[0], BASE+'index.html?id='+s.id); };
-        bs[1].href='results.html?id='+encodeURIComponent(s.id);
-        bs[2].href='create.html?id='+encodeURIComponent(s.id);
+        bs[0].href=url;
+        bs[1].onclick=function(){ copy(bs[1], url); };
+        bs[2].href='results.html?id='+encodeURIComponent(s.id);
+        bs[3].href='create.html?id='+encodeURIComponent(s.id);
         box.appendChild(d);
       });
     }).catch(function(e){ $('list').innerHTML=''; err(FORM_AUTH.netMsg(e,'読み込みに失敗しました。再読み込みしてください。')); });
