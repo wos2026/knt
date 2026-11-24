@@ -370,9 +370,66 @@ function submit_(r) {
   var nk = s.id + '|' + norm_(name), now = new Date();
   var hit = sh.getRange('B:B').createTextFinder(nk).matchEntireCell(true).findNext();
   var row = [s.id, nk, now, cell(name), JSON.stringify(ans)];
-  if (hit) { sh.getRange(hit.getRow(), 1, 1, 5).setValues([row]); return { ok: true, updated: true }; }
-  sh.appendRow(row);
-  return { ok: true, updated: false };
+  var updated = !!hit;
+  if (hit) sh.getRange(hit.getRow(), 1, 1, 5).setValues([row]); else sh.appendRow(row);
+  try { writeView_(cfg, nk, now, ans); } catch (x) { console.error(x); } // 同盟別タブ（見る用）
+  return { ok: true, updated: updated };
+}
+
+/* ---------- 同盟別タブ（見る用。システムは「回答」タブだけを使う） ---------- */
+var VIEW_HEAD = ['キー', 'アンケート', '回答日時', 'プレイヤー名', '所属同盟', '参加可能時間', '大溶鉱炉', '総力', '兵士(盾)', '兵士(槍)', '兵士(弓)', 'ひとこと'];
+var HERO_NAMES = { jeronimo: 'ジェロニモ', natalia: 'ナタリア', jasmine: 'ジャスミン', zinman: 'ジンマン', flint: 'フリント', philly: 'フレンダー',
+  alonso: 'アロンゾ', logan: 'ローガン', mia: 'ミア', greg: 'グレッグ', akmos: 'アクモス', reina: 'レイナ', lion: 'リオン', hector: 'ヘクトー',
+  norah: 'ノラ', gwen: 'グエン', wuming: '無名', renee: 'レネ', wayne: 'ウェイン', sergey: 'セルゲイ', jessie: 'ジェシー', patrick: 'パトリック',
+  lingxue: 'リンセツ', lumak: 'ルム・ボーガン', seoyoon: 'ソユン', jasser: 'ジャセル', bahiti: 'バシティ', gina: 'ジーナ' };
+function viewName_(cfg) {
+  var n = (String(cfg.server || '') + '·' + String(cfg.alliance || '')).replace(/[\[\]*?\/\\:']/g, '').trim();
+  if (n === SH_SURVEYS || n === SH_ANSWERS || n === SH_USERS) n += '_';
+  return n.slice(0, 90) || '同盟不明';
+}
+function cell_(v) { v = String(v == null ? '' : v); return /^[=+\-@]/.test(v) ? "'" + v : v; }
+function heroText_(v) {
+  if (!v) return '';
+  if (v.skill === 0) return '未所持';
+  var t = 'Lv' + v.skill + ' ★' + v.star + (v.star < 5 ? '-' + v.step + '段' : '');
+  if (typeof v.gear === 'number') t += ' 専' + (v.gear ? 'Lv' + v.gear : 'なし');
+  return t;
+}
+function writeView_(cfg, key, when, ans) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), name = viewName_(cfg), sh = ss.getSheetByName(name);
+  if (!sh) { sh = ss.insertSheet(name); sh.appendRow(VIEW_HEAD); sh.setFrozenRows(1); sh.setFrozenColumns(4); sh.hideColumns(1); }
+  var head = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), VIEW_HEAD.length)).getValues()[0].map(String);
+  var hs = ans.heroes || {}, ids = (cfg.heroes || []).filter(function (id) { return hs[id]; });
+  Object.keys(hs).forEach(function (id) { if (ids.indexOf(id) < 0) ids.push(id); });
+  var added = [];
+  ids.forEach(function (id) { var h = HERO_NAMES[id] || id; if (head.indexOf(h) < 0) { head.push(h); added.push(h); } });
+  if (added.length) sh.getRange(1, head.length - added.length + 1, 1, added.length).setValues([added]);
+  var row = head.map(function () { return ''; });
+  var base = [key, cfg.title || '', when, ans['プレイヤー名'], ans['所属同盟'], ans['参加可能時間'], ans['大溶鉱炉'], ans['総力'],
+    ans['兵士(盾)'], ans['兵士(槍)'], ans['兵士(弓)'], ans['ひとこと']];
+  base.forEach(function (v, i) { row[i] = i === 2 ? v : cell_(v); });
+  ids.forEach(function (id) { row[head.indexOf(HERO_NAMES[id] || id)] = heroText_(hs[id]); });
+  var hit = sh.getRange('A:A').createTextFinder(key).matchEntireCell(true).findNext();
+  if (hit) sh.getRange(hit.getRow(), 1, 1, row.length).setValues([row]); else sh.appendRow(row);
+}
+
+/* これまでの回答から同盟別タブを作り直す（エディタで一度だけ実行） */
+function rebuildViews() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ss.getSheets().forEach(function (sh) {
+    if (sh.getLastRow() >= 1 && String(sh.getRange(1, 1).getValue()) === 'キー' && String(sh.getRange(1, 2).getValue()) === 'アンケート') ss.deleteSheet(sh);
+  });
+  var sv = sheet_(SH_SURVEYS, HEAD_SURVEYS), cfgs = {};
+  if (sv.getLastRow() > 1) sv.getRange(2, 1, sv.getLastRow() - 1, HEAD_SURVEYS.length).getValues().forEach(function (v) {
+    try { cfgs[String(v[0])] = JSON.parse(v[8]); } catch (x) {}
+  });
+  var an = sheet_(SH_ANSWERS, HEAD_ANSWERS), n = 0;
+  if (an.getLastRow() > 1) an.getRange(2, 1, an.getLastRow() - 1, HEAD_ANSWERS.length).getValues().forEach(function (v) {
+    var cfg = cfgs[String(v[0])], ans; if (!cfg) return;
+    try { ans = JSON.parse(v[4]); } catch (x) { return; }
+    writeView_(cfg, String(v[1]), v[2], ans); n++;
+  });
+  console.log('同盟別タブに ' + n + ' 件を書き出しました');
 }
 
 /* ---------- 共通 ---------- */
