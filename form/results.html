@@ -137,7 +137,7 @@ select,input[type=password],input[type=text]{font:inherit;font-size:16px;padding
       if(j.needLogin){ FORM_AUTH.set(''); TOKEN=''; return fetchRes(); } return j; });
     return fetch(FORM_API+'?action=results&id='+encodeURIComponent(SID)+(KEY?'&key='+encodeURIComponent(KEY):'')+'&t='+Date.now()).then(function(r){return r.json()});
   }
-  function toC(c){ return { TITLE:c.title, DEADLINE:c.deadline, CLOSE_AT:c.closeAt, MEMBERS:c.members||[], ALLIANCES:[c.alliance||'-'],
+  function toC(c){ return { TITLE:c.title, DEADLINE:c.deadline, CLOSE_AT:c.closeAt, MEMBERS:c.members||[], ALLIANCES:(c.alliances&&c.alliances.length)?c.alliances:[c.alliance||'-'],
     JOIN:c.join, JOIN_LABEL:c.joinLabel||'参加', FURNACE:c.furnace, TROOP:c.troop, HEROES:heroesFromIds(c.heroes), MEMO_HINT:c.memoHint, SERVER:c.server, ALLIANCE:c.alliance }; }
   function fail(m){ $('meta').textContent=''; $('err').textContent=m; $('err').hidden=false; }
   if(DEMO && !SID){ var d=genDefaults(4); start(toC({title:'サンプル集計',deadline:'',join:['21時開始から参加','21時途中から参加','23時開始から参加','23時途中から参加','不参加'],joinLabel:'参加可能時間',furnace:d.furnace,troop:d.troop,heroes:d.heroes,alliance:'KNT',server:'4148'}), null); return; }

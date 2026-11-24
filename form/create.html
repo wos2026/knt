@@ -82,6 +82,11 @@ textarea.tall{min-height:200px}
           <input type="text" id="alliance" readonly>
         </div>
       </div>
+      <div class="f" style="margin-top:16px">
+        <label class="lab" for="allies">参加同盟 <span class="opt">1行に1つ</span></label>
+        <textarea id="allies" placeholder="例：&#10;123&#10;456"></textarea>
+        <span class="hint">2つ以上入れると、回答ページで「所属同盟」をプルダウンから選べるようになり、集計も同盟ごとに絞り込めます。1つだけなら選択欄は出ません。</span>
+      </div>
       <div class="f">
         <label class="lab" for="title">タイトル<span class="req">必須</span></label>
         <input type="text" id="title" maxlength="80" placeholder="例：2026年11月SVS参加者、英雄育成アンケート">
@@ -255,7 +260,7 @@ textarea.tall{min-height:200px}
 
   /* --- 編集モード --- */
   function fill(c){
-    $('title').value=c.title||''; $('server').value=c.server||''; $('alliance').value=c.alliance||''; $('lead').value=c.lead||'';
+    $('title').value=c.title||''; $('server').value=c.server||''; $('alliance').value=c.alliance||''; setLines('allies',(c.alliances&&c.alliances.length)?c.alliances:[c.alliance||'']); $('lead').value=c.lead||'';
     $('joinLabel').value=c.joinLabel||'参加可能時間'; setLines('join',c.join); setLines('members',c.members); $('members').oninput();
     $('memoHint').value=c.memoHint||''; $('publicResults').checked=!!c.publicResults;
     gen=c.gen||4; renderGens(); sel={}; (c.heroes||[]).forEach(function(id){sel[id]=1}); renderHeroes();
@@ -277,14 +282,14 @@ textarea.tall{min-height:200px}
     FORM_AUTH.post({action:'me',token:TOKEN}).then(function(j){
       if(j.needLogin){ FORM_AUTH.set(''); return toLogin(); }
       if(!j.ok) throw new Error(j.error);
-      $('server').value=j.user.server; $('alliance').value=j.user.alliance; $('form').hidden=false;
+      $('server').value=j.user.server; $('alliance').value=j.user.alliance; if(!lines('allies').length) setLines('allies',[j.user.alliance]); $('form').hidden=false;
     }).catch(function(e){ topErr(FORM_AUTH.netMsg(e,'読み込みに失敗しました')); });
   }
 
   /* --- 送信 --- */
   function config(){
     var c=closeInfo();
-    return { title:$('title').value.trim(), server:$('server').value.trim(), alliance:$('alliance').value.trim(), lead:$('lead').value.trim(),
+    return { title:$('title').value.trim(), server:$('server').value.trim(), alliance:$('alliance').value.trim(), alliances:lines('allies'), lead:$('lead').value.trim(),
       gen:gen, closeAt:c.closeAt, deadline:c.deadline, joinLabel:$('joinLabel').value.trim()||'参加可能時間', join:lines('join'),
       furnace:lines('furnace'), troop:lines('troop'), members:lines('members'), memoHint:$('memoHint').value.trim(), publicResults:$('publicResults').checked,
       heroes:HERO_DB.filter(function(h){return h.gen<=gen&&sel[h.id]}).sort(function(a,b){return (b.gen||0)-(a.gen||0)}).map(function(h){return h.id}) };

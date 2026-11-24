@@ -267,6 +267,7 @@ function cleanConfig_(c) {
     title: str(c.title, 80),
     server: str(c.server, 20),
     alliance: str(c.alliance, 20),
+    alliances: list(c.alliances, 20, MAX_OPTIONS),
     gen: Math.min(6, Math.max(2, Number(c.gen) || 2)),
     lead: str(c.lead, 200),
     deadline: str(c.deadline, 40),
@@ -280,6 +281,7 @@ function cleanConfig_(c) {
     memoHint: str(c.memoHint, 80),
     publicResults: !!c.publicResults
   };
+  if (!out.alliances.length && out.alliance) out.alliances = [out.alliance];
   if (!out.title) return { error: 'タイトルを入力してください' };
   if (!out.heroes.length) return { error: '英雄を1人以上選んでください' };
   if (!out.join.length) return { error: '参加可能時間の選択肢を入力してください' };
@@ -339,6 +341,10 @@ function submit_(r) {
   var name = str(r.name, 40);
   if (!name) return { ok: false, error: 'プレイヤー名がありません' };
   var cfg = s.config, t = r.troops || {}, heroes = {};
+  var als = (cfg.alliances && cfg.alliances.length) ? cfg.alliances : [cfg.alliance];
+  var ally = str(r.alliance, 30);
+  if (als.length > 1 && als.indexOf(ally) < 0) return { ok: false, error: '所属同盟を選んでください' };
+  if (als.length <= 1) ally = als[0] || '';
   var allowed = {}; cfg.heroes.forEach(function (h) { allowed[h] = 1; });
   Object.keys(r.heroes || {}).forEach(function (hid) {
     if (!allowed[hid]) return;
@@ -352,7 +358,7 @@ function submit_(r) {
   });
   var ans = {
     'プレイヤー名': name,
-    '所属同盟': str(r.alliance || cfg.alliance, 30),
+    '所属同盟': ally,
     '参加可能時間': str(r.join, 40),
     '大溶鉱炉': str(r.furnace, 20),
     '総力': str(r.power, 20),

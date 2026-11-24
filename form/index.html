@@ -183,7 +183,7 @@ textarea{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--li
     if(!j.ok) throw new Error(j.error||'読み込みに失敗しました');
     var c=j.config;
     start({ API_URL:FORM_API, ID:SID, TITLE:c.title, LEAD:c.lead||'参加予定と、各英雄の右上の遠征スキルLv・★（段）・専用装備がどこまで育っているかを教えてください。',
-      DEADLINE:c.deadline, CLOSE_AT:c.closeAt, MEMBERS:c.members||[], ALLIANCE_FIXED:c.alliance||'-', ALLIANCES:[c.alliance||'-'],
+      DEADLINE:c.deadline, CLOSE_AT:c.closeAt, MEMBERS:c.members||[], ALLIANCES:(c.alliances&&c.alliances.length)?c.alliances:[c.alliance||'-'], ALLIANCE_FIXED:((c.alliances&&c.alliances.length>1)?'':(c.alliances&&c.alliances[0])||c.alliance||'-'),
       JOIN:c.join, JOIN_LABEL:c.joinLabel, FURNACE:c.furnace, TROOP:c.troop, HEROES:heroesFromIds(c.heroes), GEAR_MAX:10,
       MEMO_HINT:c.memoHint, SERVER:c.server, ALLIANCE:c.alliance });
   }).catch(function(e){ fail((e&&e.message&&!/fetch|network|load failed/i.test(e.message))?e.message:'読み込みに失敗しました。電波の良いところで再読み込みしてください。'); });
