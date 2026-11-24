@@ -163,10 +163,7 @@ textarea.tall{min-height:200px}
         <label class="lab" for="memoHint">ひとこと欄の説明<span class="opt">任意</span></label>
         <input type="text" id="memoHint" maxlength="80" placeholder="例：今後の同盟運営について、ご希望などあれば">
       </div>
-      <div class="f">
-        <label class="chk"><input type="checkbox" id="publicResults"> <span>メンバーも集計を見られるようにする</span></label>
-        <span class="hint">オンにすると、締切までは集計ページのリンクを知っている人なら誰でも集計を見られます。締切後は幹部（ログイン）だけが見られます。</span>
-      </div>
+      <p class="hint" style="margin:4px 0 0">全員の回答（集計ページ）は、リンクを知っている人なら誰でもログインなしで見られます。</p>
     </section>
 
     <div class="notice" id="err" hidden></div>
@@ -262,7 +259,7 @@ textarea.tall{min-height:200px}
   function fill(c){
     $('title').value=c.title||''; $('server').value=c.server||''; $('alliance').value=c.alliance||''; setLines('allies',(c.alliances&&c.alliances.length)?c.alliances:[c.alliance||'']); $('lead').value=c.lead||'';
     $('joinLabel').value=c.joinLabel||'参加可能時間'; setLines('join',c.join); setLines('members',c.members); $('members').oninput();
-    $('memoHint').value=c.memoHint||''; $('publicResults').checked=!!c.publicResults;
+    $('memoHint').value=c.memoHint||'';
     gen=c.gen||4; renderGens(); sel={}; (c.heroes||[]).forEach(function(id){sel[id]=1}); renderHeroes();
     setLines('furnace',c.furnace); setLines('troop',c.troop); fillClose(c.closeAt);
   }
@@ -291,7 +288,7 @@ textarea.tall{min-height:200px}
     var c=closeInfo();
     return { title:$('title').value.trim(), server:$('server').value.trim(), alliance:$('alliance').value.trim(), alliances:lines('allies'), lead:$('lead').value.trim(),
       gen:gen, closeAt:c.closeAt, deadline:c.deadline, joinLabel:$('joinLabel').value.trim()||'参加可能時間', join:lines('join'),
-      furnace:lines('furnace'), troop:lines('troop'), members:lines('members'), memoHint:$('memoHint').value.trim(), publicResults:$('publicResults').checked,
+      furnace:lines('furnace'), troop:lines('troop'), members:lines('members'), memoHint:$('memoHint').value.trim(), publicResults:true,
       heroes:HERO_DB.filter(function(h){return h.gen<=gen&&sel[h.id]}).sort(function(a,b){return (b.gen||0)-(a.gen||0)}).map(function(h){return h.id}) };
   }
   $('form').addEventListener('submit', function(ev){

@@ -311,13 +311,7 @@ function getAdmin_(id, key, token) {
 function getResults_(id, key, token) {
   var s = findSurvey_(id);
   if (!s) return { ok: false, error: 'アンケートが見つかりません' };
-  var admin = !!canManage_(s, key, token);
-  if (!admin) {
-    if (!s.config.publicResults) return token && session_(token)
-      ? { ok: false, forbidden: true, error: 'このアンケートを見る権限がありません（別のサーバー・同盟のアンケートです）' }
-      : { ok: false, needLogin: true, error: '集計を見るには幹部ページからログインしてください' };
-    if (closed_(s.config)) return { ok: false, closed: true, error: '集計の公開は終了しました' };
-  }
+  var admin = !!canManage_(s, key, token); // 幹部なら設定変更ボタンを出す。閲覧はリンクを知っていれば誰でも可
   var sh = sheet_(SH_ANSWERS, HEAD_ANSWERS), rows = [];
   var found = sh.getRange('A:A').createTextFinder(s.id).matchEntireCell(true).findAll();
   found.forEach(function (r) {
